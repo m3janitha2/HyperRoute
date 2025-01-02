@@ -1,0 +1,42 @@
+[
+{
+  "directory": "/mnt/d/linux/github/max/build/_deps/googletest-build/googlemock",
+  "command": "/usr/bin/g++  -I/mnt/d/linux/github/max/build/_deps/googletest-src/googlemock/include -I/mnt/d/linux/github/max/build/_deps/googletest-src/googlemock -isystem /mnt/d/linux/github/max/build/_deps/googletest-src/googletest/include -isystem /mnt/d/linux/github/max/build/_deps/googletest-src/googletest -g -Wall -Wshadow -Wno-error=dangling-else -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -std=c++20 -o CMakeFiles/gmock.dir/src/gmock-all.cc.o -c /mnt/d/linux/github/max/build/_deps/googletest-src/googlemock/src/gmock-all.cc",
+  "file": "/mnt/d/linux/github/max/build/_deps/googletest-src/googlemock/src/gmock-all.cc"
+},
+{
+  "directory": "/mnt/d/linux/github/max/build/_deps/googletest-build/googlemock",
+  "command": "/usr/bin/g++  -isystem /mnt/d/linux/github/max/build/_deps/googletest-src/googlemock/include -isystem /mnt/d/linux/github/max/build/_deps/googletest-src/googlemock -isystem /mnt/d/linux/github/max/build/_deps/googletest-src/googletest/include -isystem /mnt/d/linux/github/max/build/_deps/googletest-src/googletest -g -Wall -Wshadow -Wno-error=dangling-else -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -std=c++20 -o CMakeFiles/gmock_main.dir/src/gmock_main.cc.o -c /mnt/d/linux/github/max/build/_deps/googletest-src/googlemock/src/gmock_main.cc",
+  "file": "/mnt/d/linux/github/max/build/_deps/googletest-src/googlemock/src/gmock_main.cc"
+},
+{
+  "directory": "/mnt/d/linux/github/max/build/_deps/googletest-build/googletest",
+  "command": "/usr/bin/g++  -I/mnt/d/linux/github/max/build/_deps/googletest-src/googletest/include -I/mnt/d/linux/github/max/build/_deps/googletest-src/googletest -g -Wall -Wshadow -Wno-error=dangling-else -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -std=c++20 -o CMakeFiles/gtest.dir/src/gtest-all.cc.o -c /mnt/d/linux/github/max/build/_deps/googletest-src/googletest/src/gtest-all.cc",
+  "file": "/mnt/d/linux/github/max/build/_deps/googletest-src/googletest/src/gtest-all.cc"
+},
+{
+  "directory": "/mnt/d/linux/github/max/build/_deps/googletest-build/googletest",
+  "command": "/usr/bin/g++  -isystem /mnt/d/linux/github/max/build/_deps/googletest-src/googletest/include -isystem /mnt/d/linux/github/max/build/_deps/googletest-src/googletest -g -Wall -Wshadow -Wno-error=dangling-else -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -std=c++20 -o CMakeFiles/gtest_main.dir/src/gtest_main.cc.o -c /mnt/d/linux/github/max/build/_deps/googletest-src/googletest/src/gtest_main.cc",
+  "file": "/mnt/d/linux/github/max/build/_deps/googletest-src/googletest/src/gtest_main.cc"
+},
+{
+  "directory": "/mnt/d/linux/github/max/build/application/app",
+  "command": "/usr/bin/g++  -I/mnt/d/linux/github/max -g -std=c++20 -o CMakeFiles/max.dir/main.cpp.o -c /mnt/d/linux/github/max/application/app/main.cpp",
+  "file": "/mnt/d/linux/github/max/application/app/main.cpp"
+},
+{
+  "directory": "/mnt/d/linux/github/max/build/application/app",
+  "command": "/usr/bin/g++  -I/mnt/d/linux/github/max -g -std=c++20 -o CMakeFiles/max.dir/__/session/ClientSessionProtocolA.cpp.o -c /mnt/d/linux/github/max/application/session/ClientSessionProtocolA.cpp",
+  "file": "/mnt/d/linux/github/max/application/session/ClientSessionProtocolA.cpp"
+},
+{
+  "directory": "/mnt/d/linux/github/max/build/application/app",
+  "command": "/usr/bin/g++  -I/mnt/d/linux/github/max -g -std=c++20 -o CMakeFiles/max.dir/__/session/VenueSessionProtocolB.cpp.o -c /mnt/d/linux/github/max/application/session/VenueSessionProtocolB.cpp",
+  "file": "/mnt/d/linux/github/max/application/session/VenueSessionProtocolB.cpp"
+},
+{
+  "directory": "/mnt/d/linux/github/max/build/application/app",
+  "command": "/usr/bin/g++  -I/mnt/d/linux/github/max -g -std=c++20 -o CMakeFiles/max.dir/__/router/ReverseRouter.cpp.o -c /mnt/d/linux/github/max/application/router/ReverseRouter.cpp",
+  "file": "/mnt/d/linux/github/max/application/router/ReverseRouter.cpp"
+}
+]
