@@ -1,7 +1,6 @@
 #pragma once
 
 #include <application/session/ClientSessionsDeclaration.h>
-#include <application/message/protocol_a/NewOrderSingle.h>
 #include <application/session/RejectInfo.h>
 #include <cstdint>
 #include <unordered_map>

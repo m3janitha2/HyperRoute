@@ -6,6 +6,6 @@
 
 namespace max
 {
-    using ClientSessionVarient = std::variant<ClientSessionProtocolA>;
-    using ClientSessionPtrVarient = std::variant<ClientSessionProtocolA*>;
+    using ClientSessionVarient = std::variant<protocol_a::ClientSessionProtocolA>;
+    using ClientSessionPtrVarient = std::variant<protocol_a::ClientSessionProtocolA*>;
 }

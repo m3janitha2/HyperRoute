@@ -1,19 +1,20 @@
 #pragma once
 
 #include <application/util/CrtpWrapper.h>
+#include <application/session/RejectInfo.h>
 #include <application/enricher/ClientEnricher.h>
 #include <application/router/ForwardRouters.h>
-#include <application/session/RejectInfo.h>
 #include <application/router/ReverseRouter.h>
+#include <application/transport/Transport.h>
 
 #include <type_traits>
 #include <concepts>
+#include <string_view>
 
 namespace max
 {
     template <typename Impl>
-    concept SessionEvents = requires(Impl impl) {
-        impl.on_data_impl();
+    concept TransportEvents = requires(Impl impl) {
         impl.on_connect_impl();
         impl.on_disconnect_impl();
     };
@@ -22,13 +23,17 @@ namespace max
     class ClientSessionBase : public core::CrtpWrapper<SessionImpl>
     {
     public:
-        explicit ClientSessionBase(ForwardRouterVarient &forward_router, ReverseRouter &reverse_router)
-            : forward_router_(forward_router), reverse_router_(reverse_router) 
-            {
-                static_assert(SessionEvents<SessionImpl>);
-            }
+        explicit ClientSessionBase(ForwardRouterVarient &forward_router,
+                                   ReverseRouter &reverse_router,
+                                   Transport &transport)
+            : forward_router_{forward_router},
+              reverse_router_{reverse_router},
+              transport_{transport}
+        {
+            static_assert(TransportEvents<SessionImpl>);
+        }
 
-        void on_data() { this->impl().on_data_impl(); }
+        /* TransportEvents */
         void on_connect() { this->impl().on_connect_impl(); }
         void on_disconnect() { this->impl().on_disconnect_impl(); }
 
@@ -46,7 +51,9 @@ namespace max
         template <typename Msg>
         RejectInfo send_message_to_client(Msg &msg);
         template <typename Msg>
-        RejectInfo on_venue_message(Msg &&msg) { return this->impl().on_venue_message_impl(msg); }
+        void on_message(Msg &msg) { this->impl().on_message_impl(msg); }
+        template <typename Msg>
+        RejectInfo on_venue_message(Msg &msg) { return this->impl().on_venue_message_impl(msg); }
         template <typename Msg>
         void reject_client_message(Msg &msg, RejectInfo &reject_info) { this->impl().reject_client_message_impl(msg, reject_info); }
         template <typename Msg>
@@ -56,6 +63,7 @@ namespace max
         ForwardRouterVarient &forward_router_;
         ReverseRouter &reverse_router_;
         ClientEnricher enricher_{};
+        Transport &transport_;
     };
 
     template <typename SessionImpl>
@@ -119,7 +127,8 @@ namespace max
     inline RejectInfo ClientSessionBase<SessionImpl>::send_message_to_client(Msg &msg)
     {
         std::cout << "send_message_to_client:" << msg << std::endl;
-        return RejectInfo{};
+        std::string_view data{reinterpret_cast<char *>(&msg), sizeof(msg)};
+        return transport_.send_data(data);
     }
 
     template <typename SessionImpl>

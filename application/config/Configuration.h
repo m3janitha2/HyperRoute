@@ -5,6 +5,7 @@
 #include <string_view>
 
 namespace pt = boost::property_tree;
+using Config = pt::ptree;
 
 class Configuration
 {

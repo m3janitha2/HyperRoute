@@ -1,1 +1,0 @@
-/usr/bin/g++ -g CMakeFiles/max.dir/main.cpp.o CMakeFiles/max.dir/__/session/ClientSessionProtocolA.cpp.o CMakeFiles/max.dir/__/session/VenueSessionProtocolB.cpp.o CMakeFiles/max.dir/__/router/ReverseRouter.cpp.o -o max 

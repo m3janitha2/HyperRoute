@@ -6,5 +6,5 @@
 
 namespace max
 {
-    using VenueSessionVarient = std::variant<VenueSessionProtocolB>;
+    using VenueSessionVarient = std::variant<protocol_b::VenueSessionProtocolB>;
 };

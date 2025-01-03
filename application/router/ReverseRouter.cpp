@@ -1,5 +1,6 @@
 #include <application/router/ReverseRouter.h>
 #include <application/session/ClientSessions.h>
+#include <application/message/protocol_a/Messages.h>
 
 #include <variant>
 #include "ReverseRouter.h"
@@ -28,6 +29,6 @@ namespace max
         uid_to_client_session_.emplace(uid, client_session_varient);
     }
 
-    template RejectInfo ReverseRouter::send_message_to_client<protocol_a::ExecutionReport>(protocol_a::ExecutionReport &msg);
-    template RejectInfo ReverseRouter::send_message_to_client<protocol_a::CancelReject>(protocol_a::CancelReject &msg);
+    template RejectInfo ReverseRouter::send_message_to_client<protocol_a::session::ExecutionReport>(protocol_a::session::ExecutionReport &msg);
+    template RejectInfo ReverseRouter::send_message_to_client<protocol_a::session::CancelReject>(protocol_a::session::CancelReject &msg);
 }

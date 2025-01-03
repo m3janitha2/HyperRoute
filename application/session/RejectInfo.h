@@ -16,51 +16,61 @@ namespace max
         To_Client_Routing_Failed,
     };
 
-    inline std::ostream &operator<<(std::ostream &os, const InteranlRejectCode &code)
+    inline const char *to_chars(InteranlRejectCode code)
     {
         using enum InteranlRejectCode;
         switch (code)
         {
         case Client_Enrichment_Failed:
-            return os << "Client_Enrichment_Failed";
+            return "Client_Enrichment_Failed";
         case Client_Validation_Failed:
-            return os << "Client_Validation_Failed";
+            return "Client_Validation_Failed";
         case To_Venue_Routing_Failed:
-            return os << "To_Venue_Routing_Failed";
+            return "To_Venue_Routing_Failed";
         case To_Venue_Validation_Failed:
-            return os << "To_Venue_Validation_Failed";
+            return "To_Venue_Validation_Failed";
         case To_Venue_Enrichement_Failed:
-            return os << "To_Venue_Enrichement_Failed";
+            return "To_Venue_Enrichement_Failed";
         case To_Venue_Encoding_Failed:
-            return os << "To_Venue_Encoding_Failed";
+            return "To_Venue_Encoding_Failed";
         case From_Venue_Decoding_Failed:
-            return os << "From_Venue_Decoding_Failed";
+            return "From_Venue_Decoding_Failed";
         case To_Client_Routing_Failed:
-            return os << "To_Client_Routing_Failed";
-
+            return "To_Client_Routing_Failed";
         default:
-            return os << "Unknown";
+            return "Unknown";
         }
     }
 
-    class RejectInfo
+    inline std::string to_string(InteranlRejectCode code)
+    {
+        return to_chars(code);
+    }
+
+    template <typename RejectCode>
+    class RejectInfoBase
     {
     public:
-        constexpr RejectInfo() = default;
-        constexpr RejectInfo(const char *reason, InteranlRejectCode code = InteranlRejectCode::None) noexcept
+        constexpr RejectInfoBase() = default;
+        constexpr RejectInfoBase(const char *reason, RejectCode code = RejectCode::None) noexcept
             : code_(code), reason_(reason) {}
 
-        constexpr operator bool() const noexcept { return code_ == InteranlRejectCode::None; }
+        constexpr operator bool() const noexcept { return code_ == RejectCode::None; }
+        const char *to_chars() const { return to_chars(code_); }
 
-        friend std::ostream &operator<<(std::ostream &os, const RejectInfo &reject_info)
-        {
-            os << "code:" << reject_info.code_ << " reason:" << reject_info.reason_;
-            return os;
-        }
+        template <typename T>
+        friend std::ostream &operator<<(std::ostream &os, const RejectInfoBase<T> &reject_info);
 
-    private:
-        InteranlRejectCode code_{InteranlRejectCode::None};
+            private : RejectCode code_ { RejectCode::None };
         const char *reason_{""};
     };
 
+    template <typename T>
+    inline std::ostream &operator<<(std::ostream &os, const RejectInfoBase<T> &reject_info)
+    {
+        //"code:" << reject_info.to_chars() << " reason:" << reject_info.reason_;
+        return os;
+    }
+
+    using RejectInfo = RejectInfoBase<InteranlRejectCode>;
 }

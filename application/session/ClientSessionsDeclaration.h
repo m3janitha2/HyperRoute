@@ -4,8 +4,11 @@
 
 namespace max
 {
-    class ClientSessionProtocolA;
-    using ClientSessionVarient = std::variant<ClientSessionProtocolA>;
-
-    using ClientSessionPtrVarient = std::variant<ClientSessionProtocolA*>;
+    namespace protocol_a
+    {
+        class ClientSessionProtocolA;
+    }
+    
+    using ClientSessionVarient = std::variant<protocol_a::ClientSessionProtocolA>;
+    using ClientSessionPtrVarient = std::variant<protocol_a::ClientSessionProtocolA*>;
 };
