@@ -22,8 +22,8 @@ namespace max::protocol_b
         void on_disconnect_impl();
 
         /* messages from venue to client */
-        void on_message_impl(session::ExecutionReport &msg);
-        void on_message_impl(session::CancelReject &msg);
+        void on_message_from_transport_impl(session::ExecutionReport &msg);
+        void on_message_from_transport_impl(session::CancelReject &msg);
 
         template <typename Msg>
         auto encode_message_to_venue_impl(Msg &msg);

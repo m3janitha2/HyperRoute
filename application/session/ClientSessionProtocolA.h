@@ -25,23 +25,23 @@ namespace max::protocol_a
 
         /* Messages from transport */
         template <typename Msg>
-        void on_message_impl(Msg &msg);
-        void on_message_impl(session::NewOrderSingle &msg);
-        void on_message_impl(session::CancelReplaceRequest &msg);
-        void on_message_impl(session::CancelRequest &msg);
+        void on_message_from_transport_impl(Msg &msg);
+        void on_message_from_transport_impl(session::NewOrderSingle &msg);
+        void on_message_from_transport_impl(session::CancelReplaceRequest &msg);
+        void on_message_from_transport_impl(session::CancelRequest &msg);
 
-        /* messages from venue to client */
-        RejectInfo on_venue_message_impl(session::ExecutionReport &msg);
-        RejectInfo on_venue_message_impl(session::CancelReject &msg);
+        /* Internal Rejects */
+        void rejecet_message_from_transport_impl(session::NewOrderSingle &msg, RejectInfo &reject_info);
+        void rejecet_message_from_transport_impl(session::CancelReplaceRequest &msg, RejectInfo &reject_info);
+        void rejecet_message_from_transport_impl(session::CancelRequest &msg, RejectInfo &reject_info);
 
-        /* handle internal message rejects */
-        void reject_client_message_impl(session::NewOrderSingle &msg, RejectInfo &reject_info);
-        void reject_client_message_impl(session::CancelReplaceRequest &msg, RejectInfo &reject_info);
-        void reject_client_message_impl(session::CancelRequest &msg, RejectInfo &reject_info);
+        /* messages from peer session to transport */
+        RejectInfo on_message_from_peer_impl(session::ExecutionReport &msg);
+        RejectInfo on_message_from_peer_impl(session::CancelReject &msg);
     };
 
     template <typename Msg>
-    inline void ClientSessionProtocolA::on_message_impl(Msg &msg)
+    inline void ClientSessionProtocolA::on_message_from_transport_impl(Msg &msg)
     {
         std::cout << "unknown client message" << std::endl;
     }

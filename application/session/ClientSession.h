@@ -6,6 +6,7 @@
 #include <application/router/ForwardRouters.h>
 #include <application/router/ReverseRouter.h>
 #include <application/transport/Transport.h>
+#include <application/message/core/Messages.h>
 
 #include <type_traits>
 #include <concepts>
@@ -39,23 +40,23 @@ namespace max
 
         /* client session internal */
         template <typename Msg>
-        void procoess_message_from_client(Msg &msg);
+        void procoess_message_from_transport(Msg &msg);
         template <typename Msg>
-        RejectInfo procoess_message_to_client(Msg &msg);
+        RejectInfo procoess_message_to_transport(Msg &msg);
         template <typename Msg>
-        RejectInfo enrich_message_from_client(Msg &msg);
+        RejectInfo enrich_message_from_transport(Msg &msg);
         template <typename Msg>
-        RejectInfo enrich_message_to_client(Msg &msg);
+        RejectInfo enrich_message_to_transport(Msg &msg);
         template <typename Msg>
-        RejectInfo send_message_from_client(Msg &msg);
+        RejectInfo send_message_to_peer(Msg &msg);
         template <typename Msg>
-        RejectInfo send_message_to_client(Msg &msg);
+        RejectInfo send_message_to_transport(Msg &msg);
         template <typename Msg>
-        void on_message(Msg &msg) { this->impl().on_message_impl(msg); }
+        void on_message_from_transport(Msg &msg) { this->impl().on_message_from_transport_impl(msg); }
         template <typename Msg>
-        RejectInfo on_venue_message(Msg &msg) { return this->impl().on_venue_message_impl(msg); }
+        RejectInfo on_message_from_peer(Msg &msg) { return this->impl().on_message_from_peer_impl(msg); }
         template <typename Msg>
-        void reject_client_message(Msg &msg, RejectInfo &reject_info) { this->impl().reject_client_message_impl(msg, reject_info); }
+        void rejecet_message_from_transport(Msg &msg, RejectInfo &reject_info) { this->impl().rejecet_message_from_transport_impl(msg, reject_info); }
         template <typename Msg>
         void update_routing_info(Msg &msg);
 
@@ -68,16 +69,16 @@ namespace max
 
     template <typename SessionImpl>
     template <typename Msg>
-    inline void ClientSessionBase<SessionImpl>::procoess_message_from_client(Msg &msg)
+    inline void ClientSessionBase<SessionImpl>::procoess_message_from_transport(Msg &msg)
     {
-        if (auto reject_info = enrich_message_from_client(msg); reject_info != true)
+        if (auto reject_info = enrich_message_from_transport(msg); reject_info != true)
         {
-            reject_client_message(msg, reject_info);
+            rejecet_message_from_transport(msg, reject_info);
         }
 
-        if (auto reject_info = send_message_from_client(msg); reject_info != true)
+        if (auto reject_info = send_message_to_peer(msg); reject_info != true)
         {
-            reject_client_message(msg, reject_info);
+            rejecet_message_from_transport(msg, reject_info);
         }
 
         update_routing_info(msg);
@@ -88,12 +89,12 @@ namespace max
 
     template <typename SessionImpl>
     template <typename Msg>
-    inline RejectInfo ClientSessionBase<SessionImpl>::procoess_message_to_client(Msg &msg)
+    inline RejectInfo ClientSessionBase<SessionImpl>::procoess_message_to_transport(Msg &msg)
     {
-        if (auto reject_info = enrich_message_to_client(msg); reject_info != true)
+        if (auto reject_info = enrich_message_to_transport(msg); reject_info != true)
             return reject_info;
 
-        if (auto reject_info = send_message_to_client(msg); reject_info != true)
+        if (auto reject_info = send_message_to_transport(msg); reject_info != true)
             return reject_info;
 
         return RejectInfo{};
@@ -101,21 +102,21 @@ namespace max
 
     template <typename SessionImpl>
     template <typename Msg>
-    inline RejectInfo ClientSessionBase<SessionImpl>::enrich_message_from_client(Msg &msg)
+    inline RejectInfo ClientSessionBase<SessionImpl>::enrich_message_from_transport(Msg &msg)
     {
-        return enricher_.enrich_message_from_client(msg);
+        return enricher_.enrich_message_from_transport(msg);
     }
 
     template <typename SessionImpl>
     template <typename Msg>
-    inline RejectInfo ClientSessionBase<SessionImpl>::enrich_message_to_client(Msg &msg)
+    inline RejectInfo ClientSessionBase<SessionImpl>::enrich_message_to_transport(Msg &msg)
     {
-        return enricher_.enrich_message_to_client(msg);
+        return enricher_.enrich_message_to_transport(msg);
     }
 
     template <typename SessionImpl>
     template <typename Msg>
-    inline RejectInfo ClientSessionBase<SessionImpl>::send_message_from_client(Msg &msg)
+    inline RejectInfo ClientSessionBase<SessionImpl>::send_message_to_peer(Msg &msg)
     {
         return std::visit([&msg](auto &&router)
                           { return std::forward<decltype(router)>(router).on_message_from_client(msg); },
@@ -124,9 +125,9 @@ namespace max
 
     template <typename SessionImpl>
     template <typename Msg>
-    inline RejectInfo ClientSessionBase<SessionImpl>::send_message_to_client(Msg &msg)
+    inline RejectInfo ClientSessionBase<SessionImpl>::send_message_to_transport(Msg &msg)
     {
-        std::cout << "send_message_to_client:" << msg << std::endl;
+        std::cout << "send_message_to_transport:" << msg << std::endl;
         std::string_view data{reinterpret_cast<char *>(&msg), sizeof(msg)};
         return transport_.send_data(data);
     }
@@ -135,10 +136,11 @@ namespace max
     template <typename Msg>
     inline void ClientSessionBase<SessionImpl>::update_routing_info(Msg &msg)
     {
-        // if constexpr (std::is_same_v<Msg, protocol_a::NewOrderSingle>)
-        //{
+        // if constexpr (std::derived_from<Msg, session::NewOrderSingle>)
+        // {
+        std::cout << "update_routing_info: NewOrderSingle" << std::endl;
         ClientSessionPtrVarient client_session_varient{&(this->impl())};
         reverse_router_.update_reverse_routing(123, client_session_varient);
-        //}
+        // }
     }
 }

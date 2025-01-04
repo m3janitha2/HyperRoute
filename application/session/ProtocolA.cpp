@@ -72,21 +72,21 @@ namespace max::protocol_a
         {
             auto &msg = *(reinterpret_cast<schema::NewOrderSingle *>(header));
             session::NewOrderSingle msg_wrap{msg};
-            session_.on_message(msg_wrap);
+            session_.on_message_from_transport(msg_wrap);
             break;
         }
         case schema::MsgType::CancelReplaceRequest:
         {
             auto &msg = *(reinterpret_cast<schema::CancelReplaceRequest *>(header));
             session::CancelReplaceRequest msg_wrap{msg};
-            session_.on_message(msg_wrap);
+            session_.on_message_from_transport(msg_wrap);
             break;
         }
         case schema::MsgType::CancelRequest:
         {
             auto &msg = *(reinterpret_cast<schema::CancelRequest *>(header));
             session::CancelRequest msg_wrap{msg};
-            session_.on_message(msg_wrap);
+            session_.on_message_from_transport(msg_wrap);
             break;
         }
         default:

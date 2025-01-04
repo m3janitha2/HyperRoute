@@ -1,88 +1,36 @@
 #pragma once
 
+#include <application/message/core/Types.h>
 #include <ostream>
 #include <string_view>
+#include <chrono>
 
-namespace max::core::binary
+namespace max::message::core
 {
-    template <typename Msg>
-    struct BinaryMessage
+    using Timestamp = std::chrono::time_point<std::chrono::steady_clock>;
+    using TimestampClock = std::chrono::steady_clock;
+
+    class Message
     {
-        explicit BinaryMessage(Msg &msg)
-            : msg_{msg}{}
+    public:
+        [[nodiscard]] constexpr UID uid() const noexcept { return uid_; }
+        constexpr void uid(UID uid) noexcept { uid_ = uid; }
 
-        const Msg &msg() const { return msg_; }
-        Msg &msg() { return msg_; }
-        std::string_view data()
-        {
-            std::string_view data{reinterpret_cast<char *>(msg_), sizeof(msg)};
-            return data;
-        }
+        [[nodiscard]] constexpr Timestamp in_time() const noexcept { return in_time_; }
+        constexpr void in_time(Timestamp in_time) noexcept { in_time_ = in_time; }
 
-        Msg &msg_;
+        [[nodiscard]] constexpr Timestamp out_time() const noexcept { return out_time_; }
+        constexpr void out_time(Timestamp out_time) noexcept { out_time_ = out_time; }
+
+    private:
+        UID uid_{};
+        Timestamp in_time_{TimestampClock::now()};
+        Timestamp out_time_{};
     };
-
-    template <typename Msg>
-    struct NewOrderSingle : public BinaryMessage<Msg>
-    {
-        explicit NewOrderSingle(Msg &msg)
-            : BinaryMessage<Msg>(msg) {}
-
-        friend std::ostream &operator<<(std::ostream &os, const Msg &msg)
-        {
-            os << "NewOrderSingle: " << msg;
-            return os;
-        }
-    };
-
-    template <typename Msg>
-    struct CancelReplaceRequest : public BinaryMessage<Msg>
-    {
-        explicit CancelReplaceRequest(Msg &msg)
-            : BinaryMessage<Msg>(msg) {}
-
-        friend std::ostream &operator<<(std::ostream &os, const Msg &msg)
-        {
-            os << "CancelReplaceRequest: " << msg;
-            return os;
-        }
-    };
-
-    template <typename Msg>
-    struct CancelRequest : public BinaryMessage<Msg>
-    {
-        explicit CancelRequest(Msg &msg)
-            : BinaryMessage<Msg>(msg) {}
-
-        friend std::ostream &operator<<(std::ostream &os, const Msg &msg)
-        {
-            os << "CancelRequest: " << msg;
-            return os;
-        }
-    };
-
-    template <typename Msg>
-    struct ExecutionReport : public BinaryMessage<Msg>
-    {
-        explicit ExecutionReport(Msg &msg)
-            : BinaryMessage<Msg>(msg) {}
-
-        friend std::ostream &operator<<(std::ostream &os, const Msg &msg)
-        {
-            os << "ExecutionReport: " << msg;
-            return os;
-        }
-    };
-
-    template <typename Msg>
-    struct CancelReject : public BinaryMessage<Msg>
-    {
-        explicit CancelReject(Msg &msg)
-            : BinaryMessage<Msg>(msg) {}
-        friend std::ostream &operator<<(std::ostream &os, const Msg &msg)
-        {
-            os << "CancelReject: " << msg;
-            return os;
-        }
-    };
+    
+    struct NewOrderSingle : public Message {};
+    struct CancelReplaceRequest : public Message{};
+    struct CancelRequest : public Message{};
+    struct ExecutionReport : public Message{};
+    struct CancelReject : public Message{};
 }

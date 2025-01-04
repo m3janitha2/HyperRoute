@@ -26,7 +26,7 @@ namespace max
         template <typename Msg>
         RejectInfo on_client_message(Msg &msg);
         template <typename Msg>
-        void on_message(Msg &msg) { this->impl().on_message_impl(msg); }
+        void on_message_from_transport(Msg &msg) { this->impl().on_message_from_transport_impl(msg); }
 
         /* venue session internal */
         template <typename Msg>

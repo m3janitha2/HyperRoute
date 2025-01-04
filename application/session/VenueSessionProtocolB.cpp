@@ -2,12 +2,12 @@
 
 namespace max::protocol_b
 {
-    void VenueSessionProtocolB::on_message_impl(session::ExecutionReport &msg)
+    void VenueSessionProtocolB::on_message_from_transport_impl(session::ExecutionReport &msg)
     {
         procoess_message_from_venue(msg);
     }
 
-    void VenueSessionProtocolB::on_message_impl(session::CancelReject &msg)
+    void VenueSessionProtocolB::on_message_from_transport_impl(session::CancelReject &msg)
     {
         procoess_message_from_venue(msg);
     }

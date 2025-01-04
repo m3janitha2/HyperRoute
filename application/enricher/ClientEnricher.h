@@ -6,9 +6,9 @@ namespace max
     struct ClientEnricher
     {
         template <typename Msg>
-        RejectInfo enrich_message_from_client(Msg &msg) const noexcept { return RejectInfo{}; }
+        RejectInfo enrich_message_from_transport(Msg &msg) const noexcept { return RejectInfo{}; }
 
         template <typename Msg>
-        RejectInfo enrich_message_to_client(Msg &msg) const noexcept { return RejectInfo{}; }
+        RejectInfo enrich_message_to_transport(Msg &msg) const noexcept { return RejectInfo{}; }
     };
 }

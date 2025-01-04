@@ -10,12 +10,12 @@ namespace max
     template <typename Msg>
     RejectInfo ReverseRouter::send_message_to_client(Msg &msg)
     {
-        UID uid{123};
+        auto uid = msg.uid();
         if (auto it = uid_to_client_session_.find(uid); it != uid_to_client_session_.end())
         {
             auto client_session_var = it->second;
             return std::visit([&msg](auto &&client_session)
-                              { return std::forward<decltype(client_session)>(client_session)->on_venue_message(msg); },
+                              { return std::forward<decltype(client_session)>(client_session)->on_message_from_peer(msg); },
                               client_session_var);
         }
         else
@@ -24,7 +24,7 @@ namespace max
         }
     }
 
-    void ReverseRouter::update_reverse_routing(UID uid, ClientSessionPtrVarient client_session_varient)
+    void ReverseRouter::update_reverse_routing(message::UID uid, ClientSessionPtrVarient client_session_varient)
     {
         uid_to_client_session_.emplace(uid, client_session_varient);
     }
