@@ -14,6 +14,8 @@ namespace max
         To_Venue_Encoding_Failed,
         From_Venue_Decoding_Failed,
         To_Client_Routing_Failed,
+        Invalid_Orig_Cl_Ord_ID,
+        Destination_Session_Not_Found_For_UID,
     };
 
     inline const char *to_chars(InteranlRejectCode code)
@@ -37,6 +39,8 @@ namespace max
             return "From_Venue_Decoding_Failed";
         case To_Client_Routing_Failed:
             return "To_Client_Routing_Failed";
+        case Invalid_Orig_Cl_Ord_ID:
+            return "Invalid_Orig_Cl_Ord_ID";
         default:
             return "Unknown";
         }

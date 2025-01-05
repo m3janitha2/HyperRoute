@@ -1,6 +1,6 @@
 #pragma once
 
-#include <application/session/ClientSessionsDeclaration.h>
+#include <application/session/SourceSessionsDeclaration.h>
 #include <application/session/RejectInfo.h>
 #include <application/message/core/Types.h>
 #include <unordered_map>
@@ -12,9 +12,9 @@ namespace max
     {
     public:
         template <typename Msg>
-        RejectInfo send_message_to_client(Msg &msg);
-        void update_reverse_routing(message::UID uid, ClientSessionPtrVarient client_session_varient);
+        RejectInfo send_message_to_source(Msg &msg);
+        void update_reverse_routing(UID uid, SourceSessionPtrVarient client_session_varient);
 
-        std::unordered_map<message::UID, ClientSessionPtrVarient> uid_to_client_session_{};
+        std::unordered_map<UID, SourceSessionPtrVarient> uid_to_source_session_{};
     };
 }

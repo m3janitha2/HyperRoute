@@ -1,5 +1,5 @@
 #include <application/session/ProtocolA.h>
-#include <application/session/ClientSessionProtocolA.h>
+#include <application/session/SourceSessionProtocolA.h>
 
 namespace max::protocol_a
 {
@@ -22,7 +22,7 @@ namespace max::protocol_a
         return to_chars(code);
     }
 
-    ProtocolA::ProtocolA(ForwardRouterVarient &forward_router,
+    ProtocolA::ProtocolA(DestinatinRouterVarient &forward_router,
                          ReverseRouter &reverse_router)
         : session_(forward_router, reverse_router, transport_)
     {
@@ -70,23 +70,20 @@ namespace max::protocol_a
         }
         case schema::MsgType::NewOrderSingle:
         {
-            auto &msg = *(reinterpret_cast<schema::NewOrderSingle *>(header));
-            session::NewOrderSingle msg_wrap{msg};
-            session_.on_message_from_transport(msg_wrap);
+            session::NewOrderSingle msg{data};
+            session_.on_message_from_transport(msg);
             break;
         }
         case schema::MsgType::CancelReplaceRequest:
         {
-            auto &msg = *(reinterpret_cast<schema::CancelReplaceRequest *>(header));
-            session::CancelReplaceRequest msg_wrap{msg};
-            session_.on_message_from_transport(msg_wrap);
+            session::CancelReplaceRequest msg{data};
+            session_.on_message_from_transport(msg);
             break;
         }
         case schema::MsgType::CancelRequest:
         {
-            auto &msg = *(reinterpret_cast<schema::CancelRequest *>(header));
-            session::CancelRequest msg_wrap{msg};
-            session_.on_message_from_transport(msg_wrap);
+            session::CancelRequest msg{data};
+            session_.on_message_from_transport(msg);
             break;
         }
         default:
@@ -160,5 +157,4 @@ namespace max::protocol_a
     {
         return SessionRejectInfo();
     }
-
 }

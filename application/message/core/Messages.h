@@ -7,6 +7,8 @@
 
 namespace max::message::core
 {
+    /* Message interface used by the core framework */
+    
     using Timestamp = std::chrono::time_point<std::chrono::steady_clock>;
     using TimestampClock = std::chrono::steady_clock;
 
@@ -27,10 +29,24 @@ namespace max::message::core
         Timestamp in_time_{TimestampClock::now()};
         Timestamp out_time_{};
     };
-    
-    struct NewOrderSingle : public Message {};
-    struct CancelReplaceRequest : public Message{};
-    struct CancelRequest : public Message{};
-    struct ExecutionReport : public Message{};
-    struct CancelReject : public Message{};
+
+    struct NewOrderSingle : public Message
+    {
+    };
+
+    struct CancelReplaceRequest : public Message
+    {
+    };
+
+    struct CancelRequest : public Message
+    {
+    };
+
+    struct ExecutionReport : public Message
+    {
+    };
+
+    struct CancelReject : public Message
+    {
+    };
 }

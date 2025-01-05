@@ -68,16 +68,14 @@ namespace max::protocol_b
         }
         case schema::MsgType::ExecutionReport:
         {
-            auto &msg = *(reinterpret_cast<schema::ExecutionReport *>(header));
-            session::ExecutionReport msg_wrap{msg};
-            session_.on_message_from_transport(msg_wrap);
+            session::ExecutionReport msg{data};
+            session_.on_message_from_transport(msg);
             break;
         }
         case schema::MsgType::CancelReject:
         {
-            auto &msg = *(reinterpret_cast<schema::CancelReject *>(header));
-            session::CancelReject msg_wrap{msg};
-            session_.on_message_from_transport(msg_wrap);
+            session::CancelReject msg{data};
+            session_.on_message_from_transport(msg);
             break;
         }
         default:

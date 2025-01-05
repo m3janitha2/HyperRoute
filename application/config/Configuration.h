@@ -42,7 +42,7 @@ inline pt::ptree &Configuration::get_client_ses_cfg_by_name(const std::string &s
 
 inline pt::ptree &Configuration::get_venue_ses_cfg_by_name(const std::string &session_name)
 {
-    for(auto&& subtree : config_.get_child("configuration.venue_sessions"))
+    for(auto&& subtree : config_.get_child("configuration.destination_sessions"))
     {
         if(subtree.second.get<std::string>("name") == session_name)
             return subtree.second;

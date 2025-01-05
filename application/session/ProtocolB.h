@@ -1,6 +1,6 @@
 #pragma once
 
-#include <application/session/VenueSessionProtocolB.h>
+#include <application/session/DestinationSessionProtocolB.h>
 #include <application/session/RejectInfo.h>
 #include <application/message/protocol_b/Messages.h>
 #include <application/transport/Transport.h>
@@ -37,8 +37,8 @@ namespace max::protocol_b
         void on_disconnect();
         std::size_t on_data(std::string_view data);
 
-        const VenueSessionProtocolB &session() const { return session_; }
-        VenueSessionProtocolB &session() { return session_; }
+        const DestinationSessionProtocolB &session() const { return session_; }
+        DestinationSessionProtocolB &session() { return session_; }
 
         template <typename Msg>
         RejectInfo send_to_transport(Msg &msg);
@@ -67,7 +67,7 @@ namespace max::protocol_b
                                                { return on_data(data); }};
         Transport transport_{transport_callbacks};
         SequenceStore sequence_store_{};
-        VenueSessionProtocolB session_;
+        DestinationSessionProtocolB session_;
     };
 
     template <typename Msg>

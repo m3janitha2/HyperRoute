@@ -27,7 +27,7 @@ namespace max::message::binary
         [[nodiscard]] constexpr Msg &msg() noexcept { return msg_; }
         [[nodiscard]] constexpr std::string_view data() const noexcept
         {
-            std::string_view data{reinterpret_cast<char *>(msg_), sizeof(msg)};
+            std::string_view data{reinterpret_cast<char *>(&msg_), sizeof(Msg)};
             return data;
         }
 

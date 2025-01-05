@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace max::message
+namespace max
 {
     using UID = std::uint64_t;
 }

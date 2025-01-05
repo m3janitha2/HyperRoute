@@ -1,6 +1,6 @@
 #pragma once
 
-#include <application/session/ClientSessionProtocolA.h>
+#include <application/session/SourceSessionProtocolA.h>
 #include <application/session/RejectInfo.h>
 #include <application/message/protocol_a/Messages.h>
 #include <application/transport/Transport.h>
@@ -31,7 +31,7 @@ namespace max::protocol_a
     class ProtocolA
     {
     public:
-        explicit ProtocolA(ForwardRouterVarient &forward_router,
+        explicit ProtocolA(DestinatinRouterVarient &forward_router,
                            ReverseRouter &reverse_router);
         void on_connect();
         void on_disconnect();
@@ -64,7 +64,7 @@ namespace max::protocol_a
                                                { return on_data(data); }};
         Transport transport_{transport_callbacks};
         SequenceStore sequence_store_{};
-        ClientSessionProtocolA session_;
+        SourceSessionProtocolA session_;
     };
 
     template <typename Msg>

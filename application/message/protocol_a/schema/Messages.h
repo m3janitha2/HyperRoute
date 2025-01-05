@@ -71,7 +71,9 @@ namespace max::protocol_a::schema
 
         friend std::ostream &operator<<(std::ostream &os, const NewOrderSingle &msg)
         {
-            os << "A NewOrderSingle a:" << msg.a << " b:" << msg.b;
+            os << "A NewOrderSingle a:" << msg.a
+               << " b:" << msg.b
+               << " cl_ord_id: " << msg.cl_ord_id;
             return os;
         }
     };
@@ -86,7 +88,10 @@ namespace max::protocol_a::schema
 
         friend std::ostream &operator<<(std::ostream &os, const CancelReplaceRequest &msg)
         {
-            os << "B CancelReplaceRequest a:" << msg.a << " b:" << msg.b;
+            os << "B CancelReplaceRequest a:" << msg.a
+               << " b:" << msg.b
+               << " cl_ord_id: " << msg.cl_ord_id
+               << " orig_cl_ord_id: " << msg.orig_cl_ord_id;
             return os;
         }
     };
@@ -101,7 +106,10 @@ namespace max::protocol_a::schema
 
         friend std::ostream &operator<<(std::ostream &os, const CancelRequest &msg)
         {
-            os << "A CancelRequest a:" << msg.a << " b:" << msg.b;
+            os << "A CancelRequest a:" << msg.a
+               << " b:" << msg.b
+               << " cl_ord_id: " << msg.cl_ord_id
+               << " orig_cl_ord_id: " << msg.orig_cl_ord_id;
             return os;
         }
     };

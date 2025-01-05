@@ -15,18 +15,18 @@
       <router_id>1</router_id>
     </client_session>
   </client_sessions>
-  <venue_sessions>
-    <venue_session name="VenueA">
+  <destination_sessions>
+    <destination_session name="VenueA">
       <name>VenueA</name>
       <id>2000</id>
       <protocol>Custom1</protocol>
       <router_id>1</router_id>
-    </venue_session>
-    <venue_session name="VenueB">
+    </destination_session>
+    <destination_session name="VenueB">
       <name>VenueB</name>
       <id>2001</id>
       <protocol>Custom1</protocol>
       <router_id>1</router_id>
-    </venue_session>
-  </venue_sessions>
+    </destination_session>
+  </destination_sessions>
 </configuration>

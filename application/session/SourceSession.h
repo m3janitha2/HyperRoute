@@ -3,7 +3,7 @@
 #include <application/util/CrtpWrapper.h>
 #include <application/session/RejectInfo.h>
 #include <application/enricher/ClientEnricher.h>
-#include <application/router/ForwardRouters.h>
+#include <application/router/DestinatinRouters.h>
 #include <application/router/ReverseRouter.h>
 #include <application/transport/Transport.h>
 #include <application/message/core/Messages.h>
@@ -21,10 +21,10 @@ namespace max
     };
 
     template <typename SessionImpl>
-    class ClientSessionBase : public core::CrtpWrapper<SessionImpl>
+    class SourceSessionBase : public core::CrtpWrapper<SessionImpl>
     {
     public:
-        explicit ClientSessionBase(ForwardRouterVarient &forward_router,
+        explicit SourceSessionBase(DestinatinRouterVarient &forward_router,
                                    ReverseRouter &reverse_router,
                                    Transport &transport)
             : forward_router_{forward_router},
@@ -34,11 +34,12 @@ namespace max
             static_assert(TransportEvents<SessionImpl>);
         }
 
+        SourceSessionBase(const SourceSessionBase &) = delete;
+
         /* TransportEvents */
         void on_connect() { this->impl().on_connect_impl(); }
         void on_disconnect() { this->impl().on_disconnect_impl(); }
 
-        /* client session internal */
         template <typename Msg>
         void procoess_message_from_transport(Msg &msg);
         template <typename Msg>
@@ -61,7 +62,7 @@ namespace max
         void update_routing_info(Msg &msg);
 
     private:
-        ForwardRouterVarient &forward_router_;
+        DestinatinRouterVarient &forward_router_;
         ReverseRouter &reverse_router_;
         ClientEnricher enricher_{};
         Transport &transport_;
@@ -69,7 +70,7 @@ namespace max
 
     template <typename SessionImpl>
     template <typename Msg>
-    inline void ClientSessionBase<SessionImpl>::procoess_message_from_transport(Msg &msg)
+    inline void SourceSessionBase<SessionImpl>::procoess_message_from_transport(Msg &msg)
     {
         if (auto reject_info = enrich_message_from_transport(msg); reject_info != true)
         {
@@ -81,15 +82,17 @@ namespace max
             rejecet_message_from_transport(msg, reject_info);
         }
 
+        /* Message sent out from the destination session */
+
         update_routing_info(msg);
 
-        // persist client message
-        // publish client message downstream
+        // Persist SourceSession message
+        // Publish SourceSession message downstream
     }
 
     template <typename SessionImpl>
     template <typename Msg>
-    inline RejectInfo ClientSessionBase<SessionImpl>::procoess_message_to_transport(Msg &msg)
+    inline RejectInfo SourceSessionBase<SessionImpl>::procoess_message_to_transport(Msg &msg)
     {
         if (auto reject_info = enrich_message_to_transport(msg); reject_info != true)
             return reject_info;
@@ -102,45 +105,46 @@ namespace max
 
     template <typename SessionImpl>
     template <typename Msg>
-    inline RejectInfo ClientSessionBase<SessionImpl>::enrich_message_from_transport(Msg &msg)
+    inline RejectInfo SourceSessionBase<SessionImpl>::enrich_message_from_transport(Msg &msg)
     {
         return enricher_.enrich_message_from_transport(msg);
     }
 
     template <typename SessionImpl>
     template <typename Msg>
-    inline RejectInfo ClientSessionBase<SessionImpl>::enrich_message_to_transport(Msg &msg)
+    inline RejectInfo SourceSessionBase<SessionImpl>::enrich_message_to_transport(Msg &msg)
     {
         return enricher_.enrich_message_to_transport(msg);
     }
 
     template <typename SessionImpl>
     template <typename Msg>
-    inline RejectInfo ClientSessionBase<SessionImpl>::send_message_to_peer(Msg &msg)
+    inline RejectInfo SourceSessionBase<SessionImpl>::send_message_to_peer(Msg &msg)
     {
-        return std::visit([&msg](auto &&router)
-                          { return std::forward<decltype(router)>(router).on_message_from_client(msg); },
+        return std::visit([&msg]<typename Router>(Router &&router)
+                          { return std::forward<decltype(router)>(router).on_message_from_source(msg); },
                           forward_router_);
     }
 
     template <typename SessionImpl>
     template <typename Msg>
-    inline RejectInfo ClientSessionBase<SessionImpl>::send_message_to_transport(Msg &msg)
+    inline RejectInfo SourceSessionBase<SessionImpl>::send_message_to_transport(Msg &msg)
     {
         std::cout << "send_message_to_transport:" << msg << std::endl;
-        std::string_view data{reinterpret_cast<char *>(&msg), sizeof(msg)};
-        return transport_.send_data(data);
+        return transport_.send_data(msg.data());
     }
 
     template <typename SessionImpl>
     template <typename Msg>
-    inline void ClientSessionBase<SessionImpl>::update_routing_info(Msg &msg)
+    inline void SourceSessionBase<SessionImpl>::update_routing_info(Msg &msg)
     {
-        // if constexpr (std::derived_from<Msg, session::NewOrderSingle>)
-        // {
-        std::cout << "update_routing_info: NewOrderSingle" << std::endl;
-        ClientSessionPtrVarient client_session_varient{&(this->impl())};
-        reverse_router_.update_reverse_routing(123, client_session_varient);
-        // }
+        if constexpr (std::derived_from<Msg, message::core::NewOrderSingle>)
+        {
+            std::cout << "update_routing_info: NewOrderSingle. uid:" << msg.uid() << std::endl;
+            SourceSessionPtrVarient client_session_varient{&(this->impl())};
+            reverse_router_.update_reverse_routing(msg.uid(), client_session_varient);
+        }
+
+        return this->impl().update_routing_info_impl(msg);
     }
 }

@@ -10,8 +10,11 @@ namespace max::protocol_b::session
     class NewOrderSingle : public message::binary::NewOrderSingle<schema::NewOrderSingle>
     {
     public:
-        explicit NewOrderSingle(schema::NewOrderSingle &msg)
-            : message::binary::NewOrderSingle<schema::NewOrderSingle>(msg) {}
+        explicit constexpr NewOrderSingle(schema::NewOrderSingle &msg) noexcept
+            : message::binary::NewOrderSingle<schema::NewOrderSingle>{msg} {}
+
+        explicit constexpr NewOrderSingle(std::string_view data) noexcept
+            : message::binary::NewOrderSingle<schema::NewOrderSingle>{data} {}
 
         friend std::ostream &operator<<(std::ostream &os, const NewOrderSingle &msg)
         {
@@ -26,8 +29,11 @@ namespace max::protocol_b::session
     class CancelReplaceRequest : public message::binary::CancelReplaceRequest<schema::CancelReplaceRequest>
     {
     public:
-        explicit CancelReplaceRequest(schema::CancelReplaceRequest &msg)
-            : message::binary::CancelReplaceRequest<schema::CancelReplaceRequest>(msg) {}
+        explicit constexpr CancelReplaceRequest(schema::CancelReplaceRequest &msg) noexcept
+            : message::binary::CancelReplaceRequest<schema::CancelReplaceRequest>{msg} {}
+
+        explicit constexpr CancelReplaceRequest(std::string_view data) noexcept
+            : message::binary::CancelReplaceRequest<schema::CancelReplaceRequest>{data} {}
 
         friend std::ostream &operator<<(std::ostream &os, const CancelReplaceRequest &msg)
         {
@@ -43,8 +49,11 @@ namespace max::protocol_b::session
     class CancelRequest : public message::binary::CancelRequest<schema::CancelRequest>
     {
     public:
-        explicit CancelRequest(schema::CancelRequest &msg)
-            : message::binary::CancelRequest<schema::CancelRequest>(msg) {}
+        explicit constexpr CancelRequest(schema::CancelRequest &msg) noexcept
+            : message::binary::CancelRequest<schema::CancelRequest>{msg} {}
+
+        explicit constexpr CancelRequest(std::string_view data) noexcept
+            : message::binary::CancelRequest<schema::CancelRequest>{data} {}
 
         friend std::ostream &operator<<(std::ostream &os, const CancelRequest &msg)
         {
@@ -60,8 +69,11 @@ namespace max::protocol_b::session
     class ExecutionReport : public message::binary::ExecutionReport<schema::ExecutionReport>
     {
     public:
-        explicit ExecutionReport(schema::ExecutionReport &msg)
-            : message::binary::ExecutionReport<schema::ExecutionReport>(msg) {}
+        explicit constexpr ExecutionReport(schema::ExecutionReport &msg) noexcept
+            : message::binary::ExecutionReport<schema::ExecutionReport>{msg} {}
+
+        explicit constexpr ExecutionReport(std::string_view data) noexcept
+            : message::binary::ExecutionReport<schema::ExecutionReport>{data} {}
 
         friend std::ostream &operator<<(std::ostream &os, const ExecutionReport &msg)
         {
@@ -76,8 +88,11 @@ namespace max::protocol_b::session
     class CancelReject : public message::binary::CancelReject<schema::CancelReject>
     {
     public:
-        explicit CancelReject(schema::CancelReject &msg)
-            : message::binary::CancelReject<schema::CancelReject>(msg) {}
+        explicit constexpr CancelReject(schema::CancelReject &msg) noexcept
+            : message::binary::CancelReject<schema::CancelReject>{msg} {}
+
+        explicit constexpr CancelReject(std::string_view data) noexcept
+            : message::binary::CancelReject<schema::CancelReject>{data} {}
 
         friend std::ostream &operator<<(std::ostream &os, const CancelReject &msg)
         {

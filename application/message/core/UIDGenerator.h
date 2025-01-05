@@ -9,16 +9,16 @@ namespace max::message
     public:
         UIDGenerator(const UIDGenerator &) = delete;
 
-        UIDGenerator &instance()
+        static UIDGenerator &instance()
         {
             static UIDGenerator instance{};
             return instance;
         }
 
-        [[nodiscard]] constexpr UID get_next_uid() noexcept { return ++uid_; }
+        [[nodiscard]] UID get_next_uid() noexcept { return ++uid_; }
 
     private:
         UIDGenerator() = default;
-        static constinit UID uid_{0};
+        inline static constinit UID uid_{0};
     };
 }
