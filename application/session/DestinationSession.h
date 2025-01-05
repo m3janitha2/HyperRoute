@@ -20,30 +20,28 @@ namespace max
             : reverse_router_{reverse_router},
               transport_{transport} {}
 
-        //DestinationSessionBase(const DestinationSessionBase &) = delete;
+        // DestinationSessionBase(const DestinationSessionBase &) = delete;
 
         /* TransportEvents */
         void on_connect() { this->impl().on_connect_impl(); }
         void on_disconnect() { this->impl().on_disconnect_impl(); }
 
-        /* Messages from the peer session to the destination */
         template <typename Msg>
-        RejectInfo on_message_from_peer(Msg &msg);
+        RejectInfo on_message_from_peer(Msg &msg) { this->impl().on_message_from_peer_impl(msg); }
         template <typename Msg>
         void on_message_from_transport(Msg &msg) { this->impl().on_message_from_transport_impl(msg); }
-
-        template <typename Msg>
-        void procoess_message_from_transport(Msg &msg);
-        template <typename Msg>
-        RejectInfo procoess_message_to_transport(Msg &msg);
+        template <typename DestinationMsg, typename SourceMsg>
+        void procoess_message_from_transport(DestinationMsg &destination_msg, SourceMsg &source_msg);
+        template <typename SourceMsg, typename DestinationMsg>
+        RejectInfo procoess_message_to_transport(SourceMsg &source_msg, DestinationMsg &destination_msg);
         template <typename Msg>
         RejectInfo enrich_message_to_transport(Msg &msg);
         template <typename Msg>
         RejectInfo enrich_message_from_transport(Msg &msg);
-        template <typename SourceMsg>
-        auto encode_message_to_destination(SourceMsg &msg) { return this->impl().encode_message_to_destination_impl(msg); }
-        template <typename DestinationMsg>
-        auto decode_message_from_destination(DestinationMsg &msg) { return this->impl().decode_message_from_destination_impl(msg); }
+        template <typename SourceMsg, typename DestinationMsg>
+        auto encode_message_to_destination(SourceMsg &source_msg, DestinationMsg &destination_msg) { return this->impl().encode_message_to_destination_impl(source_msg, destination_msg); }
+        template <typename DestinationMsg, typename SourceMsg>
+        auto decode_message_from_destination(DestinationMsg &destination_msg, SourceMsg &source_msg) { return this->impl().decode_message_from_destination_impl(destination_msg, source_msg); }
         template <typename Msg>
         RejectInfo send_message_to_transport(Msg &msg);
         template <typename Msg>
@@ -59,27 +57,19 @@ namespace max
     };
 
     template <typename SessionImpl>
-    template <typename Msg>
-    RejectInfo DestinationSessionBase<SessionImpl>::on_message_from_peer(Msg &msg)
+    template <typename SourceMsg, typename DestinationMsg>
+    RejectInfo DestinationSessionBase<SessionImpl>::procoess_message_to_transport(SourceMsg &source_msg, DestinationMsg &destination_msg)
     {
-        return procoess_message_to_transport(msg);
-    }
-
-    template <typename SessionImpl>
-    template <typename Msg>
-    RejectInfo DestinationSessionBase<SessionImpl>::procoess_message_to_transport(Msg &source_msg)
-    {
-        if (auto reject_info = validator_.validate(source_msg); reject_info != true)
+        if (auto reject_info = validator_.validate(source_msg); reject_info != true) [[unlikely]]
             return reject_info;
 
-        auto [reject, destination_msg] = encode_message_to_destination(source_msg);
-        if (reject != true)
-            return reject;
-
-        if (auto reject_info = enrich_message_to_transport(destination_msg); reject_info != true)
+        if (auto reject_info = encode_message_to_destination(source_msg, destination_msg); reject_info != true) [[unlikely]]
             return reject_info;
 
-        if (auto reject_info = send_message_to_transport(destination_msg); reject_info != true)
+        if (auto reject_info = enrich_message_to_transport(destination_msg); reject_info != true) [[unlikely]]
+            return reject_info;
+
+        if (auto reject_info = send_message_to_transport(destination_msg); reject_info != true) [[unlikely]]
             return reject_info;
 
         // Persist DestinationSession message
@@ -88,20 +78,19 @@ namespace max
     }
 
     template <typename SessionImpl>
-    template <typename Msg>
-    void DestinationSessionBase<SessionImpl>::procoess_message_from_transport(Msg &destination_msg)
+    template <typename DestinationMsg, typename SourceMsg>
+    void DestinationSessionBase<SessionImpl>::procoess_message_from_transport(DestinationMsg &destination_msg, SourceMsg &source_msg)
     {
-        if (auto reject_info = enrich_message_from_transport(destination_msg); reject_info != true)
+        if (auto reject_info = enrich_message_from_transport(destination_msg); reject_info != true) [[unlikely]]
             rejecet_message_from_transport(destination_msg, reject_info);
 
-        auto [reject, source_msg] = decode_message_from_destination(destination_msg);
-        if (reject != true)
-            rejecet_message_from_transport(destination_msg, reject);
-
-        if (auto reject_info = validator_.validate(source_msg); reject_info != true)
+        if (auto reject_info = decode_message_from_destination(destination_msg, source_msg); reject_info != true) [[unlikely]]
             rejecet_message_from_transport(destination_msg, reject_info);
 
-        if (auto reject_info = send_message_to_peer(source_msg); reject_info != true)
+        if (auto reject_info = validator_.validate(source_msg); reject_info != true) [[unlikely]]
+            rejecet_message_from_transport(destination_msg, reject_info);
+
+        if (auto reject_info = send_message_to_peer(source_msg); reject_info != true) [[unlikely]]
             rejecet_message_from_transport(destination_msg, reject_info);
 
         // persist DestinationSession message

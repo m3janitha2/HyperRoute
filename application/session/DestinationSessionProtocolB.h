@@ -14,37 +14,45 @@ namespace max::protocol_b
     {
     public:
         explicit DestinationSessionProtocolB(ReverseRouter &reverse_router,
-                                       Transport &transport)
+                                             Transport &transport)
             : DestinationSessionBase<DestinationSessionProtocolB>{reverse_router, transport} {}
 
         /* TransportEvents */
         void on_connect_impl();
         void on_disconnect_impl();
 
-        /* messages from venue to client */
+        /* Messages from the source to the destination */        
         void on_message_from_transport_impl(session::ExecutionReport &msg);
         void on_message_from_transport_impl(session::CancelReject &msg);
 
-        template <typename Msg>
-        auto encode_message_to_destination_impl(Msg &msg);
-        std::pair<RejectInfo, protocol_b::session::NewOrderSingle> encode_message_to_destination_impl(protocol_a::session::NewOrderSingle &msg);
-        std::pair<RejectInfo, protocol_b::session::CancelReplaceRequest> encode_message_to_destination_impl(protocol_a::session::CancelReplaceRequest &msg);
-        std::pair<RejectInfo, protocol_b::session::CancelRequest> encode_message_to_destination_impl(protocol_a::session::CancelRequest &msg);
+        RejectInfo decode_message_from_destination_impl(protocol_b::session::ExecutionReport &destination_msg,
+                                                        protocol_a::session::ExecutionReport &source_msg);
+        RejectInfo decode_message_from_destination_impl(protocol_b::session::CancelReject &destination_msg,
+                                                        protocol_a::session::CancelReject &source_msg);
 
-        std::pair<RejectInfo, protocol_a::session::ExecutionReport> decode_message_from_destination_impl(session::ExecutionReport &msg);
-        std::pair<RejectInfo, protocol_a::session::CancelReject> decode_message_from_destination_impl(session::CancelReject &msg);
+        void rejecet_message_from_transport_impl(protocol_b::session::ExecutionReport &msg, RejectInfo &reject_info);
+        void rejecet_message_from_transport_impl(protocol_b::session::CancelReject &msg, RejectInfo &reject_info);
 
-        void rejecet_message_from_transport_impl(session::ExecutionReport &msg, RejectInfo &reject_info);
-        void rejecet_message_from_transport_impl(session::CancelReject &msg, RejectInfo &reject_info);
+        /* Messages from the destination to the source */
+        RejectInfo on_message_from_peer_impl(protocol_a::session::NewOrderSingle &msg);
+        RejectInfo on_message_from_peer_impl(protocol_a::session::CancelReplaceRequest &msg);
+        RejectInfo on_message_from_peer_impl(protocol_a::session::CancelRequest &msg);
 
-    private:
+        template <typename SourceMsg, typename DestinationMsg>
+        RejectInfo encode_message_to_destination_impl(SourceMsg &source_msg,
+                                                DestinationMsg &destination_msg);
+        RejectInfo encode_message_to_destination_impl(protocol_a::session::NewOrderSingle &source_msg,
+                                                      protocol_b::session::NewOrderSingle &destination_msg);
+        RejectInfo encode_message_to_destination_impl(protocol_a::session::CancelReplaceRequest &source_msg,
+                                                      protocol_b::session::CancelReplaceRequest &destination_msg);
+        RejectInfo encode_message_to_destination_impl(protocol_a::session::CancelRequest &source_msg,
+                                                      protocol_b::session::CancelRequest &destination_msg);
     };
 
-    template <typename Msg>
-    inline auto DestinationSessionProtocolB::encode_message_to_destination_impl(Msg &msg)
+    template <typename SourceMsg, typename DestinationMsg>
+    inline RejectInfo DestinationSessionProtocolB::encode_message_to_destination_impl(SourceMsg &source_msg, DestinationMsg &destination_msg)
     {
         std::cout << "unknown message" << std::endl;
-        protocol_b::session::NewOrderSingle destination_msg{};
-        return std::pair{RejectInfo{"Protocol B encoding unknown message", InteranlRejectCode::To_Venue_Encoding_Failed}, destination_msg};
+        return RejectInfo{};
     }
 }

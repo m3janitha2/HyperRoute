@@ -10,9 +10,9 @@ namespace max::protocol_a::session
     class NewOrderSingle : public message::binary::NewOrderSingle<schema::NewOrderSingle>
     {
     public:
+        NewOrderSingle() = default;
         explicit constexpr NewOrderSingle(schema::NewOrderSingle &msg) noexcept
             : message::binary::NewOrderSingle<schema::NewOrderSingle>{msg} {}
-
         explicit constexpr NewOrderSingle(std::string_view data) noexcept
             : message::binary::NewOrderSingle<schema::NewOrderSingle>{data} {}
 
@@ -29,9 +29,9 @@ namespace max::protocol_a::session
     class CancelReplaceRequest : public message::binary::CancelReplaceRequest<schema::CancelReplaceRequest>
     {
     public:
+        CancelReplaceRequest() = default;
         explicit constexpr CancelReplaceRequest(schema::CancelReplaceRequest &msg) noexcept
             : message::binary::CancelReplaceRequest<schema::CancelReplaceRequest>{msg} {}
-
         explicit constexpr CancelReplaceRequest(std::string_view data) noexcept
             : message::binary::CancelReplaceRequest<schema::CancelReplaceRequest>{data} {}
 
@@ -49,9 +49,9 @@ namespace max::protocol_a::session
     class CancelRequest : public message::binary::CancelRequest<schema::CancelRequest>
     {
     public:
+        CancelRequest() = default;
         explicit constexpr CancelRequest(schema::CancelRequest &msg) noexcept
             : message::binary::CancelRequest<schema::CancelRequest>{msg} {}
-
         explicit constexpr CancelRequest(std::string_view data) noexcept
             : message::binary::CancelRequest<schema::CancelRequest>{data} {}
 
@@ -69,9 +69,9 @@ namespace max::protocol_a::session
     class ExecutionReport : public message::binary::ExecutionReport<schema::ExecutionReport>
     {
     public:
+        ExecutionReport() = default;
         explicit constexpr ExecutionReport(schema::ExecutionReport &msg) noexcept
             : message::binary::ExecutionReport<schema::ExecutionReport>{msg} {}
-
         explicit constexpr ExecutionReport(std::string_view data) noexcept
             : message::binary::ExecutionReport<schema::ExecutionReport>{data} {}
 
@@ -88,9 +88,9 @@ namespace max::protocol_a::session
     class CancelReject : public message::binary::CancelReject<schema::CancelReject>
     {
     public:
+        CancelReject() = default;
         explicit constexpr CancelReject(schema::CancelReject &msg) noexcept
             : message::binary::CancelReject<schema::CancelReject>{msg} {}
-
         explicit constexpr CancelReject(std::string_view data) noexcept
             : message::binary::CancelReject<schema::CancelReject>{data} {}
 

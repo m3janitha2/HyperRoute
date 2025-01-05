@@ -8,13 +8,16 @@
 namespace max::message::core
 {
     /* Message interface used by the core framework */
-    
+
     using Timestamp = std::chrono::time_point<std::chrono::steady_clock>;
     using TimestampClock = std::chrono::steady_clock;
 
     class Message
     {
     public:
+        Message() = default;
+        Message(const Message &) = delete;
+
         [[nodiscard]] constexpr UID uid() const noexcept { return uid_; }
         constexpr void uid(UID uid) noexcept { uid_ = uid; }
 
@@ -30,7 +33,10 @@ namespace max::message::core
         Timestamp out_time_{};
     };
 
-    struct NewOrderSingle : public Message
+    struct FirstEvent{}; /* First Message of the message chain */
+    struct SubsequentEvent{};
+
+    struct NewOrderSingle : public Message, FirstEvent
     {
     };
 
