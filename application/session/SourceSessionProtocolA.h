@@ -1,23 +1,24 @@
 #pragma once
 
-#include <application/enricher/ClientEnricher.h>
-#include <application/router/DestinatinRouters.h>
-#include <application/router/ReverseRouter.h>
-#include <application/session/SourceSession.h>
-#include <application/session/RejectInfo.h>
+#include <framework/protocol/SourceSession.h>
 #include <application/message/protocol_a/Messages.h>
 #include <type_traits>
 #include <iostream>
 
 namespace max::protocol_a
 {
-    class SourceSessionProtocolA : public SourceSessionBase<SourceSessionProtocolA>
+    using RejectInfo = framework::RejectInfo;
+    using SourceRouter = framework::SourceRouter;
+    using Transport = framework::Transport;
+    using UID = framework::UID;
+
+    class SourceSessionProtocolA : public framework::SourceSession<SourceSessionProtocolA>
     {
     public:
-        explicit SourceSessionProtocolA(DestinatinRouterVarient &forward_router,
-                                        ReverseRouter &reverse_router,
+        explicit SourceSessionProtocolA(DestinationRouterPtrVarient &destination_router,
+                                        SourceRouter &source_router,
                                         Transport &transport)
-            : SourceSessionBase<SourceSessionProtocolA>{forward_router, reverse_router, transport} {}
+            : SourceSession<SourceSessionProtocolA>{destination_router, source_router, transport} {}
 
         /* TransportEvents */
         void on_connect_impl();
@@ -51,9 +52,9 @@ namespace max::protocol_a
     template <typename Msg>
     inline void SourceSessionProtocolA::on_message_from_transport_impl(Msg &msg)
     {
-        std::cout << "unknown client message" << std::endl;
+        std::cout << "unknown source message" << std::endl;
     }
-    
+
     template <typename Msg>
     inline void SourceSessionProtocolA::update_routing_info_impl(Msg &msg)
     {

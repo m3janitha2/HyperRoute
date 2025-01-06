@@ -22,9 +22,9 @@ namespace max::protocol_a
         return to_chars(code);
     }
 
-    ProtocolA::ProtocolA(DestinatinRouterVarient &forward_router,
-                         ReverseRouter &reverse_router)
-        : session_(forward_router, reverse_router, transport_)
+    ProtocolA::ProtocolA(DestinationRouterPtrVarient &destination_router,
+                         SourceRouter &source_router)
+        : session_(destination_router, source_router, transport_)
     {
     }
 
@@ -128,19 +128,19 @@ namespace max::protocol_a
     void ProtocolA::send_logon()
     {
         schema::Logon msg{};
-        send_to_transport(msg);
+        auto reject_info = send_to_transport(msg);
     }
 
     void ProtocolA::send_logout()
     {
         schema::Logout msg{};
-        send_to_transport(msg);
+        auto reject_info = send_to_transport(msg);
     }
 
     void ProtocolA::send_heartbeat()
     {
         schema::Heartbeat msg{};
-        send_to_transport(msg);
+        auto reject_info = send_to_transport(msg);
     }
 
     SessionRejectInfo protocol_a::ProtocolA::validate_logon(schema::Logon &msg)

@@ -1,8 +1,10 @@
 #pragma once
-#include <application/session/RejectInfo.h>
+#include <framework/protocol/RejectInfo.h>
 
 namespace max
 {
+    using RejectInfo = framework::RejectInfo;
+
     class Validator
     {
     public:

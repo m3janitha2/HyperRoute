@@ -21,8 +21,8 @@ namespace max::protocol_b
         return to_chars(code);
     }
 
-    ProtocolB::ProtocolB(ReverseRouter &reverse_router)
-        : session_(reverse_router, transport_)
+    ProtocolB::ProtocolB(SourceRouter &source_router)
+        : session_(source_router, transport_)
     {
     }
 
@@ -120,19 +120,19 @@ namespace max::protocol_b
     void ProtocolB::send_logon()
     {
         schema::Logon msg{};
-        send_to_transport(msg);
+        auto reject_info = send_to_transport(msg);
     }
 
     void ProtocolB::send_logout()
     {
         schema::Logout msg{};
-        send_to_transport(msg);
+        auto reject_info = send_to_transport(msg);
     }
 
     void ProtocolB::send_heartbeat()
     {
         schema::Heartbeat msg{};
-        send_to_transport(msg);
+        auto reject_info = send_to_transport(msg);
     }
 
     SessionRejectInfo ProtocolB::validate_logon(schema::Logon &msg)

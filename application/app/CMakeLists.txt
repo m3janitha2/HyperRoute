@@ -7,7 +7,7 @@ set(SOURCE_FILES
     main.cpp
     ../session/SourceSessionProtocolA.cpp
     ../session/ProtocolA.cpp
-    ../router/ReverseRouter.cpp
+    ../../framework/router/SourceRouter.cpp
     ../session/DestinationSessionProtocolB.cpp
     ../session/ProtocolB.cpp)
 

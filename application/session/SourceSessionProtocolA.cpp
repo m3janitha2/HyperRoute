@@ -1,15 +1,18 @@
 #include <application/session/SourceSessionProtocolA.h>
-#include <application/message/core/UIDGenerator.h>
+#include <framework/message/UIDGenerator.h>
 
 namespace max::protocol_a
 {
+    using UIDGenerator = framework::UIDGenerator;
+    using InteranlRejectCode = framework::InteranlRejectCode;
+
     void SourceSessionProtocolA::on_connect_impl() {}
 
     void SourceSessionProtocolA::on_disconnect_impl() {}
 
     void SourceSessionProtocolA::on_message_from_transport_impl(session::NewOrderSingle &msg)
     {
-        auto uid = message::UIDGenerator::instance().get_next_uid();
+        auto uid = UIDGenerator::instance().get_next_uid();
         msg.uid(uid);
 
         procoess_message_from_transport(msg);

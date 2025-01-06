@@ -1,9 +1,9 @@
 #pragma once
 
+#include <framework/utility/ErrorInfo.h>
+#include <framework/transport/Transport.h>
 #include <application/session/DestinationSessionProtocolB.h>
-#include <application/session/RejectInfo.h>
 #include <application/message/protocol_b/Messages.h>
-#include <application/transport/Transport.h>
 #include <type_traits>
 #include <string_view>
 
@@ -18,7 +18,7 @@ namespace max::protocol_b
 
     enum class SessionRejectCode
     {
-        None,
+        Success,
         Invalid_Logon,
         Invalid_heartbeat,
     };
@@ -26,12 +26,14 @@ namespace max::protocol_b
     const char *to_chars(SessionRejectCode code);
     std::string to_string(SessionRejectCode code);
 
-    using SessionRejectInfo = RejectInfoBase<SessionRejectCode>;
+    using SessionRejectInfo = framework::ErrorInfo<SessionRejectCode>;
+    using TransportCallbacks = framework::TransportCallbacks;
+    using Transport = framework::Transport;
 
     class ProtocolB
     {
     public:
-        explicit ProtocolB(ReverseRouter &reverse_router);
+        explicit ProtocolB(SourceRouter &source_router);
 
         void on_connect();
         void on_disconnect();
