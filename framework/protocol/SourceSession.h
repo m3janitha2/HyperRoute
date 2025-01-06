@@ -41,17 +41,17 @@ namespace max::framework
         void on_disconnect() { this->impl().on_disconnect_impl(); }
 
         template <typename Msg>
-        void procoess_message_from_transport(Msg &msg);
+        void procoess_message_from_transport(Msg &msg) noexcept;
         template <typename Msg>
-        RejectInfo procoess_message_to_transport(Msg &msg);
+        RejectInfo procoess_message_to_transport(Msg &msg) noexcept;
         template <typename Msg>
-        RejectInfo enrich_message_from_transport(Msg &msg);
+        RejectInfo enrich_message_from_transport(Msg &msg) noexcept;
         template <typename Msg>
-        RejectInfo enrich_message_to_transport(Msg &msg);
+        RejectInfo enrich_message_to_transport(Msg &msg) noexcept;
         template <typename Msg>
-        RejectInfo send_message_to_peer(Msg &msg);
+        RejectInfo send_message_to_peer(Msg &msg) noexcept;
         template <typename Msg>
-        RejectInfo send_message_to_transport(Msg &msg);
+        RejectInfo send_message_to_transport(Msg &msg) noexcept;
         template <typename Msg>
         void on_message_from_transport(Msg &msg) { this->impl().on_message_from_transport_impl(msg); }
         template <typename Msg>
@@ -59,7 +59,7 @@ namespace max::framework
         template <typename Msg>
         void rejecet_message_from_transport(Msg &msg, RejectInfo &reject_info) { this->impl().rejecet_message_from_transport_impl(msg, reject_info); }
         template <typename Msg>
-        void update_routing_info(Msg &msg);
+        void update_routing_info(Msg &msg) noexcept;
 
     private:
         DestinationRouterPtrVarient &destination_router_;
@@ -70,17 +70,15 @@ namespace max::framework
 
     template <typename SessionImpl>
     template <typename Msg>
-    inline void SourceSession<SessionImpl>::procoess_message_from_transport(Msg &msg)
+    inline void SourceSession<SessionImpl>::procoess_message_from_transport(Msg &msg) noexcept
     {
-        if (auto reject_info = enrich_message_from_transport(msg); reject_info != true)
-        {
+        if (auto reject_info = enrich_message_from_transport(msg);
+            reject_info != true) [[unlikely]]
             rejecet_message_from_transport(msg, reject_info);
-        }
 
-        if (auto reject_info = send_message_to_peer(msg); reject_info != true)
-        {
+        if (auto reject_info = send_message_to_peer(msg);
+            reject_info != true) [[unlikely]]
             rejecet_message_from_transport(msg, reject_info);
-        }
 
         /* Message sent out from the destination session */
 
@@ -92,12 +90,14 @@ namespace max::framework
 
     template <typename SessionImpl>
     template <typename Msg>
-    inline RejectInfo SourceSession<SessionImpl>::procoess_message_to_transport(Msg &msg)
+    inline RejectInfo SourceSession<SessionImpl>::procoess_message_to_transport(Msg &msg) noexcept
     {
-        if (auto reject_info = enrich_message_to_transport(msg); reject_info != true)
+        if (auto reject_info = enrich_message_to_transport(msg);
+            reject_info != true) [[unlikely]]
             return reject_info;
 
-        if (auto reject_info = send_message_to_transport(msg); reject_info != true)
+        if (auto reject_info = send_message_to_transport(msg);
+            reject_info != true) [[unlikely]]
             return reject_info;
 
         return RejectInfo{};
@@ -105,30 +105,30 @@ namespace max::framework
 
     template <typename SessionImpl>
     template <typename Msg>
-    inline RejectInfo SourceSession<SessionImpl>::enrich_message_from_transport(Msg &msg)
+    inline RejectInfo SourceSession<SessionImpl>::enrich_message_from_transport(Msg &msg) noexcept
     {
         return enricher_.enrich_message_from_transport(msg);
     }
 
     template <typename SessionImpl>
     template <typename Msg>
-    inline RejectInfo SourceSession<SessionImpl>::enrich_message_to_transport(Msg &msg)
+    inline RejectInfo SourceSession<SessionImpl>::enrich_message_to_transport(Msg &msg) noexcept
     {
         return enricher_.enrich_message_to_transport(msg);
     }
 
     template <typename SessionImpl>
     template <typename Msg>
-    inline RejectInfo SourceSession<SessionImpl>::send_message_to_peer(Msg &msg)
+    inline RejectInfo SourceSession<SessionImpl>::send_message_to_peer(Msg &msg) noexcept
     {
         return std::visit([&msg]<typename Router>(Router &&router)
-                          { return std::forward<decltype(router)>(router)->on_message_from_source(msg); },
+                          { return std::forward<Router>(router)->on_message_from_source(msg); },
                           destination_router_);
     }
 
     template <typename SessionImpl>
     template <typename Msg>
-    inline RejectInfo SourceSession<SessionImpl>::send_message_to_transport(Msg &msg)
+    inline RejectInfo SourceSession<SessionImpl>::send_message_to_transport(Msg &msg) noexcept
     {
         std::cout << "send_message_to_transport:" << msg << std::endl;
         msg.update_out_timestamp();
@@ -137,7 +137,7 @@ namespace max::framework
 
     template <typename SessionImpl>
     template <typename Msg>
-    inline void SourceSession<SessionImpl>::update_routing_info(Msg &msg)
+    inline void SourceSession<SessionImpl>::update_routing_info(Msg &msg) noexcept
     {
         if constexpr (std::derived_from<Msg, framework::message::NewOrderSingle>)
         {

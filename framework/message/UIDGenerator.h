@@ -8,6 +8,7 @@ namespace max::framework
     {
     public:
         UIDGenerator(const UIDGenerator &) = delete;
+        UIDGenerator& operator=(const UIDGenerator&) = delete;
 
         static UIDGenerator &instance()
         {
@@ -15,7 +16,7 @@ namespace max::framework
             return instance;
         }
 
-        [[nodiscard]] UID get_next_uid() noexcept { return ++uid_; }
+        [[nodiscard]] UID get_next_uid() const noexcept { return ++uid_; }
 
     private:
         UIDGenerator() = default;

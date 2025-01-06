@@ -5,20 +5,14 @@
 
 namespace max::framework
 {
-	template <typename DestinationSession>
-	concept DestinationRouter = requires(DestinationSession vs) {
-		vs.on_message_from_source();
+	template <typename Msg>
+	concept RouterMsg = requires (Msg msg){
+		msg.uid();
 	};
 
-	// class DestinationRouter
-	// {
-	// public:
-	// 	template <typename SourceMsg>
-	// 	void on_message_from_source(SourceMsg &msg)
-	// 	{
-	// 		destination_.on_request(msg);
-	// 	}
-
-	// 	DestinationSession &destination_;
-	// };
+	template <typename DestinationSession, typename Msg>
+	concept RouterDestination = requires (DestinationSession ds, Msg msg)
+	{
+		ds->on_message_from_peer(msg);
+	};
 }

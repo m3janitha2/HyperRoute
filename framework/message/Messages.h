@@ -17,6 +17,7 @@ namespace max::framework::message
     public:
         Message() = default;
         Message(const Message &) = delete;
+        Message &operator=(const Message &) = delete;
 
         [[nodiscard]] constexpr UID uid() const noexcept { return uid_; }
         constexpr void uid(UID uid) noexcept { uid_ = uid; }

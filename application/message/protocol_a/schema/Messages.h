@@ -21,11 +21,12 @@ namespace max::protocol_a::schema
     {
         std::uint32_t size;
         MsgType msg_type;
+        std::uint64_t seq_no;
     };
 
     struct Logon
     {
-        Header header{sizeof(Logon), MsgType::Logon};
+        Header header{.size = sizeof(Logon), .msg_type = MsgType::Logon};
         std::uint32_t a{};
         std::uint32_t b{};
 

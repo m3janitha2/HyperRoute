@@ -110,18 +110,18 @@ namespace max::framework::message::binary
             using type = BinaryMessageAllocateOnHeap<Msg>;
         };
 
-        // template <typename Msg, typename AllocationPolicy = AllocationPolicyAcquireByReference>
-        // struct NewOrderSingle : public BaseSelector<Msg, AllocationPolicy>::type, NewOrderSingle
-        // {
-        //     NewOrderSingle(typename std::enable_if<std::is_same<AllocationPolicy, AllocationPolicyAllocateOnHeap>::value>::type * = nullptr) noexcept
-        //         : BinaryMessage<Msg>{} {}
-        //     explicit constexpr NewOrderSingle(Msg &msg,
-        //                                       typename std::enable_if<std::is_same_v<AllocationPolicy, AllocationPolicyAcquireByReference>>::type * = nullptr) noexcept
-        //         : BinaryMessage<Msg>{msg} {}
-        //     explicit constexpr NewOrderSingle(std::string_view data,
-        //                                       typename std::enable_if<std::is_same_v<AllocationPolicy, AllocationPolicyAcquireByReference>>::type * = nullptr) noexcept
-        //         : BinaryMessage<Msg>{data} {}
-        // };
+        template <typename Msg, typename AllocationPolicy = AllocationPolicyAcquireByReference>
+        struct NewOrderSingle : public BaseSelector<Msg, AllocationPolicy>::type, framework::message::NewOrderSingle
+        {
+            NewOrderSingle(typename std::enable_if<std::is_same<AllocationPolicy, AllocationPolicyAllocateOnHeap>::value>::type * = nullptr) noexcept
+                : BinaryMessage<Msg>{} {}
+            explicit constexpr NewOrderSingle(Msg &msg,
+                                              typename std::enable_if<std::is_same_v<AllocationPolicy, AllocationPolicyAcquireByReference>>::type * = nullptr) noexcept
+                : BinaryMessage<Msg>{msg} {}
+            explicit constexpr NewOrderSingle(std::string_view data,
+                                              typename std::enable_if<std::is_same_v<AllocationPolicy, AllocationPolicyAcquireByReference>>::type * = nullptr) noexcept
+                : BinaryMessage<Msg>{data} {}
+        };
     }
 
     template <typename Msg>

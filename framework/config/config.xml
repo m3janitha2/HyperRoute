@@ -1,32 +1,49 @@
 <?xml version="1.0"?>
-<configuration version="1.0"> 
+<configuration version="1.0">
   <filename>abcd</filename>
   <source_sessions>
-    <source_session name="SourceA">
-      <name>SourceA</name>
+    <source_session name="Source1">
+      <name>Source1</name>
       <id>1000</id>
-      <protocol>Custom1</protocol>
-      <router_id>1</router_id>
+      <protocol>ProtocolA</protocol>
+      <router>
+        <type>OneToOne</type>
+        <destination_session_id>2000</destination_session_id>
+      </router>
+      <enricher>
+        <name>ProtocolA_Profile1</name>
+      </enricher>
     </source_session>
-    <source_session name="SourceB">
-      <name>SourceB</name>
+    <source_session name="Source2">
+      <name>Source2</name>
       <id>1001</id>
-      <protocol>Custom1</protocol>
-      <router_id>1</router_id>
+      <protocol>ProtocolA</protocol>
+      <router>
+        <type>OneToMany</type>
+        <destination_session_id>2000</destination_session_id>
+        <destination_session_id>2001</destination_session_id>
+      </router>
+      <enricher>
+        <name>ProtocolA_Profile2</name>
+      </enricher>
     </source_session>
   </source_sessions>
   <destination_sessions>
     <destination_session name="DestinationA">
       <name>DestinationA</name>
       <id>2000</id>
-      <protocol>Custom1</protocol>
-      <router_id>1</router_id>
+      <protocol>ProtocolB</protocol>
+      <enricher>
+        <name>ProtocolB_Profile2</name>
+      </enricher>
     </destination_session>
     <destination_session name="DestinationB">
-      <name>DestinationB</name>
+      <name>ProtocolB</name>
       <id>2001</id>
       <protocol>Custom1</protocol>
-      <router_id>1</router_id>
+      <enricher>
+        <name>ProtocolB_Profile2</name>
+      </enricher>
     </destination_session>
   </destination_sessions>
 </configuration>

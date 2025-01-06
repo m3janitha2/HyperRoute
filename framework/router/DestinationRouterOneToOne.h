@@ -1,5 +1,6 @@
 #pragma once
 
+#include <framework/router/DestinationRouter.h>
 #include <application/session/DestinationSessions.h>
 
 namespace max::framework
@@ -10,11 +11,12 @@ namespace max::framework
 		explicit DestinationRouterOneToOne(DestinationSessionPtrVarient &destination_session)
 			: destination_session_(destination_session) {}
 
-		DestinationRouterOneToOne(const DestinationRouterOneToOne&) = delete;
-		DestinationRouterOneToOne& operator=(const DestinationRouterOneToOne&) = delete;
+		DestinationRouterOneToOne(const DestinationRouterOneToOne &) = delete;
+		DestinationRouterOneToOne &operator=(const DestinationRouterOneToOne &) = delete;
 
 		template <typename Msg>
 		RejectInfo on_message_from_source(Msg &msg) noexcept
+			requires RouterMsg<Msg>
 		{
 			return send_message_to_desination(msg);
 		}

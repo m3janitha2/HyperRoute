@@ -9,6 +9,5 @@ namespace max::framework
 {
     class MessageStore
     {
-    public:
     };
 }

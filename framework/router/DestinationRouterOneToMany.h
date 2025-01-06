@@ -2,6 +2,7 @@
 
 #include <framework/protocol/RejectInfo.h>
 #include <framework/message/Messages.h>
+#include <framework/router/DestinationRouter.h>
 #include <application/session/DestinationSessions.h>
 #include <cstdint>
 #include <vector>
@@ -16,6 +17,7 @@ namespace max::framework
 
 		template <typename Msg>
 		RejectInfo on_message_from_source(Msg &msg) noexcept
+			requires RouterMsg<Msg>
 		{
 			if (auto reject_info = send_message_to_desination(msg); reject_info != true)
 				return reject_info;
@@ -36,7 +38,7 @@ namespace max::framework
 				auto next_index = next_session_index();
 				auto &next_destination = *destinations_[next_index];
 				auto reject_info = send_message_to_desination(msg, next_destination);
-				
+
 				/* Message sent out from the destination session */
 				insert_destination_by_uid(msg.uid(), next_destination);
 				return reject_info;
@@ -63,10 +65,11 @@ namespace max::framework
 		}
 
 		template <typename Msg>
-		RejectInfo send_message_to_desination(Msg &msg, DestinationSessionPtrVarient &destination_session) noexcept
+		RejectInfo send_message_to_desination(Msg &msg, DestinationSessionPtrVarient &destination_session) const noexcept
 		{
-			return std::visit([&msg](auto &&destination_session)
-							  { return destination_session->on_message_from_peer(msg); },
+			return std::visit([&msg]<typename Destination>(Destination &&destination)
+								  requires RouterDestination<Destination, Msg>
+							  { return std::forward<Destination>(destination)->on_message_from_peer(msg); },
 							  destination_session);
 		}
 
