@@ -5,13 +5,15 @@ namespace max::protocol_b
 {
     void DestinationSessionProtocolB::on_message_from_transport_impl(protocol_b::session::ExecutionReport &msg)
     {
-        protocol_a::session::ExecutionReport source_msg{};
+        protocol_a::schema::ExecutionReport s_msg{};
+        protocol_a::session::ExecutionReport source_msg{s_msg};
         procoess_message_from_transport(msg, source_msg);
     }
 
     void DestinationSessionProtocolB::on_message_from_transport_impl(protocol_b::session::CancelReject &msg)
     {
-        protocol_a::session::CancelReject source_msg{};
+        protocol_a::schema::CancelReject s_msg{};
+        protocol_a::session::CancelReject source_msg{s_msg};
         procoess_message_from_transport(msg, source_msg);
     }
 
@@ -46,7 +48,8 @@ namespace max::protocol_b
 
     RejectInfo DestinationSessionProtocolB::on_message_from_peer_impl(protocol_a::session::NewOrderSingle &msg)
     {
-        protocol_b::session::NewOrderSingle destination_msg{};
+        protocol_b::schema::NewOrderSingle s_msg{};
+        protocol_b::session::NewOrderSingle destination_msg{s_msg};
         return procoess_message_to_transport(msg, destination_msg);
     }
 

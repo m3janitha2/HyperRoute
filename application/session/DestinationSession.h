@@ -27,7 +27,7 @@ namespace max
         void on_disconnect() { this->impl().on_disconnect_impl(); }
 
         template <typename Msg>
-        RejectInfo on_message_from_peer(Msg &msg) { this->impl().on_message_from_peer_impl(msg); }
+        RejectInfo on_message_from_peer(Msg &msg) { return this->impl().on_message_from_peer_impl(msg); }
         template <typename Msg>
         void on_message_from_transport(Msg &msg) { this->impl().on_message_from_transport_impl(msg); }
         template <typename DestinationMsg, typename SourceMsg>
