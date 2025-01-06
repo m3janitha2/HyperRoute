@@ -21,20 +21,20 @@ namespace max::framework::message
         [[nodiscard]] constexpr UID uid() const noexcept { return uid_; }
         constexpr void uid(UID uid) noexcept { uid_ = uid; }
 
-        [[nodiscard]] constexpr auto in_time() const noexcept { return in_time_.time_since_epoch().count(); }
-        constexpr void in_time(Timestamp in_time) noexcept { in_time_ = in_time; }
-        void update_in_time() noexcept { in_time(TimestampClock::now()); }
+        [[nodiscard]] constexpr auto in_timestamp() const noexcept { return in_timestamp_.time_since_epoch().count(); }
+        constexpr void in_timestamp(Timestamp in_timestamp) noexcept { in_timestamp_ = in_timestamp; }
+        void update_in_timestamp() noexcept { in_timestamp(TimestampClock::now()); }
 
-        [[nodiscard]] constexpr auto out_time() const noexcept { return out_time_.time_since_epoch().count(); }
-        constexpr void out_time(Timestamp out_time) noexcept { out_time_ = out_time; }
-        void update_out_time() noexcept { out_time(TimestampClock::now()); }
+        [[nodiscard]] constexpr auto out_timestamp() const noexcept { return out_timestamp_.time_since_epoch().count(); }
+        constexpr void out_timestamp(Timestamp out_timestamp) noexcept { out_timestamp_ = out_timestamp; }
+        void update_out_timestamp() noexcept { out_timestamp(TimestampClock::now()); }
 
-        constexpr auto latency_in_ns() noexcept { return std::chrono::duration_cast<std::chrono::nanoseconds>(out_time_ - in_time_).count(); }
+        constexpr auto latency_in_ns() noexcept { return std::chrono::duration_cast<std::chrono::nanoseconds>(out_timestamp_ - in_timestamp_).count(); }
 
     private:
         UID uid_{};
-        Timestamp in_time_{TimestampClock::now()};
-        Timestamp out_time_{};
+        Timestamp in_timestamp_{TimestampClock::now()};
+        Timestamp out_timestamp_{};
     };
 
     struct FirstEvent

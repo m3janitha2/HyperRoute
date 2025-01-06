@@ -121,8 +121,8 @@ namespace max::framework
         // Publish DestinationSession message for downstream
 
         std::cout << "sent message to transport: " << dst_msg
-                  << " in:" << dst_msg.in_time()
-                  << " out:" << dst_msg.out_time()
+                  << " in:" << dst_msg.in_timestamp()
+                  << " out:" << dst_msg.out_timestamp()
                   << " latency_in_ns:" << dst_msg.latency_in_ns() << std::endl;
         return RejectInfo{};
     }
@@ -131,7 +131,6 @@ namespace max::framework
     template <typename Msg>
     inline RejectInfo DestinationSession<SessionImpl>::enrich_message_to_transport(Msg &msg) noexcept
     {
-        // std::cout << "enrich_message_to_transport:" << msg.msg() << std::endl;
         return destination_enricher_.enrich_message_to_transport(msg);
     }
 
@@ -162,9 +161,8 @@ namespace max::framework
     template <typename Msg>
     inline RejectInfo DestinationSession<SessionImpl>::send_message_to_transport(Msg &msg) noexcept
     {
-        msg.update_out_time();
-        std::string_view data{reinterpret_cast<char *>(&msg), sizeof(msg)};
-        return transport_.send_data(data);
+        msg.update_out_timestamp();
+        return transport_.send_data(msg.data());
     }
 
     template <typename SessionImpl>

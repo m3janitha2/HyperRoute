@@ -131,6 +131,7 @@ namespace max::framework
     inline RejectInfo SourceSession<SessionImpl>::send_message_to_transport(Msg &msg)
     {
         std::cout << "send_message_to_transport:" << msg << std::endl;
+        msg.update_out_timestamp();
         return transport_.send_data(msg.data());
     }
 
