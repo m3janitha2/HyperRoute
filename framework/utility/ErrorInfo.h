@@ -2,7 +2,7 @@
 #include <ostream>
 #include <concepts>
 
-namespace max::framework
+namespace hyper::framework
 {
     template <typename ErrorCode>
     concept ErroCodeType = requires {
@@ -18,7 +18,6 @@ namespace max::framework
             : code_(code), reason_(reason) {}
 
         [[nodiscard]] constexpr operator bool() const noexcept { return code_ == ErrorCode::Success; }
-        constexpr const char *to_chars() const noexcept { return to_chars(code_); }
 
         template <typename T>
         friend std::ostream &operator<<(std::ostream &os, const ErrorInfo<T> &error_info);
@@ -31,7 +30,7 @@ namespace max::framework
     template <typename T>
     inline std::ostream &operator<<(std::ostream &os, const ErrorInfo<T> &error_info)
     {
-        os << "code:" << error_info.to_chars() << " reason:" << error_info.reason_;
+        os << "code:" << to_chars(error_info.code_) << " reason:" << error_info.reason_;
         return os;
     }
 }

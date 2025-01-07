@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <framework/utility/ErrorInfo.h>
 
-namespace max::framework
+namespace hyper::framework
 {
     enum class InteranlRejectCode
     {
@@ -18,9 +18,10 @@ namespace max::framework
         To_Source_Routing_Failed,
         Invalid_Orig_Cl_Ord_ID,
         Destination_Session_Not_Found_For_UID,
+        Validation_Failed_Check_01,
     };
 
-    inline const char *to_chars(InteranlRejectCode code)
+    inline constexpr const char *to_chars(InteranlRejectCode code) noexcept
     {
         using enum InteranlRejectCode;
         switch (code)

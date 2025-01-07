@@ -5,7 +5,7 @@
 #include <application/session/SourceSessionsDeclaration.h>
 #include <unordered_map>
 
-namespace max::framework
+namespace hyper::framework
 {
     // todox: move this logic to message store
     class SourceRouter

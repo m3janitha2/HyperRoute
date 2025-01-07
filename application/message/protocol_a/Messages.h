@@ -1,19 +1,19 @@
 #pragma once
 
-#include <framework/message/BinaryMessages.h>
+#include <application/message/core/BinaryMessages.h>
 #include <application/message/protocol_a/schema/Messages.h>
-#include <iostream>
 #include <cstdint>
+#include <iostream>
 
-namespace max::protocol_a::session
+namespace hyper::protocol_a::session
 {
-    class NewOrderSingle : public framework::message::binary::NewOrderSingle<schema::NewOrderSingle>
+    class NewOrderSingle : public trading::binary::NewOrderSingle<schema::NewOrderSingle>
     {
     public:
         explicit constexpr NewOrderSingle(schema::NewOrderSingle &msg) noexcept
-            : framework::message::binary::NewOrderSingle<schema::NewOrderSingle>{msg} {}
+            : trading::binary::NewOrderSingle<schema::NewOrderSingle>{msg} {}
         explicit constexpr NewOrderSingle(std::string_view data) noexcept
-            : framework::message::binary::NewOrderSingle<schema::NewOrderSingle>{data} {}
+            : trading::binary::NewOrderSingle<schema::NewOrderSingle>{data} {}
 
         friend std::ostream &operator<<(std::ostream &os, const NewOrderSingle &msg)
         {
@@ -23,15 +23,17 @@ namespace max::protocol_a::session
 
         /* message interface required for the framework */
         std::uint64_t cl_ord_id() { return msg().cl_ord_id; }
+        std::uint64_t price() { return msg().a; }
+        std::uint64_t size() { return msg().b; }
     };
 
-    class CancelReplaceRequest : public framework::message::binary::CancelReplaceRequest<schema::CancelReplaceRequest>
+    class CancelReplaceRequest : public trading::binary::CancelReplaceRequest<schema::CancelReplaceRequest>
     {
     public:
         explicit constexpr CancelReplaceRequest(schema::CancelReplaceRequest &msg) noexcept
-            : framework::message::binary::CancelReplaceRequest<schema::CancelReplaceRequest>{msg} {}
+            : trading::binary::CancelReplaceRequest<schema::CancelReplaceRequest>{msg} {}
         explicit constexpr CancelReplaceRequest(std::string_view data) noexcept
-            : framework::message::binary::CancelReplaceRequest<schema::CancelReplaceRequest>{data} {}
+            : trading::binary::CancelReplaceRequest<schema::CancelReplaceRequest>{data} {}
 
         friend std::ostream &operator<<(std::ostream &os, const CancelReplaceRequest &msg)
         {
@@ -42,15 +44,17 @@ namespace max::protocol_a::session
         /* message interface required for the framework */
         std::uint64_t cl_ord_id() { return msg().cl_ord_id; }
         std::uint64_t orig_cl_ord_id() { return msg().orig_cl_ord_id; }
+        std::uint64_t price() { return msg().a; }
+        std::uint64_t size() { return msg().b; }
     };
 
-    class CancelRequest : public framework::message::binary::CancelRequest<schema::CancelRequest>
+    class CancelRequest : public trading::binary::CancelRequest<schema::CancelRequest>
     {
     public:
         explicit constexpr CancelRequest(schema::CancelRequest &msg) noexcept
-            : framework::message::binary::CancelRequest<schema::CancelRequest>{msg} {}
+            : trading::binary::CancelRequest<schema::CancelRequest>{msg} {}
         explicit constexpr CancelRequest(std::string_view data) noexcept
-            : framework::message::binary::CancelRequest<schema::CancelRequest>{data} {}
+            : trading::binary::CancelRequest<schema::CancelRequest>{data} {}
 
         friend std::ostream &operator<<(std::ostream &os, const CancelRequest &msg)
         {
@@ -61,15 +65,17 @@ namespace max::protocol_a::session
         /* message interface required for the framework */
         std::uint64_t cl_ord_id() { return msg().cl_ord_id; }
         std::uint64_t orig_cl_ord_id() { return msg().orig_cl_ord_id; }
+        std::uint64_t price() { return msg().a; }
+        std::uint64_t size() { return msg().b; }
     };
 
-    class ExecutionReport : public framework::message::binary::ExecutionReport<schema::ExecutionReport>
+    class ExecutionReport : public trading::binary::ExecutionReport<schema::ExecutionReport>
     {
     public:
         explicit constexpr ExecutionReport(schema::ExecutionReport &msg) noexcept
-            : framework::message::binary::ExecutionReport<schema::ExecutionReport>{msg} {}
+            : trading::binary::ExecutionReport<schema::ExecutionReport>{msg} {}
         explicit constexpr ExecutionReport(std::string_view data) noexcept
-            : framework::message::binary::ExecutionReport<schema::ExecutionReport>{data} {}
+            : trading::binary::ExecutionReport<schema::ExecutionReport>{data} {}
 
         friend std::ostream &operator<<(std::ostream &os, const ExecutionReport &msg)
         {
@@ -79,15 +85,17 @@ namespace max::protocol_a::session
 
         /* message interface required for the framework */
         std::uint64_t cl_ord_id() { return msg().cl_ord_id; }
+        std::uint64_t price() { return msg().a; }
+        std::uint64_t size() { return msg().b; }
     };
 
-    class CancelReject : public framework::message::binary::CancelReject<schema::CancelReject>
+    class CancelReject : public trading::binary::CancelReject<schema::CancelReject>
     {
     public:
         explicit constexpr CancelReject(schema::CancelReject &msg) noexcept
-            : framework::message::binary::CancelReject<schema::CancelReject>{msg} {}
+            : trading::binary::CancelReject<schema::CancelReject>{msg} {}
         explicit constexpr CancelReject(std::string_view data) noexcept
-            : framework::message::binary::CancelReject<schema::CancelReject>{data} {}
+            : trading::binary::CancelReject<schema::CancelReject>{data} {}
 
         friend std::ostream &operator<<(std::ostream &os, const CancelReject &msg)
         {
@@ -97,5 +105,7 @@ namespace max::protocol_a::session
 
         /* message interface required for the framework */
         std::uint64_t cl_ord_id() { return msg().cl_ord_id; }
+        std::uint64_t price() { return msg().a; }
+        std::uint64_t size() { return msg().b; }
     };
 }

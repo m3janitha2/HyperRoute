@@ -11,5 +11,5 @@ set(SOURCE_FILES
     ../session/DestinationSessionProtocolB.cpp
     ../session/ProtocolB.cpp)
 
-add_executable(max
+add_executable(HyperRoute
     ${SOURCE_FILES})

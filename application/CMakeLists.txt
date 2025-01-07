@@ -5,7 +5,6 @@ include_directories(${PROJECT_SOURCE_DIR}/../framework)
 
 
 add_subdirectory(utility)
-add_subdirectory(router)
 add_subdirectory(session)
 add_subdirectory(validator)
 add_subdirectory(app)

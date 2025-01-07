@@ -2,7 +2,7 @@
 
 #include <variant>
 
-namespace max
+namespace hyper
 {
     namespace protocol_a
     {

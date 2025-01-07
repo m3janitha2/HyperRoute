@@ -1,11 +1,12 @@
 #include <application/session/DestinationSessionProtocolB.h>
 
-namespace max::protocol_b
+namespace hyper::protocol_b
 {
     void DestinationSessionProtocolB::on_message_from_transport_impl(protocol_b::session::ExecutionReport &msg)
     {
         protocol_a::schema::ExecutionReport s_msg{};
         protocol_a::session::ExecutionReport src_msg{s_msg};
+        /* handle ord id generation */
         procoess_message_from_transport(msg, src_msg);
     }
 
@@ -54,12 +55,16 @@ namespace max::protocol_b
 
     RejectInfo DestinationSessionProtocolB::on_message_from_peer_impl(protocol_a::session::CancelReplaceRequest &msg)
     {
-        return RejectInfo();
+        protocol_b::schema::CancelReplaceRequest s_msg{};
+        protocol_b::session::CancelReplaceRequest dst_msg{s_msg};
+        return procoess_message_to_transport(msg, dst_msg);
     }
 
     RejectInfo DestinationSessionProtocolB::on_message_from_peer_impl(protocol_a::session::CancelRequest &msg)
     {
-        return RejectInfo();
+        protocol_b::schema::CancelRequest s_msg{};
+        protocol_b::session::CancelRequest dst_msg{s_msg};
+        return procoess_message_to_transport(msg, dst_msg);
     }
 
     RejectInfo DestinationSessionProtocolB::encode_message_to_destination_impl(protocol_a::session::NewOrderSingle &src_msg,
@@ -77,7 +82,7 @@ namespace max::protocol_b
     RejectInfo DestinationSessionProtocolB::encode_message_to_destination_impl(protocol_a::session::CancelReplaceRequest &src_msg,
                                                                                protocol_b::session::CancelReplaceRequest &dst_msg)
     {
-        std::cout << "encode_message_to_destination:" << src_msg << std::endl;
+        //std::cout << "encode_message_to_destination:" << src_msg << std::endl;
         auto &dest_msg = dst_msg.msg();
         dest_msg.a = static_cast<int>(src_msg.msg().a);
         dest_msg.b = static_cast<int>(src_msg.msg().b);
@@ -87,7 +92,7 @@ namespace max::protocol_b
     RejectInfo DestinationSessionProtocolB::encode_message_to_destination_impl(protocol_a::session::CancelRequest &src_msg,
                                                                                protocol_b::session::CancelRequest &dst_msg)
     {
-        std::cout << "encode_message_to_destination:" << src_msg << std::endl;
+        //std::cout << "encode_message_to_destination:" << src_msg << std::endl;
         auto &dest_msg = dst_msg.msg();
         dest_msg.a = static_cast<int>(src_msg.msg().a);
         dest_msg.b = static_cast<int>(src_msg.msg().b);

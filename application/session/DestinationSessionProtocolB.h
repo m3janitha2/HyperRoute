@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-namespace max::protocol_b
+namespace hyper::protocol_b
 {
     using RejectInfo = framework::RejectInfo;
     using SourceRouter = framework::SourceRouter;

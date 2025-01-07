@@ -3,7 +3,7 @@
 #include <framework/router/DestinationRouter.h>
 #include <application/session/DestinationSessions.h>
 
-namespace max::framework
+namespace hyper::framework
 {
 	class DestinationRouterOneToOne
 	{

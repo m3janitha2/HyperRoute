@@ -2,7 +2,7 @@
 
 #include <framework/utility/Types.h>
 
-namespace max::framework
+namespace hyper::framework
 {
     class UIDGenerator
     {

@@ -1,9 +1,9 @@
 #include <application/session/ProtocolA.h>
 #include <application/session/SourceSessionProtocolA.h>
 
-namespace max::protocol_a
+namespace hyper::protocol_a
 {
-    const char *to_chars(SessionRejectCode code)
+    constexpr const char *to_chars(SessionRejectCode code) noexcept
     {
         using enum SessionRejectCode;
         switch (code)
@@ -28,15 +28,15 @@ namespace max::protocol_a
     {
     }
 
-    void ProtocolA::on_connect()
+    void ProtocolA::on_connect_impl()
     {
     }
 
-    void ProtocolA::on_disconnect()
+    void ProtocolA::on_disconnect_impl()
     {
     }
 
-    std::size_t ProtocolA::on_data(std::string_view data)
+    std::size_t ProtocolA::on_data_impl(std::string_view data)
     {
         auto *const_header = reinterpret_cast<const schema::Header *>(data.data());
         auto *header = const_cast<schema::Header *>(const_header);
@@ -98,7 +98,7 @@ namespace max::protocol_a
         if (auto reject_info = validate_logon(msg); reject_info != true)
         {
             send_logout();
-            transport_.disconnect();
+            this->impl().transport_.disconnect();
             return;
         }
 
@@ -109,7 +109,7 @@ namespace max::protocol_a
     {
         if (auto reject_info = validate_logout(msg); reject_info != true)
         {
-            transport_.disconnect();
+            this->impl().transport_.disconnect();
             return;
         }
 
@@ -120,7 +120,7 @@ namespace max::protocol_a
     {
         if (auto reject_info = validate_heartbeat(msg); reject_info != true)
         {
-            transport_.disconnect();
+            this->impl().transport_.disconnect();
             return;
         }
     }

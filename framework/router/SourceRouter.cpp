@@ -5,7 +5,7 @@
 #include <variant>
 #include "SourceRouter.h"
 
-namespace max::framework
+namespace hyper::framework
 {
     template <typename Msg>
     RejectInfo SourceRouter::send_message_to_source(Msg &msg)

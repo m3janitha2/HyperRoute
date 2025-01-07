@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <concepts>
 
-namespace max::framework
+namespace hyper::framework
 {
 	template <typename Msg>
 	concept RouterMsg = requires (Msg msg){

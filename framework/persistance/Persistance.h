@@ -3,7 +3,7 @@
 #include <CrtpBase.h>
 #include <string_view>
 
-namespace max::framework
+namespace hyper::framework
 {    
     template <typename T>
     class Persistance : public CrtpBase<T>

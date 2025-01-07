@@ -6,7 +6,7 @@
 #include <framework/router/DestinationRouterOneToOne.h>
 #include <framework/router/DestinationRouterOneToMany.h>
 
-namespace max
+namespace hyper
 {
     using DestinationRouterPtrVarient = std::variant<framework::DestinationRouterOneToOne *,
                                                      framework::DestinationRouterOneToMany *>;

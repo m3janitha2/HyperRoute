@@ -5,9 +5,9 @@
 #include <chrono>
 #include <ostream>
 
-namespace max::framework::message
+namespace hyper::framework::message
 {
-    /* Message interface used by the framework framework */
+    /* Message interface used by the framework */
 
     using Timestamp = std::chrono::time_point<std::chrono::steady_clock>;
     using TimestampClock = std::chrono::steady_clock;
@@ -44,24 +44,4 @@ namespace max::framework::message
     struct SubsequentEvent
     {
     }; /* Subsequent Messages of the same message chain */
-
-    struct NewOrderSingle : public Message, FirstEvent
-    {
-    };
-
-    struct CancelReplaceRequest : public Message, SubsequentEvent
-    {
-    };
-
-    struct CancelRequest : public Message, SubsequentEvent
-    {
-    };
-
-    struct ExecutionReport : public Message, SubsequentEvent
-    {
-    };
-
-    struct CancelReject : public Message, SubsequentEvent
-    {
-    };
 }

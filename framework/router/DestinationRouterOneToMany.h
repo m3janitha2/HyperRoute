@@ -1,14 +1,14 @@
 #pragma once
 
 #include <framework/protocol/RejectInfo.h>
-#include <framework/message/Messages.h>
+#include <framework/message/Message.h>
 #include <framework/router/DestinationRouter.h>
 #include <application/session/DestinationSessions.h>
 #include <cstdint>
 #include <vector>
 #include <iostream>
 
-namespace max::framework
+namespace hyper::framework
 {
 	class DestinationRouterOneToMany
 	{

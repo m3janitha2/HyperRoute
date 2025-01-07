@@ -7,7 +7,7 @@
 #include <framework/transport/Transport.h>
 #include <application/validator/Validator.h>
 
-namespace max::framework
+namespace hyper::framework
 {
     class DestinationSessionInfo;
 

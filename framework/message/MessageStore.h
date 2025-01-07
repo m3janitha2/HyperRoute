@@ -5,7 +5,7 @@
 #include <application/session/DestinationSessionsDeclarations.h>
 #include <unordered_map>
 
-namespace max::framework
+namespace hyper::framework
 {
     class MessageStore
     {

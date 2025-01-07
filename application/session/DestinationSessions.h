@@ -4,7 +4,7 @@
 
 #include <application/session/DestinationSessionProtocolB.h>
 
-namespace max
+namespace hyper
 {
     //using DestinationSessionPtrVarient = std::variant<protocol_b::DestinationSessionProtocolB>;
     using DestinationSessionPtrVarient = std::variant<protocol_b::DestinationSessionProtocolB*>;

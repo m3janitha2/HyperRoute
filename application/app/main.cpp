@@ -7,7 +7,7 @@
 #include <application/session/ProtocolB.h>
 #include <application/session/DestinationSessionProtocolB.h>
 
-using namespace max;
+using namespace hyper;
 
 struct SubSystem
 {
@@ -21,7 +21,7 @@ struct SubSystem
 
 int main(int argc, char **argv)
 {
-	// Configuration cfg{"/mnt/d/linux/github/max/application/config/config.xml"};
+	// Configuration cfg{"/mnt/d/linux/github/m3janitha2/HyperRoute/application/config/config.xml"};
 	// auto x = cfg.get_source_ses_cfg_by_name("SourceA");
 	SubSystem ss{};
 
@@ -30,12 +30,12 @@ int main(int argc, char **argv)
 		protocol_a::schema::NewOrderSingle new_order{.a = 20, .b = 3, .cl_ord_id = 100};
 		auto *new_order_ptr = reinterpret_cast<char *>(&new_order);
 		std::string_view new_order_data{new_order_ptr, new_order.header.size};
-		ss.source_protocol.on_data(new_order_data);
+		ss.source_protocol.transport().on_data(new_order_data);
 
 		protocol_a::schema::CancelReplaceRequest amend{.a = 30, .b = 5, .cl_ord_id = 101, .orig_cl_ord_id = 100};
 		auto *amend_ptr = reinterpret_cast<char *>(&amend);
 		std::string_view amend_data{amend_ptr, amend.header.size};
-		ss.source_protocol.on_data(amend_data);
+		ss.source_protocol.transport().on_data(amend_data);
 
 		protocol_b::schema::ExecutionReport exec{.a = 5, .b = 9};
 		auto *exec_ptr = reinterpret_cast<char *>(&exec);

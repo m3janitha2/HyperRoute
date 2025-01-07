@@ -1,7 +1,7 @@
 #include <application/session/SourceSessionProtocolA.h>
 #include <framework/message/UIDGenerator.h>
 
-namespace max::protocol_a
+namespace hyper::protocol_a
 {
     using UIDGenerator = framework::UIDGenerator;
     using InteranlRejectCode = framework::InteranlRejectCode;
@@ -54,14 +54,17 @@ namespace max::protocol_a
 
     void SourceSessionProtocolA::rejecet_message_from_transport_impl(session::NewOrderSingle &msg, RejectInfo &reject_info)
     {
+        std::cout << "msg rejected: " << msg << " reason: " << reject_info << std::endl;
     }
 
     void SourceSessionProtocolA::rejecet_message_from_transport_impl(session::CancelReplaceRequest &msg, RejectInfo &reject_info)
     {
+        std::cout << "msg rejected: " << msg << " reason: " << reject_info << std::endl;
     }
 
     void SourceSessionProtocolA::rejecet_message_from_transport_impl(session::CancelRequest &msg, RejectInfo &reject_info)
     {
+        std::cout << "msg rejected: " << msg << " reason: " << reject_info << std::endl;
     }
 
     RejectInfo SourceSessionProtocolA::on_message_from_peer_impl(session::ExecutionReport &msg)

@@ -1,8 +1,8 @@
 #include <application/session/ProtocolB.h>
 
-namespace max::protocol_b
+namespace hyper::protocol_b
 {
-    const char *to_chars(SessionRejectCode code)
+    constexpr const char *to_chars(SessionRejectCode code) noexcept
     {
         using enum SessionRejectCode;
         switch (code)
@@ -26,15 +26,15 @@ namespace max::protocol_b
     {
     }
 
-    void ProtocolB::on_connect()
+    void ProtocolB::on_connect_impl()
     {
     }
 
-    void ProtocolB::on_disconnect()
+    void ProtocolB::on_disconnect_impl()
     {
     }
 
-    std::size_t ProtocolB::on_data(std::string_view data)
+    std::size_t ProtocolB::on_data_impl(std::string_view data)
     {
         auto *const_header = reinterpret_cast<const schema::Header *>(data.data());
         auto *header = const_cast<schema::Header *>(const_header);
@@ -90,7 +90,7 @@ namespace max::protocol_b
         if (auto reject_info = validate_logon(msg); reject_info != true)
         {
             send_logout();
-            transport_.disconnect();
+            impl().transport_.disconnect();
             return;
         }
 
@@ -101,7 +101,7 @@ namespace max::protocol_b
     {
         if (auto reject_info = validate_logout(msg); reject_info != true)
         {
-            transport_.disconnect();
+            impl().transport_.disconnect();
             return;
         }
 
@@ -112,7 +112,7 @@ namespace max::protocol_b
     {
         if (auto reject_info = validate_heartbeat(msg); reject_info != true)
         {
-            transport_.disconnect();
+            impl().transport_.disconnect();
             return;
         }
     }

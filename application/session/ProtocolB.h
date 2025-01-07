@@ -1,21 +1,11 @@
 #pragma once
 
-#include <framework/utility/ErrorInfo.h>
-#include <framework/transport/Transport.h>
+#include <framework/protocol/Protocol.h>
 #include <application/session/DestinationSessionProtocolB.h>
 #include <application/message/protocol_b/Messages.h>
-#include <type_traits>
-#include <string_view>
 
-namespace max::protocol_b
+namespace hyper::protocol_b
 {
-    /* todox: persisted sequence number */
-    struct SequenceStore
-    {
-        std::uint64_t in_sequence_number_{0};
-        std::uint64_t out_sequence_number_{0};
-    };
-
     enum class SessionRejectCode
     {
         Success,
@@ -23,27 +13,22 @@ namespace max::protocol_b
         Invalid_heartbeat,
     };
 
-    const char *to_chars(SessionRejectCode code);
+    constexpr const char *to_chars(SessionRejectCode code) noexcept;
     std::string to_string(SessionRejectCode code);
 
     using SessionRejectInfo = framework::ErrorInfo<SessionRejectCode>;
-    using TransportCallbacks = framework::TransportCallbacks;
-    using Transport = framework::Transport;
 
-    class ProtocolB
+    class ProtocolB : public framework::Protocol<ProtocolB>
     {
     public:
         explicit ProtocolB(SourceRouter &source_router);
 
-        void on_connect();
-        void on_disconnect();
-        std::size_t on_data(std::string_view data);
+        void on_connect_impl();
+        void on_disconnect_impl();
+        std::size_t on_data_impl(std::string_view data);
 
         const DestinationSessionProtocolB &session() const { return session_; }
         DestinationSessionProtocolB &session() { return session_; }
-
-        template <typename Msg>
-        RejectInfo send_to_transport(Msg &msg);
 
         void on_logon(schema::Logon &msg);
         void on_logout(schema::Logout &msg);
@@ -57,26 +42,7 @@ namespace max::protocol_b
         SessionRejectInfo validate_logout(schema::Logout &msg);
         SessionRejectInfo validate_heartbeat(schema::Heartbeat &msg);
 
-        void persist_session_message();
-        void publish_session_message();
-
     private:
-        TransportCallbacks transport_callbacks{[this]()
-                                               { on_connect(); },
-                                               [this]()
-                                               { on_disconnect(); },
-                                               [this](std::string_view data)
-                                               { return on_data(data); }};
-        Transport transport_{transport_callbacks};
-        SequenceStore sequence_store_{};
         DestinationSessionProtocolB session_;
     };
-
-    template <typename Msg>
-    inline RejectInfo ProtocolB::send_to_transport(Msg &msg)
-    {
-        // reschedule heatbeat timer
-        std::string_view data{reinterpret_cast<char *>(&msg), sizeof(msg)};
-        return transport_.send_data(data);
-    }
 }

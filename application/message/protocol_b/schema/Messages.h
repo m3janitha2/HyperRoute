@@ -3,7 +3,7 @@
 #include <iostream>
 #include <cstdint>
 
-namespace max::protocol_b::schema
+namespace hyper::protocol_b::schema
 {
     enum class MsgType : std::uint32_t
     {

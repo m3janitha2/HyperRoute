@@ -3,7 +3,7 @@
 #include <framework/protocol/RejectInfo.h>
 #include <iostream>
 
-namespace max::framework
+namespace hyper::framework
 {
     struct DestinationEnricher
     {

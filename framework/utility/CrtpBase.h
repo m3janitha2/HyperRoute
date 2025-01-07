@@ -1,6 +1,6 @@
 #pragma once
 
-namespace max::framework
+namespace hyper::framework
 {
     template <typename T>
     struct CrtpBase

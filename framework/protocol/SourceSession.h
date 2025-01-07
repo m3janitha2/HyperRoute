@@ -5,13 +5,13 @@
 #include <framework/enricher/SourceEnricher.h>
 #include <framework/router/SourceRouter.h>
 #include <framework/transport/Transport.h>
-#include <framework/message/Messages.h>
+#include <framework/message/Message.h>
 #include <framework/router/DestinationRouters.h>
 #include <type_traits>
 #include <concepts>
 #include <string_view>
 
-namespace max::framework
+namespace hyper::framework
 {
     template <typename Impl>
     concept TransportEvents = requires(Impl impl) {
@@ -139,7 +139,7 @@ namespace max::framework
     template <typename Msg>
     inline void SourceSession<SessionImpl>::update_routing_info(Msg &msg) noexcept
     {
-        if constexpr (std::derived_from<Msg, framework::message::NewOrderSingle>)
+        if constexpr (std::derived_from<Msg, framework::message::FirstEvent>)
         {
             std::cout << "update_routing_info: NewOrderSingle. uid:" << msg.uid() << std::endl;
             SourceSessionPtrVarient source_session_varient{&(this->impl())};

@@ -1,7 +1,7 @@
 #pragma once
 #include <framework/protocol/RejectInfo.h>
 
-namespace max::framework
+namespace hyper::framework
 {
     struct SourceEnricher
     {

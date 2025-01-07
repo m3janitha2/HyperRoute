@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace max::framework
+namespace hyper::framework
 {
     using UID = std::uint64_t;
 }

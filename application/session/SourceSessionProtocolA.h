@@ -5,7 +5,7 @@
 #include <type_traits>
 #include <iostream>
 
-namespace max::protocol_a
+namespace hyper::protocol_a
 {
     using RejectInfo = framework::RejectInfo;
     using SourceRouter = framework::SourceRouter;

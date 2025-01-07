@@ -4,7 +4,7 @@
 
 #include <application/session/DestinationSessionProtocolB.h>
 
-namespace max
+namespace hyper
 {
     namespace protocol_b
     {
