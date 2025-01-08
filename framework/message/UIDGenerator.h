@@ -4,6 +4,7 @@
 
 namespace hyper::framework
 {
+    /* Unique ID generator */
     class UIDGenerator
     {
     public:

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <framework/protocol/SourceSession.h>
+#include <framework/session/SourceSession.h>
 #include <application/message/protocol_a/Messages.h>
 #include <type_traits>
 #include <iostream>
@@ -21,39 +21,39 @@ namespace hyper::protocol_a
             : SourceSession<SourceSessionProtocolA>{destination_router, source_router, transport} {}
 
         /* TransportEvents */
-        void on_connect_impl();
-        void on_disconnect_impl();
+        void on_connect_impl() noexcept;
+        void on_disconnect_impl() noexcept;
 
         /* Messages from transport */
         template <typename Msg>
-        void on_message_from_transport_impl(Msg &msg);
-        void on_message_from_transport_impl(session::NewOrderSingle &msg);
-        void on_message_from_transport_impl(session::CancelReplaceRequest &msg);
-        void on_message_from_transport_impl(session::CancelRequest &msg);
+        void on_message_from_transport_impl(Msg &msg) noexcept;
+        void on_message_from_transport_impl(session::NewOrderSingle &msg) noexcept;
+        void on_message_from_transport_impl(session::CancelReplaceRequest &msg) noexcept;
+        void on_message_from_transport_impl(session::CancelRequest &msg) noexcept;
 
         /* Internal rejects */
-        void rejecet_message_from_transport_impl(session::NewOrderSingle &msg, RejectInfo &reject_info);
-        void rejecet_message_from_transport_impl(session::CancelReplaceRequest &msg, RejectInfo &reject_info);
-        void rejecet_message_from_transport_impl(session::CancelRequest &msg, RejectInfo &reject_info);
+        void rejecet_message_from_transport_impl(session::NewOrderSingle &msg, RejectInfo &reject_info) noexcept;
+        void rejecet_message_from_transport_impl(session::CancelReplaceRequest &msg, RejectInfo &reject_info) noexcept;
+        void rejecet_message_from_transport_impl(session::CancelRequest &msg, RejectInfo &reject_info) noexcept;
 
         template <typename Msg>
         void update_routing_info_impl(Msg &msg);
 
         /* Messages from the peer session to the transport */
-        RejectInfo on_message_from_peer_impl(session::ExecutionReport &msg);
-        RejectInfo on_message_from_peer_impl(session::CancelReject &msg);
+        RejectInfo on_message_from_peer_impl(session::ExecutionReport &msg) noexcept;
+        RejectInfo on_message_from_peer_impl(session::CancelReject &msg) noexcept;
 
     private:
         template <typename Msg>
-        bool enrich_uid_from_orig_cl_ord_id(Msg &msg);
+        bool enrich_uid_from_orig_cl_ord_id(Msg &msg) noexcept;
 
         using ClOrdIdType = decltype(schema::NewOrderSingle::cl_ord_id);
         using ClOrdIDToUIDMap = std::unordered_map<ClOrdIdType, UID>;
-        ClOrdIDToUIDMap cl_ord_id_to_uid_{50}; /* todox: set bucket size this from config */
+        ClOrdIDToUIDMap cl_ord_id_to_uid_{50}; /* todox: set bucket size from config */
     };
 
     template <typename Msg>
-    inline void SourceSessionProtocolA::on_message_from_transport_impl(Msg &msg)
+    inline void SourceSessionProtocolA::on_message_from_transport_impl(Msg &msg) noexcept
     {
         std::cout << "unknown source message" << std::endl;
     }

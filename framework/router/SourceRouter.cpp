@@ -24,7 +24,7 @@ namespace hyper::framework
         }
     }
 
-    void SourceRouter::update_reverse_routing(UID uid, SourceSessionPtrVarient source_session_varient)
+    void SourceRouter::update_routing_info(UID uid, SourceSessionPtrVarient source_session_varient)
     {
         uid_to_source_session_.emplace(uid, source_session_varient);
     }

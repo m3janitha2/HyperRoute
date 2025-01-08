@@ -1,5 +1,5 @@
 #pragma once
-#include <framework/protocol/RejectInfo.h>
+#include <framework/utility/RejectInfo.h>
 
 namespace hyper::framework
 {

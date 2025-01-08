@@ -1,7 +1,6 @@
-#include <application/session/ProtocolA.h>
-#include <application/session/SourceSessionProtocolA.h>
+#include <application/protocol/ProtocolB.h>
 
-namespace hyper::protocol_a
+namespace hyper::protocol_b
 {
     constexpr const char *to_chars(SessionRejectCode code) noexcept
     {
@@ -22,21 +21,20 @@ namespace hyper::protocol_a
         return to_chars(code);
     }
 
-    ProtocolA::ProtocolA(DestinationRouterPtrVarient &destination_router,
-                         SourceRouter &source_router)
-        : session_(destination_router, source_router, transport_)
+    ProtocolB::ProtocolB(SourceRouter &source_router)
+        : session_(source_router, transport_)
     {
     }
 
-    void ProtocolA::on_connect_impl()
+    void ProtocolB::on_connect_impl()
     {
     }
 
-    void ProtocolA::on_disconnect_impl()
+    void ProtocolB::on_disconnect_impl()
     {
     }
 
-    std::size_t ProtocolA::on_data_impl(std::string_view data)
+    std::size_t ProtocolB::on_data_impl(std::string_view data)
     {
         auto *const_header = reinterpret_cast<const schema::Header *>(data.data());
         auto *header = const_cast<schema::Header *>(const_header);
@@ -68,21 +66,15 @@ namespace hyper::protocol_a
             on_heartbeat(msg);
             break;
         }
-        case schema::MsgType::NewOrderSingle:
+        case schema::MsgType::ExecutionReport:
         {
-            session::NewOrderSingle msg{data};
+            session::ExecutionReport msg{data};
             session_.on_message_from_transport(msg);
             break;
         }
-        case schema::MsgType::CancelReplaceRequest:
+        case schema::MsgType::CancelReject:
         {
-            session::CancelReplaceRequest msg{data};
-            session_.on_message_from_transport(msg);
-            break;
-        }
-        case schema::MsgType::CancelRequest:
-        {
-            session::CancelRequest msg{data};
+            session::CancelReject msg{data};
             session_.on_message_from_transport(msg);
             break;
         }
@@ -93,68 +85,69 @@ namespace hyper::protocol_a
         return header->size;
     }
 
-    void ProtocolA::on_logon(schema::Logon &msg)
+    void ProtocolB::on_logon(schema::Logon &msg)
     {
         if (auto reject_info = validate_logon(msg); reject_info != true)
         {
             send_logout();
-            this->impl().transport_.disconnect();
+            impl().transport_.disconnect();
             return;
         }
 
         send_logon();
     }
 
-    void ProtocolA::on_logout(schema::Logout &msg)
+    void ProtocolB::on_logout(schema::Logout &msg)
     {
         if (auto reject_info = validate_logout(msg); reject_info != true)
         {
-            this->impl().transport_.disconnect();
+            impl().transport_.disconnect();
             return;
         }
 
         send_logout();
     }
 
-    void ProtocolA::on_heartbeat(schema::Heartbeat &msg)
+    void ProtocolB::on_heartbeat(schema::Heartbeat &msg)
     {
         if (auto reject_info = validate_heartbeat(msg); reject_info != true)
         {
-            this->impl().transport_.disconnect();
+            impl().transport_.disconnect();
             return;
         }
     }
 
-    void ProtocolA::send_logon()
+    void ProtocolB::send_logon()
     {
         schema::Logon msg{};
         auto reject_info = send_to_transport(msg);
     }
 
-    void ProtocolA::send_logout()
+    void ProtocolB::send_logout()
     {
         schema::Logout msg{};
         auto reject_info = send_to_transport(msg);
     }
 
-    void ProtocolA::send_heartbeat()
+    void ProtocolB::send_heartbeat()
     {
         schema::Heartbeat msg{};
         auto reject_info = send_to_transport(msg);
     }
 
-    SessionRejectInfo protocol_a::ProtocolA::validate_logon(schema::Logon &msg)
+    SessionRejectInfo ProtocolB::validate_logon(schema::Logon &msg)
     {
         return SessionRejectInfo();
     }
 
-    SessionRejectInfo protocol_a::ProtocolA::validate_logout(schema::Logout &msg)
+    SessionRejectInfo ProtocolB::validate_logout(schema::Logout &msg)
     {
         return SessionRejectInfo();
     }
 
-    SessionRejectInfo protocol_a::ProtocolA::validate_heartbeat(schema::Heartbeat &msg)
+    SessionRejectInfo ProtocolB::validate_heartbeat(schema::Heartbeat &msg)
     {
         return SessionRejectInfo();
     }
+
 }

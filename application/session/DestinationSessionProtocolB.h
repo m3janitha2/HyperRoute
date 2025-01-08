@@ -1,6 +1,6 @@
 #pragma once
 
-#include <framework/protocol/DestinationSession.h>
+#include <framework/session/DestinationSession.h>
 #include <application/message/protocol_b/Messages.h>
 #include <application/message/protocol_a/Messages.h>
 #include <framework/message/UIDGenerator.h>
@@ -64,8 +64,8 @@ namespace hyper::protocol_b
             framework::UID uid_;
         };
         using SrcRoutingInfoByDestClOrdIDType = std::unordered_map<DestClOrdIDType, SourceRotingInfo>;
-        DestClOrdIDBySrcClOrdIDType dest_cl_ord_id_by_src_cl_ord_id_{50}; /* todox: set bucket size this from config */
-        SrcRoutingInfoByDestClOrdIDType src_routing_info_by_dest_cl_ord_id_{50}; /* todox: set bucket size this from config */
+        DestClOrdIDBySrcClOrdIDType dest_cl_ord_id_by_src_cl_ord_id_{50}; /* todox: set bucket size from config */
+        SrcRoutingInfoByDestClOrdIDType src_routing_info_by_dest_cl_ord_id_{50}; /* todox: set bucket size from config */
 
         using VenueIDGenarator = framework::UIDGenerator;
         VenueIDGenarator& venue_id_generator_{VenueIDGenarator::instance()};

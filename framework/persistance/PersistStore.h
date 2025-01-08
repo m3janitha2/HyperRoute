@@ -4,9 +4,11 @@
 #include <string_view>
 
 namespace hyper::framework
-{    
-    template <typename T>
-    class PersistStore : public CrtpBase<T>
+{
+    /* todox: Persisted store abstraction. */
+
+    template <typename PersistStoreImpl>
+    class PersistStore : public CrtpBase<PersistStoreImpl>
     {
         void persist(std::uint64_t seq_no, std::string_view data)
         {

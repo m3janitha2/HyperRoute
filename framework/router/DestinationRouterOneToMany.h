@@ -1,15 +1,18 @@
 #pragma once
 
-#include <framework/protocol/RejectInfo.h>
+#include <framework/utility/RejectInfo.h>
 #include <framework/message/Message.h>
 #include <framework/router/DestinationRouter.h>
-#include <application/session/DestinationSessions.h>
+#include <framework/application_dependency/DestinationSessions.h>
 #include <cstdint>
 #include <vector>
 #include <iostream>
 
 namespace hyper::framework
 {
+	/* Route messages from the source session to destination sessions using a round-robin pattern */
+	/* Attempt the next available session if the current session is not connected */
+	/* Reject the message if all sessions are disconnected */
 	class DestinationRouterOneToMany
 	{
 	public:
@@ -69,7 +72,10 @@ namespace hyper::framework
 		{
 			return std::visit([&msg]<typename Destination>(Destination &&destination)
 								  requires RouterDestination<Destination, Msg>
-							  { return std::forward<Destination>(destination)->on_message_from_peer(msg); },
+							  { if(!std::forward<Destination>(destination)->is_connected()) [[unlikely]]
+									return RejectInfo{"Destination is not connected", InteranlRejectCode::Destination_Is_Not_Connected};
+								else
+									return std::forward<Destination>(destination)->on_message_from_peer(msg); },
 							  destination_session);
 		}
 

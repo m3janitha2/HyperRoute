@@ -6,10 +6,11 @@ message("include_directories: ${PROJECT_SOURCE_DIR}")
 set(SOURCE_FILES
     main.cpp
     ../session/SourceSessionProtocolA.cpp
-    ../session/ProtocolA.cpp
+    ../protocol/ProtocolA.cpp
     ../../framework/router/SourceRouter.cpp
+    ../../framework/utility/RejectInfo.cpp
     ../session/DestinationSessionProtocolB.cpp
-    ../session/ProtocolB.cpp)
+    ../protocol/ProtocolB.cpp)
 
 add_executable(HyperRoute
     ${SOURCE_FILES})

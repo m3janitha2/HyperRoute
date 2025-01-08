@@ -8,9 +8,9 @@
 namespace hyper::framework::message
 {
     /* Message interface used by the framework */
-
-    using Timestamp = std::chrono::time_point<std::chrono::steady_clock>;
-    using TimestampClock = std::chrono::steady_clock;
+    
+    using TimestampClock = std::chrono::high_resolution_clock;
+    using Timestamp = std::chrono::time_point<TimestampClock>;
 
     class Message
     {

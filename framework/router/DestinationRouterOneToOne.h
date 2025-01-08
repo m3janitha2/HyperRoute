@@ -1,10 +1,11 @@
 #pragma once
 
 #include <framework/router/DestinationRouter.h>
-#include <application/session/DestinationSessions.h>
+#include <framework/application_dependency/DestinationSessions.h>
 
 namespace hyper::framework
 {
+	/* Route messages from the source to the destination session. */
 	class DestinationRouterOneToOne
 	{
 	public:

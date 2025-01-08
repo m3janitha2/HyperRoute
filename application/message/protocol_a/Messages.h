@@ -7,6 +7,9 @@
 
 namespace hyper::protocol_a::session
 {
+    /* Wrap schema messages to support the trading system interface */
+    /* Do not copy or allocate */
+
     class NewOrderSingle : public trading::binary::NewOrderSingle<schema::NewOrderSingle>
     {
     public:

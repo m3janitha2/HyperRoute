@@ -5,6 +5,8 @@
 
 namespace hyper::trading::binary
 {
+    /* Binary messages supported by the system */
+    
     template <typename Msg>
     using BinaryMessage = framework::message::binary::BinaryMessage<Msg>;
 

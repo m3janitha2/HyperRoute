@@ -6,11 +6,11 @@ namespace hyper::protocol_a
     using UIDGenerator = framework::UIDGenerator;
     using InteranlRejectCode = framework::InteranlRejectCode;
 
-    void SourceSessionProtocolA::on_connect_impl() {}
+    void SourceSessionProtocolA::on_connect_impl() noexcept {}
 
-    void SourceSessionProtocolA::on_disconnect_impl() {}
+    void SourceSessionProtocolA::on_disconnect_impl() noexcept {}
 
-    void SourceSessionProtocolA::on_message_from_transport_impl(session::NewOrderSingle &msg)
+    void SourceSessionProtocolA::on_message_from_transport_impl(session::NewOrderSingle &msg) noexcept
     {
         auto uid = UIDGenerator::instance().get_next_uid();
         msg.uid(uid);
@@ -18,7 +18,7 @@ namespace hyper::protocol_a
         procoess_message_from_transport(msg);
     }
 
-    void SourceSessionProtocolA::on_message_from_transport_impl(session::CancelReplaceRequest &msg)
+    void SourceSessionProtocolA::on_message_from_transport_impl(session::CancelReplaceRequest &msg) noexcept
     {
         if (!enrich_uid_from_orig_cl_ord_id(msg)) [[unlikely]]
             return;
@@ -26,7 +26,7 @@ namespace hyper::protocol_a
         procoess_message_from_transport(msg);
     }
 
-    void SourceSessionProtocolA::on_message_from_transport_impl(session::CancelRequest &msg)
+    void SourceSessionProtocolA::on_message_from_transport_impl(session::CancelRequest &msg) noexcept
     {
         if (!enrich_uid_from_orig_cl_ord_id(msg)) [[unlikely]]
             return;
@@ -34,33 +34,36 @@ namespace hyper::protocol_a
         procoess_message_from_transport(msg);
     }
 
-    void SourceSessionProtocolA::rejecet_message_from_transport_impl(session::NewOrderSingle &msg, RejectInfo &reject_info)
+    void SourceSessionProtocolA::rejecet_message_from_transport_impl(session::NewOrderSingle &msg,
+                                                                     RejectInfo &reject_info) noexcept
     {
         std::cout << "msg rejected: " << msg << " reason: " << reject_info << std::endl;
     }
 
-    void SourceSessionProtocolA::rejecet_message_from_transport_impl(session::CancelReplaceRequest &msg, RejectInfo &reject_info)
+    void SourceSessionProtocolA::rejecet_message_from_transport_impl(session::CancelReplaceRequest &msg,
+                                                                     RejectInfo &reject_info) noexcept
     {
         std::cout << "msg rejected: " << msg << " reason: " << reject_info << std::endl;
     }
 
-    void SourceSessionProtocolA::rejecet_message_from_transport_impl(session::CancelRequest &msg, RejectInfo &reject_info)
+    void SourceSessionProtocolA::rejecet_message_from_transport_impl(session::CancelRequest &msg,
+                                                                     RejectInfo &reject_info) noexcept
     {
         std::cout << "msg rejected: " << msg << " reason: " << reject_info << std::endl;
     }
 
-    RejectInfo SourceSessionProtocolA::on_message_from_peer_impl(session::ExecutionReport &msg)
+    RejectInfo SourceSessionProtocolA::on_message_from_peer_impl(session::ExecutionReport &msg) noexcept
     {
         return procoess_message_to_transport(msg);
     }
 
-    RejectInfo SourceSessionProtocolA::on_message_from_peer_impl(session::CancelReject &msg)
+    RejectInfo SourceSessionProtocolA::on_message_from_peer_impl(session::CancelReject &msg) noexcept
     {
         return procoess_message_to_transport(msg);
     }
 
     template <typename Msg>
-    bool SourceSessionProtocolA::enrich_uid_from_orig_cl_ord_id(Msg &msg)
+    bool SourceSessionProtocolA::enrich_uid_from_orig_cl_ord_id(Msg &msg) noexcept
     {
         if (auto it = cl_ord_id_to_uid_.find(msg.orig_cl_ord_id()); it != cl_ord_id_to_uid_.end())
         {

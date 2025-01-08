@@ -1,7 +1,7 @@
 #pragma once
 
 #include <framework/utility/CrtpBase.h>
-#include <framework/protocol/RejectInfo.h>
+#include <framework/utility/RejectInfo.h>
 #include <framework/enricher/DestinationEnricher.h>
 #include <framework/router/SourceRouter.h>
 #include <framework/transport/Transport.h>
@@ -9,8 +9,9 @@
 
 namespace hyper::framework
 {
-    class DestinationSessionInfo;
-
+    /* Destination-side application message session abstraction. */
+    /* - Receive messages from the Destination protocol and forward them to the router */
+    /* - Receive messages from the Source and forward them to the transport */
     template <typename SessionImpl>
     class DestinationSession : public CrtpBase<SessionImpl>
     {
@@ -24,8 +25,8 @@ namespace hyper::framework
         DestinationSession &operator=(const DestinationSession &) = delete;
 
         /* TransportEvents */
-        void on_connect() { this->impl().on_connect_impl(); }
-        void on_disconnect() { this->impl().on_disconnect_impl(); }
+        void on_connect() noexcept;
+        void on_disconnect() noexcept;
 
         template <typename Msg>
         RejectInfo on_message_from_peer(Msg &msg) noexcept;
@@ -54,12 +55,27 @@ namespace hyper::framework
         template <typename Msg>
         void rejecet_message_from_transport(Msg &msg, RejectInfo &reject_info) noexcept;
 
+        [[nodiscard]] constexpr bool is_connected() const noexcept { return connected_; }
+
     private:
         Validator validator_{};
         DestinationEnricher destination_enricher_{};
         SourceRouter &source_router_;
         Transport &transport_;
+        bool connected_{true};
     };
+
+    template <typename SessionImpl>
+    inline void DestinationSession<SessionImpl>::on_connect() noexcept
+    {
+        this->impl().on_connect_impl();
+    }
+
+    template <typename SessionImpl>
+    inline void DestinationSession<SessionImpl>::on_disconnect() noexcept
+    {
+        this->impl().on_disconnect_impl();
+    }
 
     template <typename SessionImpl>
     template <typename Msg>
@@ -96,8 +112,8 @@ namespace hyper::framework
             reject_info != true) [[unlikely]]
             rejecet_message_from_transport(dst_msg, reject_info);
 
-        // Persist DestinationSession message
-        // Publish DestinationSession message for downstream
+        // Persist the recevied message for session recovery.
+        // Publish the recevied message to other channels.
     }
 
     template <typename SessionImpl>
@@ -117,13 +133,11 @@ namespace hyper::framework
         if (auto reject_info = send_message_to_transport(dst_msg); reject_info != true) [[unlikely]]
             return reject_info;
 
-        // Persist DestinationSession message
-        // Publish DestinationSession message for downstream
+        // Persist the sent message for session recovery.
+        // Publish the sent message to other channels.
 
-        std::cout << "sent message to transport: " << dst_msg
-                  << " in:" << dst_msg.in_timestamp()
-                  << " out:" << dst_msg.out_timestamp()
-                  << " latency_in_ns:" << dst_msg.latency_in_ns() << std::endl;
+        log_message_info(dst_msg);
+
         return RejectInfo{};
     }
 

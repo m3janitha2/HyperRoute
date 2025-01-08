@@ -1,5 +1,5 @@
 #pragma once
-#include <framework/protocol/RejectInfo.h>
+#include <framework/utility/RejectInfo.h>
 #include <functional>
 #include <string_view>
 #include <iostream>
@@ -29,15 +29,14 @@ namespace hyper::framework
         void connect() { transport_callbacks_.connect_callback_(); }
         void disconnect() { transport_callbacks_.disconnect_callback_(); }
         std::size_t on_data(std::string_view data) { return transport_callbacks_.data_callback_(data); }
-        
+
         RejectInfo send_data(std::string_view data)
         {
-            //std::cout << "sent data to wire" << std::endl;
             receive_data_cb_for_test_(data);
             return RejectInfo{};
         }
 
-        void set_receive_data_cb_for_test(const std::function<void(std::string_view data)>& cb) 
+        void set_receive_data_cb_for_test(const std::function<void(std::string_view data)> &cb)
         {
             receive_data_cb_for_test_ = cb;
         }
@@ -47,8 +46,7 @@ namespace hyper::framework
         std::function<void(std::string_view data)> receive_data_cb_for_test_;
     };
 
-    
-        /* may be use a ring buffer */
-        /* copy data from socket buffer */
-        /* adjust offsets */
+    /* may be use a ring buffer */
+    /* copy data from socket buffer */
+    /* adjust offsets */
 }

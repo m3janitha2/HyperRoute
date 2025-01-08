@@ -5,6 +5,8 @@
 
 namespace hyper::protocol_a::schema
 {
+    /* Message schema of Protocol A */
+
     enum class MsgType : std::uint8_t
     {
         Logon = 0,
@@ -17,13 +19,16 @@ namespace hyper::protocol_a::schema
         CancelReject = 7,
     };
 
+#pragma pack(push, 1)
     struct Header
     {
         std::uint32_t size;
         MsgType msg_type;
         std::uint64_t seq_no;
     };
+#pragma pack(pop)
 
+#pragma pack(push, 1)
     struct Logon
     {
         Header header{.size = sizeof(Logon), .msg_type = MsgType::Logon};
@@ -36,7 +41,9 @@ namespace hyper::protocol_a::schema
             return os;
         }
     };
+#pragma pack(pop)
 
+#pragma pack(push, 1)
     struct Logout
     {
         Header header{sizeof(Logout), MsgType::Logout};
@@ -49,7 +56,9 @@ namespace hyper::protocol_a::schema
             return os;
         }
     };
+#pragma pack(pop)
 
+#pragma pack(push, 1)
     struct Heartbeat
     {
         Header header{sizeof(Heartbeat), MsgType::Heartbeat};
@@ -62,7 +71,9 @@ namespace hyper::protocol_a::schema
             return os;
         }
     };
+#pragma pack(pop)
 
+#pragma pack(push, 1)
     struct NewOrderSingle
     {
         Header header{sizeof(NewOrderSingle), MsgType::NewOrderSingle};
@@ -78,7 +89,9 @@ namespace hyper::protocol_a::schema
             return os;
         }
     };
+#pragma pack(pop)
 
+#pragma pack(push, 1)
     struct CancelReplaceRequest
     {
         Header header{sizeof(CancelReplaceRequest), MsgType::CancelReplaceRequest};
@@ -96,7 +109,9 @@ namespace hyper::protocol_a::schema
             return os;
         }
     };
+#pragma pack(pop)
 
+#pragma pack(push, 1)
     struct CancelRequest
     {
         Header header{sizeof(CancelRequest), MsgType::CancelRequest};
@@ -114,7 +129,9 @@ namespace hyper::protocol_a::schema
             return os;
         }
     };
+#pragma pack(pop)
 
+#pragma pack(push, 1)
     struct ExecutionReport
     {
         Header header{sizeof(ExecutionReport), MsgType::ExecutionReport};
@@ -127,11 +144,18 @@ namespace hyper::protocol_a::schema
 
         friend std::ostream &operator<<(std::ostream &os, const ExecutionReport &msg)
         {
-            os << "A ExecutionReport a:" << msg.a << " b:" << msg.b;
+            os << "A ExecutionReport a:" << msg.a
+               << " b:" << msg.b
+               << " cl_ord_id:" << msg.cl_ord_id
+               << " orig_cl_ord_id:" << msg.orig_cl_ord_id
+               << " ord_id: " << msg.ord_id
+               << " exec_id:" << msg.exec_id;
             return os;
         }
     };
+#pragma pack(pop)
 
+#pragma pack(push, 1)
     struct CancelReject
     {
         Header header{sizeof(CancelReject), MsgType::CancelReject};
@@ -142,8 +166,12 @@ namespace hyper::protocol_a::schema
 
         friend std::ostream &operator<<(std::ostream &os, const CancelReject &msg)
         {
-            os << "A CancelReject a:" << msg.a << " b:" << msg.b;
+            os << "A CancelReject a:" << msg.a
+               << " b:" << msg.b
+               << " cl_ord_id:" << msg.cl_ord_id
+               << " ord_id: " << msg.ord_id;
             return os;
         }
     };
+#pragma pack(pop)
 }

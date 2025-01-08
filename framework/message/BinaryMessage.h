@@ -8,6 +8,7 @@
 
 namespace hyper::framework::message::binary
 {
+    /* Binary message abstraction. */
     template <typename Msg>
     class BinaryMessage
     {
@@ -29,6 +30,7 @@ namespace hyper::framework::message::binary
         Msg &msg_{};
     };
 
+    /* todox: allocation policy */
     namespace testx
     {
         struct AllocationPolicyAcquireByReference

@@ -5,6 +5,8 @@
 
 namespace hyper::protocol_b::schema
 {
+    /* Message schema of Protocol B */
+    
     enum class MsgType : std::uint32_t
     {
         Logon = 10,
@@ -72,9 +74,9 @@ namespace hyper::protocol_b::schema
 
         friend std::ostream &operator<<(std::ostream &os, const NewOrderSingle &msg)
         {
-            os << "ProtocolB NewOrderSingle a:" << msg.a 
-                << " b:" << msg.b
-                << " C:" << msg.c;
+            os << "ProtocolB NewOrderSingle a:" << msg.a
+               << " b:" << msg.b
+               << " C:" << msg.c;
             return os;
         }
     };

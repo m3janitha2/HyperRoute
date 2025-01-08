@@ -1,7 +1,7 @@
 #pragma once
 
 #include <framework/utility/CrtpBase.h>
-#include <framework/protocol/RejectInfo.h>
+#include <framework/utility/RejectInfo.h>
 #include <framework/enricher/SourceEnricher.h>
 #include <framework/router/SourceRouter.h>
 #include <framework/transport/Transport.h>
@@ -13,12 +13,9 @@
 
 namespace hyper::framework
 {
-    template <typename Impl>
-    concept TransportEvents = requires(Impl impl) {
-        impl.on_connect_impl();
-        impl.on_disconnect_impl();
-    };
-
+    /* Source-side application message session abstraction. */
+    /* - Receive messages from the source protocol and forward them to the router */
+    /* - Receive messages from the destination and forward them to the transport */
     template <typename SessionImpl>
     class SourceSession : public CrtpBase<SessionImpl>
     {
@@ -28,17 +25,14 @@ namespace hyper::framework
                                Transport &transport)
             : destination_router_{destination_router},
               source_router_{source_router},
-              transport_{transport}
-        {
-            static_assert(TransportEvents<SessionImpl>);
-        }
+              transport_{transport} {}
 
         SourceSession(const SourceSession &) = delete;
         SourceSession &operator=(const SourceSession &) = delete;
 
         /* TransportEvents */
-        void on_connect() { this->impl().on_connect_impl(); }
-        void on_disconnect() { this->impl().on_disconnect_impl(); }
+        void on_connect() noexcept;
+        void on_disconnect() noexcept;
 
         template <typename Msg>
         void procoess_message_from_transport(Msg &msg) noexcept;
@@ -53,20 +47,35 @@ namespace hyper::framework
         template <typename Msg>
         RejectInfo send_message_to_transport(Msg &msg) noexcept;
         template <typename Msg>
-        void on_message_from_transport(Msg &msg) { this->impl().on_message_from_transport_impl(msg); }
+        void on_message_from_transport(Msg &msg);
         template <typename Msg>
-        RejectInfo on_message_from_peer(Msg &msg) { return this->impl().on_message_from_peer_impl(msg); }
+        RejectInfo on_message_from_peer(Msg &msg);
         template <typename Msg>
-        void rejecet_message_from_transport(Msg &msg, RejectInfo &reject_info) { this->impl().rejecet_message_from_transport_impl(msg, reject_info); }
+        void rejecet_message_from_transport(Msg &msg, RejectInfo &reject_info);
         template <typename Msg>
         void update_routing_info(Msg &msg) noexcept;
+
+        [[nodiscard]] constexpr bool is_connected() const noexcept { return connected_; }
 
     private:
         DestinationRouterPtrVarient &destination_router_;
         SourceRouter &source_router_;
         SourceEnricher enricher_{};
         Transport &transport_;
+        bool connected_{true};
     };
+
+    template <typename SessionImpl>
+    inline void SourceSession<SessionImpl>::on_connect() noexcept
+    {
+        this->impl().on_connect_impl();
+    }
+
+    template <typename SessionImpl>
+    inline void SourceSession<SessionImpl>::on_disconnect() noexcept
+    {
+        this->impl().on_disconnect_impl();
+    }
 
     template <typename SessionImpl>
     template <typename Msg>
@@ -84,8 +93,8 @@ namespace hyper::framework
 
         update_routing_info(msg);
 
-        // Persist SourceSession message
-        // Publish SourceSession message downstream
+        // Persist the recevied message for session recovery.
+        // Publish the recevied message to other channels.
     }
 
     template <typename SessionImpl>
@@ -99,6 +108,11 @@ namespace hyper::framework
         if (auto reject_info = send_message_to_transport(msg);
             reject_info != true) [[unlikely]]
             return reject_info;
+
+        // Persist the sent message for session recovery.
+        // Publish the sent message to other channels.
+
+        log_message_info(msg);
 
         return RejectInfo{};
     }
@@ -130,9 +144,29 @@ namespace hyper::framework
     template <typename Msg>
     inline RejectInfo SourceSession<SessionImpl>::send_message_to_transport(Msg &msg) noexcept
     {
-        // std::cout << "send_message_to_transport:" << msg << std::endl;
         msg.update_out_timestamp();
         return transport_.send_data(msg.data());
+    }
+
+    template <typename SessionImpl>
+    template <typename Msg>
+    inline void SourceSession<SessionImpl>::on_message_from_transport(Msg &msg)
+    {
+        this->impl().on_message_from_transport_impl(msg);
+    }
+
+    template <typename SessionImpl>
+    template <typename Msg>
+    inline RejectInfo SourceSession<SessionImpl>::on_message_from_peer(Msg &msg)
+    {
+        return this->impl().on_message_from_peer_impl(msg);
+    }
+
+    template <typename SessionImpl>
+    template <typename Msg>
+    inline void SourceSession<SessionImpl>::rejecet_message_from_transport(Msg &msg, RejectInfo &reject_info)
+    {
+        this->impl().rejecet_message_from_transport_impl(msg, reject_info);
     }
 
     template <typename SessionImpl>
@@ -141,9 +175,8 @@ namespace hyper::framework
     {
         if constexpr (std::derived_from<Msg, framework::message::FirstEvent>)
         {
-            // std::cout << "update_routing_info: NewOrderSingle. uid:" << msg.uid() << std::endl;
             SourceSessionPtrVarient source_session_varient{&(this->impl())};
-            source_router_.update_reverse_routing(msg.uid(), source_session_varient);
+            source_router_.update_routing_info(msg.uid(), source_session_varient);
         }
 
         return this->impl().update_routing_info_impl(msg);

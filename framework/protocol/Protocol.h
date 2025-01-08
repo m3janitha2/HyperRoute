@@ -1,20 +1,18 @@
 #pragma once
 
 #include <framework/utility/CrtpBase.h>
-#include <framework/protocol/RejectInfo.h>
+#include <framework/utility/RejectInfo.h>
 #include <framework/transport/Transport.h>
+#include <framework/sequence_store/SequenceStore.h>
 #include <cstdint>
 #include <string_view>
 
 namespace hyper::framework
 {
-    /* todox: persisted sequence number */
-    struct SequenceStore
-    {
-        std::uint64_t in_sequence_number_{0};
-        std::uint64_t out_sequence_number_{0};
-    };
-
+    /* Protocol abstraction */
+    /* - Receive data from the Transport */
+    /* - Handle the protocol session */
+    /* - Dispatch application messages to the Session */
     template <typename ProtocolImpl>
     class Protocol : public CrtpBase<ProtocolImpl>
     {
@@ -45,11 +43,11 @@ namespace hyper::framework
                                                [this](std::string_view data)
                                                { return on_data(data); }};
         Transport transport_{transport_callbacks};
-        SequenceStore sequence_store_{};
+        SequenceStore<std::uint64_t> sequence_store_{};
         bool connected_{false};
         /* todox: HeatbeatTimer producer_ */
         /* todox: HeatbeatTimer receiver_ */
-        /* todox: MessageStore msg_stroe_ */
+        /* todox: PersistStore msg_stroe_ */
     };
 
     template <typename ProtocolImpl>

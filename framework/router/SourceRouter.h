@@ -1,19 +1,20 @@
 #pragma once
 
-#include <framework/protocol/RejectInfo.h>
+#include <framework/utility/RejectInfo.h>
 #include <framework/utility/Types.h>
 #include <application/session/SourceSessionsDeclaration.h>
 #include <unordered_map>
 
 namespace hyper::framework
 {
-    // todox: move this logic to message store
+    /* Route messages from the destination session to the source session.*/
+    /* todox: Move this logic to the MessageStore */
     class SourceRouter
     {
     public:
         template <typename Msg>
         RejectInfo send_message_to_source(Msg &msg);
-        void update_reverse_routing(UID uid, SourceSessionPtrVarient source_session_varient);
+        void update_routing_info(UID uid, SourceSessionPtrVarient source_session_varient);
 
         std::unordered_map<UID, SourceSessionPtrVarient> uid_to_source_session_{};
     };
