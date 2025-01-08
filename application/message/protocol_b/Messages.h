@@ -22,9 +22,12 @@ namespace hyper::protocol_b::session
         }
 
         /* message interface required for the framework */
-        std::uint64_t cl_ord_id() { return msg().a; }
-        std::uint64_t price() { return msg().a; }
-        std::uint64_t size() { return msg().b; }
+        [[nodiscard]] constexpr std::uint64_t cl_ord_id() const noexcept { return msg().c; }
+        constexpr void cl_ord_id(std::uint64_t id) noexcept { msg().c = id; }
+        [[nodiscard]] constexpr std::uint64_t price() const noexcept { return msg().a; }
+        constexpr void price(std::uint64_t id) noexcept { msg().a = id; }
+        [[nodiscard]] constexpr std::uint64_t size() const noexcept { return msg().b; }
+        constexpr void size(std::uint64_t id) noexcept { msg().b = id; }
     };
 
     class CancelReplaceRequest : public trading::binary::CancelReplaceRequest<schema::CancelReplaceRequest>
@@ -42,10 +45,14 @@ namespace hyper::protocol_b::session
         }
 
         /* message interface required for the framework */
-        std::uint64_t cl_ord_id() { return msg().a; }
-        std::uint64_t orig_cl_ord_id() { return msg().b; }
-        std::uint64_t price() { return msg().a; }
-        std::uint64_t size() { return msg().b; }
+        [[nodiscard]] constexpr std::uint64_t cl_ord_id() const noexcept { return msg().c; }
+        constexpr void cl_ord_id(std::uint64_t id) noexcept { msg().c = id; }
+        [[nodiscard]] constexpr std::uint64_t orig_cl_ord_id() const noexcept { return msg().o; }
+        constexpr void orig_cl_ord_id(std::uint64_t id) noexcept { msg().o = id; }
+        [[nodiscard]] constexpr std::uint64_t price() const noexcept { return msg().a; }
+        constexpr void price(std::uint64_t id) noexcept { msg().a = id; }
+        [[nodiscard]] constexpr std::uint64_t size() const noexcept { return msg().b; }
+        constexpr void size(std::uint64_t id) noexcept { msg().b = id; }
     };
 
     class CancelRequest : public trading::binary::CancelRequest<schema::CancelRequest>
@@ -63,10 +70,14 @@ namespace hyper::protocol_b::session
         }
 
         /* message interface required for the framework */
-        std::uint64_t cl_ord_id() { return msg().a; }
-        std::uint64_t orig_cl_ord_id() { return msg().b; }
-        std::uint64_t price() { return msg().a; }
-        std::uint64_t size() { return msg().b; }
+        [[nodiscard]] constexpr std::uint64_t cl_ord_id() const noexcept { return msg().c; }
+        constexpr void cl_ord_id(std::uint64_t id) noexcept { msg().c = id; }
+        [[nodiscard]] constexpr std::uint64_t orig_cl_ord_id() const noexcept { return msg().o; }
+        constexpr void orig_cl_ord_id(std::uint64_t id) noexcept { msg().o = id; }
+        [[nodiscard]] constexpr std::uint64_t price() const noexcept { return msg().a; }
+        constexpr void price(std::uint64_t id) noexcept { msg().a = id; }
+        [[nodiscard]] constexpr std::uint64_t size() const noexcept { return msg().b; }
+        constexpr void size(std::uint64_t id) noexcept { msg().b = id; }
     };
 
     class ExecutionReport : public trading::binary::ExecutionReport<schema::ExecutionReport>
@@ -84,7 +95,14 @@ namespace hyper::protocol_b::session
         }
 
         /* message interface required for the framework */
-        std::uint64_t cl_ord_id() { return msg().a; }
+        [[nodiscard]] constexpr std::uint64_t cl_ord_id() const noexcept { return msg().c; }
+        constexpr void cl_ord_id(std::uint64_t id) noexcept { msg().c = id; }
+        [[nodiscard]] constexpr std::uint64_t orig_cl_ord_id() const noexcept { return msg().o; }
+        constexpr void orig_cl_ord_id(std::uint64_t id) noexcept { msg().o = id; }
+        [[nodiscard]] constexpr std::uint64_t price() const noexcept { return msg().a; }
+        constexpr void price(std::uint64_t id) noexcept { msg().a = id; }
+        [[nodiscard]] constexpr std::uint64_t size() const noexcept { return msg().b; }
+        constexpr void size(std::uint64_t id) noexcept { msg().b = id; }
     };
 
     class CancelReject : public trading::binary::CancelReject<schema::CancelReject>
@@ -102,8 +120,13 @@ namespace hyper::protocol_b::session
         }
 
         /* message interface required for the framework */
-        std::uint64_t cl_ord_id() { return msg().a; }
-        std::uint64_t price() { return msg().a; }
-        std::uint64_t size() { return msg().b; }
+        [[nodiscard]] constexpr std::uint64_t cl_ord_id() const noexcept { return msg().c; }
+        constexpr void cl_ord_id(std::uint64_t id) noexcept { msg().c = id; }
+        [[nodiscard]] constexpr std::uint64_t orig_cl_ord_id() const noexcept { return msg().o; }
+        constexpr void orig_cl_ord_id(std::uint64_t id) noexcept { msg().o = id; }
+        [[nodiscard]] constexpr std::uint64_t price() const noexcept { return msg().a; }
+        constexpr void price(std::uint64_t id) noexcept { msg().a = id; }
+        [[nodiscard]] constexpr std::uint64_t size() const noexcept { return msg().b; }
+        constexpr void size(std::uint64_t id) noexcept { msg().b = id; }
     };
 }

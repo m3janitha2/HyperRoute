@@ -121,6 +121,7 @@ namespace hyper::protocol_a::schema
         std::uint32_t a{};
         std::uint32_t b{};
         std::uint64_t cl_ord_id{};
+        std::uint64_t orig_cl_ord_id{};
         std::uint64_t ord_id{};
         std::uint64_t exec_id{};
 

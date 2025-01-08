@@ -32,12 +32,19 @@ namespace hyper::framework
         
         RejectInfo send_data(std::string_view data)
         {
-            std::cout << "received data" << std::endl;
+            //std::cout << "sent data to wire" << std::endl;
+            receive_data_cb_for_test_(data);
             return RejectInfo{};
+        }
+
+        void set_receive_data_cb_for_test(const std::function<void(std::string_view data)>& cb) 
+        {
+            receive_data_cb_for_test_ = cb;
         }
 
     private:
         const TransportCallbacks &transport_callbacks_;
+        std::function<void(std::string_view data)> receive_data_cb_for_test_;
     };
 
     

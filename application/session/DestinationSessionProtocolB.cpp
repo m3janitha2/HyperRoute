@@ -2,26 +2,40 @@
 
 namespace hyper::protocol_b
 {
-    void DestinationSessionProtocolB::on_message_from_transport_impl(protocol_b::session::ExecutionReport &msg)
+    void DestinationSessionProtocolB::on_message_from_transport_impl(protocol_b::session::ExecutionReport &dest_msg)
     {
         protocol_a::schema::ExecutionReport s_msg{};
         protocol_a::session::ExecutionReport src_msg{s_msg};
-        /* handle ord id generation */
-        procoess_message_from_transport(msg, src_msg);
+
+        /* New Order Ack */
+        if (auto it = src_routing_info_by_dest_cl_ord_id_.find(dest_msg.msg().c);
+            it == src_routing_info_by_dest_cl_ord_id_.end()) [[unlikely]]
+        {
+            std::cout << "Source Cl ord Id Not Found:" << dest_msg << std::endl;
+            return;
+        }
+        else
+        {
+            auto [cl_ord_id, uid] = it->second;
+            src_msg.cl_ord_id(cl_ord_id);
+            src_msg.uid(uid);
+        }            
+
+        procoess_message_from_transport(dest_msg, src_msg);
     }
 
-    void DestinationSessionProtocolB::on_message_from_transport_impl(protocol_b::session::CancelReject &msg)
+    void DestinationSessionProtocolB::on_message_from_transport_impl(protocol_b::session::CancelReject &dest_msg)
     {
         protocol_a::schema::CancelReject s_msg{};
         protocol_a::session::CancelReject src_msg{s_msg};
-        procoess_message_from_transport(msg, src_msg);
+        procoess_message_from_transport(dest_msg, src_msg);
     }
 
     /* todox: move to codec */
     RejectInfo DestinationSessionProtocolB::decode_message_from_destination_impl(protocol_b::session::ExecutionReport &dst_msg,
                                                                                  protocol_a::session::ExecutionReport &src_msg)
     {
-        std::cout << "decode_message_from_destination:" << dst_msg << std::endl;
+        // std::cout << "decode_message_from_destination:" << dst_msg << std::endl;
         auto &msg = src_msg.msg();
         msg.a = static_cast<std::uint32_t>(dst_msg.msg().a);
         msg.b = static_cast<std::uint32_t>(dst_msg.msg().b);
@@ -31,7 +45,7 @@ namespace hyper::protocol_b
     RejectInfo DestinationSessionProtocolB::decode_message_from_destination_impl(protocol_b::session::CancelReject &dst_msg,
                                                                                  protocol_a::session::CancelReject &src_msg)
     {
-        std::cout << "decode_message_from_destination:" << dst_msg << std::endl;
+        // std::cout << "decode_message_from_destination:" << dst_msg << std::endl;
         auto &msg = src_msg.msg();
         msg.a = static_cast<std::uint32_t>(dst_msg.msg().a);
         msg.b = static_cast<std::uint32_t>(dst_msg.msg().b);
@@ -40,41 +54,52 @@ namespace hyper::protocol_b
 
     void DestinationSessionProtocolB::rejecet_message_from_transport_impl(protocol_b::session::ExecutionReport &msg, RejectInfo &reject_info)
     {
+        std::cout << "message rejected. reason:" << reject_info << " msg:" << msg << std::endl;
     }
 
     void DestinationSessionProtocolB::rejecet_message_from_transport_impl(protocol_b::session::CancelReject &msg, RejectInfo &reject_info)
     {
+        std::cout << "message rejected. reason:" << reject_info << " msg:" << msg << std::endl;
     }
 
-    RejectInfo DestinationSessionProtocolB::on_message_from_peer_impl(protocol_a::session::NewOrderSingle &msg)
+    RejectInfo DestinationSessionProtocolB::on_message_from_peer_impl(protocol_a::session::NewOrderSingle &src_msg)
     {
         protocol_b::schema::NewOrderSingle s_msg{};
         protocol_b::session::NewOrderSingle dst_msg{s_msg};
-        return procoess_message_to_transport(msg, dst_msg);
+
+        auto dest_cl_ord_id = venue_id_generator_.get_next_uid();
+        s_msg.c = dest_cl_ord_id;
+        src_routing_info_by_dest_cl_ord_id_.emplace(std::piecewise_construct, 
+            std::forward_as_tuple(dest_cl_ord_id), 
+            std::forward_as_tuple(src_msg.cl_ord_id(), src_msg.uid()));
+        dest_cl_ord_id_by_src_cl_ord_id_.emplace(src_msg.cl_ord_id(), dest_cl_ord_id);
+
+        return procoess_message_to_transport(src_msg, dst_msg);
     }
 
-    RejectInfo DestinationSessionProtocolB::on_message_from_peer_impl(protocol_a::session::CancelReplaceRequest &msg)
+    RejectInfo DestinationSessionProtocolB::on_message_from_peer_impl(protocol_a::session::CancelReplaceRequest &src_msg)
     {
         protocol_b::schema::CancelReplaceRequest s_msg{};
         protocol_b::session::CancelReplaceRequest dst_msg{s_msg};
-        return procoess_message_to_transport(msg, dst_msg);
+
+        return procoess_message_to_transport(src_msg, dst_msg);
     }
 
-    RejectInfo DestinationSessionProtocolB::on_message_from_peer_impl(protocol_a::session::CancelRequest &msg)
+    RejectInfo DestinationSessionProtocolB::on_message_from_peer_impl(protocol_a::session::CancelRequest &src_msg)
     {
         protocol_b::schema::CancelRequest s_msg{};
         protocol_b::session::CancelRequest dst_msg{s_msg};
-        return procoess_message_to_transport(msg, dst_msg);
+        return procoess_message_to_transport(src_msg, dst_msg);
     }
 
     RejectInfo DestinationSessionProtocolB::encode_message_to_destination_impl(protocol_a::session::NewOrderSingle &src_msg,
                                                                                protocol_b::session::NewOrderSingle &dst_msg)
     {
-        //std::cout << "encode_message_to_destination:" << src_msg << std::endl;
+        // std::cout << "encode_message_to_destination:" << src_msg << std::endl;
         auto &dest_msg = dst_msg.msg();
         dest_msg.a = src_msg.msg().a;
         dest_msg.b = static_cast<int>(src_msg.msg().b);
-        //codec::encode(source,dest;)
+        // codec::encode(source,dest;)
         return RejectInfo{};
     }
 
@@ -82,7 +107,7 @@ namespace hyper::protocol_b
     RejectInfo DestinationSessionProtocolB::encode_message_to_destination_impl(protocol_a::session::CancelReplaceRequest &src_msg,
                                                                                protocol_b::session::CancelReplaceRequest &dst_msg)
     {
-        //std::cout << "encode_message_to_destination:" << src_msg << std::endl;
+        // std::cout << "encode_message_to_destination:" << src_msg << std::endl;
         auto &dest_msg = dst_msg.msg();
         dest_msg.a = static_cast<int>(src_msg.msg().a);
         dest_msg.b = static_cast<int>(src_msg.msg().b);
@@ -92,7 +117,7 @@ namespace hyper::protocol_b
     RejectInfo DestinationSessionProtocolB::encode_message_to_destination_impl(protocol_a::session::CancelRequest &src_msg,
                                                                                protocol_b::session::CancelRequest &dst_msg)
     {
-        //std::cout << "encode_message_to_destination:" << src_msg << std::endl;
+        // std::cout << "encode_message_to_destination:" << src_msg << std::endl;
         auto &dest_msg = dst_msg.msg();
         dest_msg.a = static_cast<int>(src_msg.msg().a);
         dest_msg.b = static_cast<int>(src_msg.msg().b);

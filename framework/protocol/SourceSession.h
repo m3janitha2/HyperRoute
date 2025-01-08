@@ -130,7 +130,7 @@ namespace hyper::framework
     template <typename Msg>
     inline RejectInfo SourceSession<SessionImpl>::send_message_to_transport(Msg &msg) noexcept
     {
-        std::cout << "send_message_to_transport:" << msg << std::endl;
+        // std::cout << "send_message_to_transport:" << msg << std::endl;
         msg.update_out_timestamp();
         return transport_.send_data(msg.data());
     }
@@ -141,7 +141,7 @@ namespace hyper::framework
     {
         if constexpr (std::derived_from<Msg, framework::message::FirstEvent>)
         {
-            std::cout << "update_routing_info: NewOrderSingle. uid:" << msg.uid() << std::endl;
+            // std::cout << "update_routing_info: NewOrderSingle. uid:" << msg.uid() << std::endl;
             SourceSessionPtrVarient source_session_varient{&(this->impl())};
             source_router_.update_reverse_routing(msg.uid(), source_session_varient);
         }

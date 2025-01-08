@@ -44,9 +44,12 @@ namespace hyper::protocol_a
         RejectInfo on_message_from_peer_impl(session::CancelReject &msg);
 
     private:
+        template <typename Msg>
+        bool enrich_uid_from_orig_cl_ord_id(Msg &msg);
+
         using ClOrdIdType = decltype(schema::NewOrderSingle::cl_ord_id);
         using ClOrdIDToUIDMap = std::unordered_map<ClOrdIdType, UID>;
-        ClOrdIDToUIDMap cl_ord_id_to_uid_{};
+        ClOrdIDToUIDMap cl_ord_id_to_uid_{50}; /* todox: set bucket size this from config */
     };
 
     template <typename Msg>

@@ -8,7 +8,7 @@ namespace hyper::framework
     {
     public:
         UIDGenerator(const UIDGenerator &) = delete;
-        UIDGenerator& operator=(const UIDGenerator&) = delete;
+        UIDGenerator &operator=(const UIDGenerator &) = delete;
 
         static UIDGenerator &instance()
         {
@@ -20,6 +20,8 @@ namespace hyper::framework
 
     private:
         UIDGenerator() = default;
+        ~UIDGenerator() = default;
+
         inline static constinit UID uid_{0};
     };
 }

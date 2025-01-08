@@ -18,6 +18,8 @@ namespace hyper::framework
         To_Source_Routing_Failed,
         Invalid_Orig_Cl_Ord_ID,
         Destination_Session_Not_Found_For_UID,
+        Destination_Orig_Cl_Ord_Id_Not_Found,
+        Source_Cl_ord_Id_Not_Found,
         Validation_Failed_Check_01,
     };
 

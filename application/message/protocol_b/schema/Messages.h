@@ -68,10 +68,13 @@ namespace hyper::protocol_b::schema
         Header header{sizeof(NewOrderSingle), MsgType::NewOrderSingle};
         int a{};
         int b{};
+        int c{};
 
         friend std::ostream &operator<<(std::ostream &os, const NewOrderSingle &msg)
         {
-            os << "B NewOrderSingle a:" << msg.a << " b:" << msg.b;
+            os << "ProtocolB NewOrderSingle a:" << msg.a 
+                << " b:" << msg.b
+                << " C:" << msg.c;
             return os;
         }
     };
@@ -81,6 +84,8 @@ namespace hyper::protocol_b::schema
         Header header{sizeof(CancelReplaceRequest), MsgType::CancelReplaceRequest};
         int a{};
         int b{};
+        int c{};
+        int o{};
 
         friend std::ostream &operator<<(std::ostream &os, const CancelReplaceRequest &msg)
         {
@@ -94,6 +99,8 @@ namespace hyper::protocol_b::schema
         Header header{sizeof(CancelRequest), MsgType::CancelRequest};
         int a{};
         int b{};
+        int o{};
+        int c{};
 
         friend std::ostream &operator<<(std::ostream &os, const CancelRequest &msg)
         {
@@ -107,6 +114,9 @@ namespace hyper::protocol_b::schema
         Header header{sizeof(ExecutionReport), MsgType::ExecutionReport};
         int a{};
         int b{};
+        int c{};
+        int o{};
+        int e{};
 
         friend std::ostream &operator<<(std::ostream &os, const ExecutionReport &msg)
         {
@@ -120,6 +130,8 @@ namespace hyper::protocol_b::schema
         Header header{sizeof(CancelReject), MsgType::CancelReject};
         int a{};
         int b{};
+        int c{};
+        int o{};
 
         friend std::ostream &operator<<(std::ostream &os, const CancelReject &msg)
         {

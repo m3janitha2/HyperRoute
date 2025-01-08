@@ -3,6 +3,7 @@
 #include <framework/protocol/DestinationSession.h>
 #include <application/message/protocol_b/Messages.h>
 #include <application/message/protocol_a/Messages.h>
+#include <framework/message/UIDGenerator.h>
 
 #include <iostream>
 
@@ -27,6 +28,7 @@ namespace hyper::protocol_b
         void on_message_from_transport_impl(session::ExecutionReport &msg);
         void on_message_from_transport_impl(session::CancelReject &msg);
 
+        /* todox: move to codec */
         RejectInfo decode_message_from_destination_impl(protocol_b::session::ExecutionReport &dst_msg,
                                                         protocol_a::session::ExecutionReport &src_msg);
         RejectInfo decode_message_from_destination_impl(protocol_b::session::CancelReject &dst_msg,
@@ -40,6 +42,7 @@ namespace hyper::protocol_b
         RejectInfo on_message_from_peer_impl(protocol_a::session::CancelReplaceRequest &msg);
         RejectInfo on_message_from_peer_impl(protocol_a::session::CancelRequest &msg);
 
+        /* todox: move to codec */
         template <typename SourceMsg, typename DestinationMsg>
         RejectInfo encode_message_to_destination_impl(SourceMsg &src_msg,
                                                       DestinationMsg &dst_msg);
@@ -49,6 +52,23 @@ namespace hyper::protocol_b
                                                       protocol_b::session::CancelReplaceRequest &dst_msg);
         RejectInfo encode_message_to_destination_impl(protocol_a::session::CancelRequest &src_msg,
                                                       protocol_b::session::CancelRequest &dst_msg);
+
+    private:
+        using SrcClOrdIDType = std::uint64_t;
+        using DestClOrdIDType = std::uint64_t;
+        /* Consider using a Boost Multi-Index Container */
+        using DestClOrdIDBySrcClOrdIDType = std::unordered_map<SrcClOrdIDType, DestClOrdIDType>;
+        struct SourceRotingInfo
+        {
+            SrcClOrdIDType cl_ord_id_{};
+            framework::UID uid_;
+        };
+        using SrcRoutingInfoByDestClOrdIDType = std::unordered_map<DestClOrdIDType, SourceRotingInfo>;
+        DestClOrdIDBySrcClOrdIDType dest_cl_ord_id_by_src_cl_ord_id_{50}; /* todox: set bucket size this from config */
+        SrcRoutingInfoByDestClOrdIDType src_routing_info_by_dest_cl_ord_id_{50}; /* todox: set bucket size this from config */
+
+        using VenueIDGenarator = framework::UIDGenerator;
+        VenueIDGenarator& venue_id_generator_{VenueIDGenarator::instance()};
     };
 
     template <typename SourceMsg, typename DestinationMsg>

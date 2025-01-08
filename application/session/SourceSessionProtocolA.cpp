@@ -20,34 +20,16 @@ namespace hyper::protocol_a
 
     void SourceSessionProtocolA::on_message_from_transport_impl(session::CancelReplaceRequest &msg)
     {
-        if (auto it = cl_ord_id_to_uid_.find(msg.msg().orig_cl_ord_id); it != cl_ord_id_to_uid_.end())
-        {
-            auto uid = it->second;
-            msg.uid(uid);
-        }
-        else
-        {
-            RejectInfo reject_info{"Invalid ClOrdID", InteranlRejectCode::Invalid_Orig_Cl_Ord_ID};
-            rejecet_message_from_transport_impl(msg, reject_info);
+        if (!enrich_uid_from_orig_cl_ord_id(msg)) [[unlikely]]
             return;
-        }
 
         procoess_message_from_transport(msg);
     }
 
     void SourceSessionProtocolA::on_message_from_transport_impl(session::CancelRequest &msg)
     {
-        if (auto it = cl_ord_id_to_uid_.find(msg.msg().orig_cl_ord_id); it != cl_ord_id_to_uid_.end())
-        {
-            auto uid = it->second;
-            msg.uid(uid);
-        }
-        else
-        {
-            RejectInfo reject_info{"Invalid ClOrdID", InteranlRejectCode::Invalid_Orig_Cl_Ord_ID};
-            rejecet_message_from_transport_impl(msg, reject_info);
+        if (!enrich_uid_from_orig_cl_ord_id(msg)) [[unlikely]]
             return;
-        }
 
         procoess_message_from_transport(msg);
     }
@@ -75,5 +57,22 @@ namespace hyper::protocol_a
     RejectInfo SourceSessionProtocolA::on_message_from_peer_impl(session::CancelReject &msg)
     {
         return procoess_message_to_transport(msg);
+    }
+
+    template <typename Msg>
+    bool SourceSessionProtocolA::enrich_uid_from_orig_cl_ord_id(Msg &msg)
+    {
+        if (auto it = cl_ord_id_to_uid_.find(msg.orig_cl_ord_id()); it != cl_ord_id_to_uid_.end())
+        {
+            auto uid = it->second;
+            msg.uid(uid);
+            return true;
+        }
+        else
+        {
+            RejectInfo reject_info{"Invalid ClOrdID", InteranlRejectCode::Invalid_Orig_Cl_Ord_ID};
+            rejecet_message_from_transport_impl(msg, reject_info);
+            return false;
+        }
     }
 }
