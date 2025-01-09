@@ -10,7 +10,7 @@ namespace hyper::framework
     };
 
     template <ErroCodeType ErrorCode>
-    class [[nodiscard]] ErrorInfo
+    class [[nodiscard("Check the return code")]] ErrorInfo
     {
     public:
         constexpr ErrorInfo() = default;

@@ -30,7 +30,7 @@ namespace hyper::framework::message
         constexpr void out_timestamp(Timestamp out_timestamp) noexcept { out_timestamp_ = out_timestamp; }
         void update_out_timestamp() noexcept { out_timestamp(TimestampClock::now()); }
 
-        constexpr auto latency_in_ns() noexcept { return std::chrono::duration_cast<std::chrono::nanoseconds>(out_timestamp_ - in_timestamp_).count(); }
+        [[nodiscard]] constexpr auto latency_in_ns() const noexcept { return std::chrono::duration_cast<std::chrono::nanoseconds>(out_timestamp_ - in_timestamp_).count(); }
 
     private:
         UID uid_{};

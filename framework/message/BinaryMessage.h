@@ -18,6 +18,9 @@ namespace hyper::framework::message::binary
         explicit constexpr BinaryMessage(std::string_view data) noexcept
             : msg_{*(reinterpret_cast<Msg *>(const_cast<char *>(data.data())))} {}
 
+        BinaryMessage(const BinaryMessage &) = delete;
+        BinaryMessage &operator=(const BinaryMessage &) = delete;
+
         [[nodiscard]] constexpr const Msg &msg() const noexcept { return msg_; }
         [[nodiscard]] constexpr Msg &msg() noexcept { return msg_; }
         [[nodiscard]] constexpr std::string_view data() const noexcept

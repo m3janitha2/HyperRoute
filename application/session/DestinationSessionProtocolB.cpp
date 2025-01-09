@@ -19,7 +19,7 @@ namespace hyper::protocol_b
             auto [cl_ord_id, uid] = it->second;
             src_msg.cl_ord_id(cl_ord_id);
             src_msg.uid(uid);
-        }            
+        }
 
         procoess_message_from_transport(dest_msg, src_msg);
     }
@@ -69,9 +69,9 @@ namespace hyper::protocol_b
 
         auto dest_cl_ord_id = venue_id_generator_.get_next_uid();
         s_msg.c = dest_cl_ord_id;
-        src_routing_info_by_dest_cl_ord_id_.emplace(std::piecewise_construct, 
-            std::forward_as_tuple(dest_cl_ord_id), 
-            std::forward_as_tuple(src_msg.cl_ord_id(), src_msg.uid()));
+        src_routing_info_by_dest_cl_ord_id_.emplace(std::piecewise_construct,
+                                                    std::forward_as_tuple(dest_cl_ord_id),
+                                                    std::forward_as_tuple(src_msg.cl_ord_id(), src_msg.uid()));
         dest_cl_ord_id_by_src_cl_ord_id_.emplace(src_msg.cl_ord_id(), dest_cl_ord_id);
 
         return procoess_message_to_transport(src_msg, dst_msg);

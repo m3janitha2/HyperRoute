@@ -32,7 +32,7 @@ struct SubSystem
 	std::vector<hyper::DestinationSessionPtrVarient *> destination_sessions{const_cast<hyper::DestinationSessionPtrVarient*>(&destination_session_varient)};
 	hyper::framework::DestinationRouterOneToOne dest_router{const_cast<hyper::DestinationSessionPtrVarient &>(destination_session_varient)};
 	hyper::framework::DestinationRouterOneToMany dest_router2{destination_sessions};
-	hyper::DestinationRouterPtrVarient dest_router_variant{&dest_router2};
+	hyper::DestinationRouterPtrVarient dest_router_variant{&dest_router};
 	hyper::protocol_a::ProtocolA source_protocol{dest_router_variant, source_router};
 };
 

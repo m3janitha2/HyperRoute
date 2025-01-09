@@ -19,11 +19,11 @@ namespace hyper::protocol_a
 
     using SessionRejectInfo = framework::ErrorInfo<SessionRejectCode>;
 
-    class ProtocolA : public framework::Protocol<ProtocolA>
+    class ProtocolA : public framework::Protocol<ProtocolA, SourceSessionProtocolA>
     {
     public:
-        explicit ProtocolA(DestinationRouterPtrVarient &destination_router,
-                           SourceRouter &source_router);
+        explicit ProtocolA(const DestinationRouterPtrVarient &destination_router,
+                           const SourceRouter &source_router);
 
         void on_connect_impl();
         void on_disconnect_impl();
@@ -42,6 +42,6 @@ namespace hyper::protocol_a
         SessionRejectInfo validate_heartbeat(schema::Heartbeat &msg);
 
     private:
-        SourceSessionProtocolA session_;
+        /* SessionStateMachine */
     };
 }

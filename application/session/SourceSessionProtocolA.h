@@ -2,6 +2,7 @@
 
 #include <framework/session/SourceSession.h>
 #include <application/message/protocol_a/Messages.h>
+#include <application/utility/utility.h>
 #include <type_traits>
 #include <iostream>
 
@@ -15,10 +16,10 @@ namespace hyper::protocol_a
     class SourceSessionProtocolA : public framework::SourceSession<SourceSessionProtocolA>
     {
     public:
-        explicit SourceSessionProtocolA(DestinationRouterPtrVarient &destination_router,
-                                        SourceRouter &source_router,
-                                        Transport &transport)
-            : SourceSession<SourceSessionProtocolA>{destination_router, source_router, transport} {}
+        explicit SourceSessionProtocolA(Transport &transport,
+                                        const DestinationRouterPtrVarient &destination_router,
+                                        const SourceRouter &source_router)
+            : SourceSession<SourceSessionProtocolA>{transport, destination_router, source_router} {}
 
         /* TransportEvents */
         void on_connect_impl() noexcept;
@@ -49,7 +50,7 @@ namespace hyper::protocol_a
 
         using ClOrdIdType = decltype(schema::NewOrderSingle::cl_ord_id);
         using ClOrdIDToUIDMap = std::unordered_map<ClOrdIdType, UID>;
-        ClOrdIDToUIDMap cl_ord_id_to_uid_{50}; /* todox: set bucket size from config */
+        ClOrdIDToUIDMap cl_ord_id_to_uid_{optimal_order_count};
     };
 
     template <typename Msg>

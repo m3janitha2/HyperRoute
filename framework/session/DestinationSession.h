@@ -16,12 +16,14 @@ namespace hyper::framework
     class DestinationSession : public CrtpBase<SessionImpl>
     {
     public:
-        explicit DestinationSession(SourceRouter &source_router,
-                                    Transport &transport,
-                                    ValidatorPtrVarient &validator)
-            : source_router_{source_router},
-              transport_{transport},
-              validator_(validator) {}
+        explicit DestinationSession(Transport &transport,
+                                    const SourceRouter &source_router,
+                                    const ValidatorPtrVarient &validator)
+            : transport_{transport},
+              source_router_{const_cast<SourceRouter&>(source_router)},
+              validator_{const_cast<ValidatorPtrVarient&>(validator)}
+        {
+        }
 
         DestinationSession(const DestinationSession &) = delete;
         DestinationSession &operator=(const DestinationSession &) = delete;
@@ -63,8 +65,8 @@ namespace hyper::framework
 
     private:
         ValidatorPtrVarient &validator_{};
-        DestinationEnricher destination_enricher_{};
         SourceRouter &source_router_;
+        DestinationEnricher destination_enricher_{};
         Transport &transport_;
         bool connected_{true};
     };

@@ -12,6 +12,11 @@ namespace hyper::framework
     class SourceRouter
     {
     public:
+        SourceRouter() = default;
+
+        SourceRouter(const SourceRouter&) = delete;
+        SourceRouter& operator=(const SourceRouter&) = delete;
+
         template <typename Msg>
         RejectInfo send_message_to_source(Msg &msg);
         void update_routing_info(UID uid, SourceSessionPtrVarient source_session_varient);

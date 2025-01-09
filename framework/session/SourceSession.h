@@ -20,12 +20,12 @@ namespace hyper::framework
     class SourceSession : public CrtpBase<SessionImpl>
     {
     public:
-        explicit SourceSession(DestinationRouterPtrVarient &destination_router,
-                               SourceRouter &source_router,
-                               Transport &transport)
-            : destination_router_{destination_router},
-              source_router_{source_router},
-              transport_{transport} {}
+        explicit SourceSession(Transport &transport,
+                               const DestinationRouterPtrVarient &destination_router,
+                               const SourceRouter &source_router)
+            : transport_{transport},
+              destination_router_{const_cast<DestinationRouterPtrVarient&>(destination_router)},
+              source_router_{const_cast<SourceRouter&>(source_router)} {}
 
         SourceSession(const SourceSession &) = delete;
         SourceSession &operator=(const SourceSession &) = delete;

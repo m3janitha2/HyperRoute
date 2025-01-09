@@ -1,5 +1,4 @@
 #include <application/protocol/ProtocolA.h>
-#include <application/session/SourceSessionProtocolA.h>
 
 namespace hyper::protocol_a
 {
@@ -22,11 +21,9 @@ namespace hyper::protocol_a
         return to_chars(code);
     }
 
-    ProtocolA::ProtocolA(DestinationRouterPtrVarient &destination_router,
-                         SourceRouter &source_router)
-        : session_(destination_router, source_router, transport_)
-    {
-    }
+    ProtocolA::ProtocolA(const DestinationRouterPtrVarient &destination_router,
+                         const SourceRouter &source_router)
+        : Protocol{destination_router, source_router} {}
 
     void ProtocolA::on_connect_impl()
     {
@@ -71,19 +68,19 @@ namespace hyper::protocol_a
         case schema::MsgType::NewOrderSingle:
         {
             session::NewOrderSingle msg{data};
-            session_.on_message_from_transport(msg);
+            impl().session().on_message_from_transport(msg);
             break;
         }
         case schema::MsgType::CancelReplaceRequest:
         {
             session::CancelReplaceRequest msg{data};
-            session_.on_message_from_transport(msg);
+            impl().session().on_message_from_transport(msg);
             break;
         }
         case schema::MsgType::CancelRequest:
         {
             session::CancelRequest msg{data};
-            session_.on_message_from_transport(msg);
+            impl().session().on_message_from_transport(msg);
             break;
         }
         default:
@@ -98,7 +95,7 @@ namespace hyper::protocol_a
         if (auto reject_info = validate_logon(msg); reject_info != true)
         {
             send_logout();
-            this->impl().transport_.disconnect();
+            this->impl().transport().disconnect();
             return;
         }
 
@@ -109,7 +106,7 @@ namespace hyper::protocol_a
     {
         if (auto reject_info = validate_logout(msg); reject_info != true)
         {
-            this->impl().transport_.disconnect();
+            this->impl().transport().disconnect();
             return;
         }
 
@@ -120,7 +117,7 @@ namespace hyper::protocol_a
     {
         if (auto reject_info = validate_heartbeat(msg); reject_info != true)
         {
-            this->impl().transport_.disconnect();
+            this->impl().transport().disconnect();
             return;
         }
     }

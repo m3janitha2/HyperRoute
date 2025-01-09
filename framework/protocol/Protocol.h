@@ -13,29 +13,38 @@ namespace hyper::framework
     /* - Receive data from the Transport */
     /* - Handle the protocol session */
     /* - Dispatch application messages to the Session */
-    template <typename ProtocolImpl>
+    template <typename ProtocolImpl, typename Session>
     class Protocol : public CrtpBase<ProtocolImpl>
     {
     public:
-        explicit Protocol() = default;
+        template <typename... Args>
+        explicit Protocol(Args &&...args)
+            : session_{transport_, std::forward<Args>(args)...} {}
 
-        void on_connect() { this->impl().on_connect_impl(); }
-        void on_disconnect() { this->impl().on_disconnect_impl(); }
-        std::size_t on_data(std::string_view data);
+        Protocol(const Protocol &) = delete;
+        Protocol &operator=(const Protocol &) = delete;
 
-        [[nodiscard]] constexpr Transport &transport() noexcept { return transport_; }
-        [[nodiscard]] constexpr const Transport &transport() const noexcept { return transport_; }
-
-        [[nodiscard]] constexpr bool is_connected() const noexcept { return connected_; }
+        /* TransportCallbacks */
+        void on_connect() noexcept;
+        void on_disconnect() noexcept;
+        std::size_t on_data(std::string_view data) noexcept;
 
         template <typename Msg>
-        RejectInfo send_to_transport(Msg &msg);
-
+        [[nodiscard]] RejectInfo send_to_transport(Msg &msg) noexcept;
         template <typename Msg>
         void persist_session_message(Msg &msg) {}
         template <typename Msg>
         void publish_session_message(Msg &msg) {}
 
+        [[nodiscard]] constexpr Transport &transport() noexcept { return transport_; }
+        [[nodiscard]] constexpr const Transport &transport() const noexcept { return transport_; }
+
+        [[nodiscard]] constexpr const Session &session() const noexcept { return session_; }
+        [[nodiscard]] constexpr Session &session() noexcept { return session_; }
+
+        [[nodiscard]] constexpr bool is_connected() const noexcept { return connected_; }
+
+    private:
         TransportCallbacks transport_callbacks{[this]()
                                                { on_connect(); },
                                                [this]()
@@ -43,6 +52,7 @@ namespace hyper::framework
                                                [this](std::string_view data)
                                                { return on_data(data); }};
         Transport transport_{transport_callbacks};
+        Session session_;
         SequenceStore<std::uint64_t> sequence_store_{};
         bool connected_{false};
         /* todox: HeatbeatTimer producer_ */
@@ -50,16 +60,28 @@ namespace hyper::framework
         /* todox: PersistStore msg_stroe_ */
     };
 
-    template <typename ProtocolImpl>
-    inline std::size_t Protocol<ProtocolImpl>::on_data(std::string_view data)
+    template <typename ProtocolImpl, typename Session>
+    inline void Protocol<ProtocolImpl, Session>::on_connect() noexcept
+    {
+        this->impl().on_connect_impl();
+    }
+
+    template <typename ProtocolImpl, typename Session>
+    inline void Protocol<ProtocolImpl, Session>::on_disconnect() noexcept
+    {
+        this->impl().on_disconnect_impl();
+    }
+
+    template <typename ProtocolImpl, typename Session>
+    inline std::size_t Protocol<ProtocolImpl, Session>::on_data(std::string_view data) noexcept
     {
         /* todox: reschedule heatbeat receiver */
         return this->impl().on_data_impl(data);
     }
 
-    template <typename ProtocolImpl>
+    template <typename ProtocolImpl, typename Session>
     template <typename Msg>
-    inline RejectInfo Protocol<ProtocolImpl>::send_to_transport(Msg &msg)
+    inline RejectInfo Protocol<ProtocolImpl, Session>::send_to_transport(Msg &msg) noexcept
     {
         /* todox: reschedule heatbeat producer_ */
         std::string_view data{reinterpret_cast<char *>(&msg), sizeof(msg)};

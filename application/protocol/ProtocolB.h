@@ -18,17 +18,15 @@ namespace hyper::protocol_b
 
     using SessionRejectInfo = framework::ErrorInfo<SessionRejectCode>;
 
-    class ProtocolB : public framework::Protocol<ProtocolB>
+    class ProtocolB : public framework::Protocol<ProtocolB, DestinationSessionProtocolB>
     {
     public:
-        explicit ProtocolB(SourceRouter &source_router, ValidatorPtrVarient& validator);
+        explicit ProtocolB(const SourceRouter &source_router,
+                           const ValidatorPtrVarient &validator);
 
         void on_connect_impl();
         void on_disconnect_impl();
         std::size_t on_data_impl(std::string_view data);
-
-        const DestinationSessionProtocolB &session() const { return session_; }
-        DestinationSessionProtocolB &session() { return session_; }
 
         void on_logon(schema::Logon &msg);
         void on_logout(schema::Logout &msg);
@@ -43,6 +41,6 @@ namespace hyper::protocol_b
         SessionRejectInfo validate_heartbeat(schema::Heartbeat &msg);
 
     private:
-        DestinationSessionProtocolB session_;
+        /* SessionStateMachine */
     };
 }

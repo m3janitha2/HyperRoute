@@ -1,9 +1,10 @@
 #pragma once
 
 #include <framework/session/DestinationSession.h>
+#include <framework/message/UIDGenerator.h>
 #include <application/message/protocol_b/Messages.h>
 #include <application/message/protocol_a/Messages.h>
-#include <framework/message/UIDGenerator.h>
+#include <application/utility/utility.h>
 
 #include <iostream>
 
@@ -16,10 +17,10 @@ namespace hyper::protocol_b
     class DestinationSessionProtocolB : public framework::DestinationSession<DestinationSessionProtocolB>
     {
     public:
-        explicit DestinationSessionProtocolB(SourceRouter &source_router,
-                                             Transport &transport,
-                                             ValidatorPtrVarient &validator)
-            : DestinationSession<DestinationSessionProtocolB>{source_router, transport, validator} {}
+        explicit DestinationSessionProtocolB(Transport &transport,
+                                             const SourceRouter &source_router,
+                                             const ValidatorPtrVarient &validator)
+            : DestinationSession<DestinationSessionProtocolB>{transport, source_router, validator} {}
 
         /* TransportEvents */
         void on_connect_impl();
@@ -65,11 +66,11 @@ namespace hyper::protocol_b
             framework::UID uid_;
         };
         using SrcRoutingInfoByDestClOrdIDType = std::unordered_map<DestClOrdIDType, SourceRotingInfo>;
-        DestClOrdIDBySrcClOrdIDType dest_cl_ord_id_by_src_cl_ord_id_{50};        /* todox: set bucket size from config */
-        SrcRoutingInfoByDestClOrdIDType src_routing_info_by_dest_cl_ord_id_{50}; /* todox: set bucket size from config */
+        DestClOrdIDBySrcClOrdIDType dest_cl_ord_id_by_src_cl_ord_id_{optimal_order_count};
+        SrcRoutingInfoByDestClOrdIDType src_routing_info_by_dest_cl_ord_id_{optimal_order_count};
 
-        using VenueIDGenarator = framework::UIDGenerator;
-        VenueIDGenarator &venue_id_generator_{VenueIDGenarator::instance()};
+        using DestinationIDGenarator = framework::UIDGenerator;
+        DestinationIDGenarator &venue_id_generator_{DestinationIDGenarator::instance()};
     };
 
     template <typename SourceMsg, typename DestinationMsg>

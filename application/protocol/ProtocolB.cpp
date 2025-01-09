@@ -21,10 +21,9 @@ namespace hyper::protocol_b
         return to_chars(code);
     }
 
-    ProtocolB::ProtocolB(SourceRouter &source_router, ValidatorPtrVarient& validator)
-        : session_(source_router, transport_, validator)
-    {
-    }
+    ProtocolB::ProtocolB(const SourceRouter &source_router,
+                         const ValidatorPtrVarient &validator)
+        : Protocol{source_router, validator} {}
 
     void ProtocolB::on_connect_impl()
     {
@@ -69,13 +68,13 @@ namespace hyper::protocol_b
         case schema::MsgType::ExecutionReport:
         {
             session::ExecutionReport msg{data};
-            session_.on_message_from_transport(msg);
+            impl().session().on_message_from_transport(msg);
             break;
         }
         case schema::MsgType::CancelReject:
         {
             session::CancelReject msg{data};
-            session_.on_message_from_transport(msg);
+            impl().session().on_message_from_transport(msg);
             break;
         }
         default:
@@ -90,7 +89,7 @@ namespace hyper::protocol_b
         if (auto reject_info = validate_logon(msg); reject_info != true)
         {
             send_logout();
-            impl().transport_.disconnect();
+            impl().transport().disconnect();
             return;
         }
 
@@ -101,7 +100,7 @@ namespace hyper::protocol_b
     {
         if (auto reject_info = validate_logout(msg); reject_info != true)
         {
-            impl().transport_.disconnect();
+            impl().transport().disconnect();
             return;
         }
 
@@ -112,7 +111,7 @@ namespace hyper::protocol_b
     {
         if (auto reject_info = validate_heartbeat(msg); reject_info != true)
         {
-            impl().transport_.disconnect();
+            impl().transport().disconnect();
             return;
         }
     }

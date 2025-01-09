@@ -16,7 +16,11 @@ namespace hyper::framework
 	class DestinationRouterOneToMany
 	{
 	public:
-		explicit DestinationRouterOneToMany(std::vector<DestinationSessionPtrVarient *> &destinations) : destinations_{destinations} {}
+		explicit DestinationRouterOneToMany(std::vector<DestinationSessionPtrVarient *> &destinations)
+			: destinations_{destinations} {}
+
+		DestinationRouterOneToMany(const DestinationRouterOneToMany &) = delete;
+		DestinationRouterOneToMany &operator=(const DestinationRouterOneToMany &) = delete;
 
 		template <typename Msg>
 		RejectInfo on_message_from_source(Msg &msg) noexcept
