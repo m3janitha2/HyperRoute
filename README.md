@@ -1,5 +1,4 @@
 # HyperRoute
-**[this is a work in pro
 **A general-purpose, stateless, ultra-low-latency message router capable of routing messages between source and destination in under 300ns (excluding transport layer overhead). Built for seamless extensibility and customization.**
 
 ## Features:
