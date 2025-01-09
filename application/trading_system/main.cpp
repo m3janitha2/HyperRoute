@@ -11,6 +11,7 @@
 #include <string.h>
 #include <random>
 #include <vector>
+#include <string>
 
 /* Temporary implementation until the config parser is implemented */
 /* A sample config file is located at application/config/config.xml */
@@ -29,7 +30,7 @@ struct SubSystem
 	hyper::ValidatorPtrVarient validator_varient{&validator};
 	hyper::protocol_b::ProtocolB destination_protocol{source_router, validator_varient};
 	const hyper::DestinationSessionPtrVarient destination_session_varient{&destination_protocol.session()};
-	std::vector<hyper::DestinationSessionPtrVarient *> destination_sessions{const_cast<hyper::DestinationSessionPtrVarient*>(&destination_session_varient)};
+	std::vector<hyper::DestinationSessionPtrVarient *> destination_sessions{const_cast<hyper::DestinationSessionPtrVarient *>(&destination_session_varient)};
 	hyper::framework::DestinationRouterOneToOne dest_router{const_cast<hyper::DestinationSessionPtrVarient &>(destination_session_varient)};
 	hyper::framework::DestinationRouterOneToMany dest_router2{destination_sessions};
 	hyper::DestinationRouterPtrVarient dest_router_variant{&dest_router};
@@ -125,12 +126,28 @@ struct RandomGen
 	T next() { return dist(gen); }
 };
 
+int parse_arguments(int argc, char **argv)
+try
+{
+	if (argc != 2)
+	{
+		std::cerr << "Usage: " << argv[0] << " <integer>\n";
+		return -1;
+	}
+
+	return std::stoi(argv[1]);
+}
+catch (const std::invalid_argument &e)
+{
+	std::cerr << "Error: The argument is not a valid integer.\n";
+	return -1;
+}
+
 int main(int argc, char **argv)
 {
+	const auto number_of_messages = parse_arguments(argc, argv);
+
 	Simulator sim{};
-
-	const auto number_of_messages{10};
-
 	std::vector<hyper::protocol_a::schema::NewOrderSingle> new_orders{};
 	std::vector<hyper::protocol_b::schema::ExecutionReport> new_acks{};
 	std::vector<hyper::protocol_a::schema::CancelReplaceRequest> cancel_replaces{};

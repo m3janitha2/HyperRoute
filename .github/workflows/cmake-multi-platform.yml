@@ -76,4 +76,4 @@ jobs:
 
     - name: Benchmark
       working-directory: ${{github.workspace}}/build/application/trading_system/
-      run: ./HyperRoute   
+      run: ./HyperRoute 100 
