@@ -6,7 +6,7 @@
 #include <framework/router/SourceRouter.h>
 #include <framework/transport/Transport.h>
 #include <framework/message/Message.h>
-#include <framework/router/DestinationRouters.h>
+#include <framework/application_dependency/DestinationRouters.h>
 #include <type_traits>
 #include <concepts>
 #include <string_view>

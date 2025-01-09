@@ -11,5 +11,6 @@ namespace hyper
         class DestinationSessionProtocolB;
     }
 
-    using DestinationSessionPtrVarient = std::variant<std::monostate, protocol_b::DestinationSessionProtocolB*>;
+    using DestinationSessionPtrVarient = std::variant<std::monostate,
+                                                      protocol_b::DestinationSessionProtocolB *>;
 };

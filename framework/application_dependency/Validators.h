@@ -5,5 +5,5 @@
 
 namespace hyper
 {
-    using ValidatorPtrVarient = std::variant<ValidatorX*>;
+    using ValidatorPtrVarient = std::variant<ValidatorX *>;
 };

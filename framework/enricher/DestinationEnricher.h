@@ -7,6 +7,11 @@ namespace hyper::framework
 {
     struct DestinationEnricher
     {
+        DestinationEnricher() = default;
+
+        DestinationEnricher(const DestinationEnricher &) = delete;
+        DestinationEnricher& operator=(const DestinationEnricher &) = delete;
+
         template <typename Msg>
         RejectInfo enrich_message_to_transport(Msg &msg) const noexcept
         {
