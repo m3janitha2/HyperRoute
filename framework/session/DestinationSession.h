@@ -5,7 +5,7 @@
 #include <framework/enricher/DestinationEnricher.h>
 #include <framework/router/SourceRouter.h>
 #include <framework/transport/Transport.h>
-#include <application/validator/Validator.h>
+#include <framework/application_dependency/Validators.h>
 
 namespace hyper::framework
 {
@@ -17,9 +17,11 @@ namespace hyper::framework
     {
     public:
         explicit DestinationSession(SourceRouter &source_router,
-                                    Transport &transport)
+                                    Transport &transport,
+                                    ValidatorPtrVarient &validator)
             : source_router_{source_router},
-              transport_{transport} {}
+              transport_{transport},
+              validator_(validator) {}
 
         DestinationSession(const DestinationSession &) = delete;
         DestinationSession &operator=(const DestinationSession &) = delete;
@@ -38,6 +40,8 @@ namespace hyper::framework
         template <typename SourceMsg, typename DestinationMsg>
         RejectInfo procoess_message_to_transport(SourceMsg &src_msg,
                                                  DestinationMsg &dst_msg) noexcept;
+        template <typename Msg>
+        RejectInfo validate(Msg &msg) noexcept;
         template <typename Msg>
         RejectInfo enrich_message_to_transport(Msg &msg) noexcept;
         template <typename Msg>
@@ -58,7 +62,7 @@ namespace hyper::framework
         [[nodiscard]] constexpr bool is_connected() const noexcept { return connected_; }
 
     private:
-        Validator validator_{};
+        ValidatorPtrVarient &validator_{};
         DestinationEnricher destination_enricher_{};
         SourceRouter &source_router_;
         Transport &transport_;
@@ -104,7 +108,7 @@ namespace hyper::framework
             reject_info != true) [[unlikely]]
             rejecet_message_from_transport(dst_msg, reject_info);
 
-        if (auto reject_info = validator_.validate(src_msg);
+        if (auto reject_info = validate(src_msg);
             reject_info != true) [[unlikely]]
             rejecet_message_from_transport(dst_msg, reject_info);
 
@@ -121,7 +125,7 @@ namespace hyper::framework
     inline RejectInfo DestinationSession<SessionImpl>::procoess_message_to_transport(SourceMsg &src_msg,
                                                                                      DestinationMsg &dst_msg) noexcept
     {
-        if (auto reject_info = validator_.validate(src_msg); reject_info != true) [[unlikely]]
+        if (auto reject_info = validate(src_msg); reject_info != true) [[unlikely]]
             return reject_info;
 
         if (auto reject_info = encode_message_to_destination(src_msg, dst_msg); reject_info != true) [[unlikely]]
@@ -139,6 +143,15 @@ namespace hyper::framework
         log_message_info(dst_msg);
 
         return RejectInfo{};
+    }
+
+    template <typename SessionImpl>
+    template <typename Msg>
+    inline RejectInfo DestinationSession<SessionImpl>::validate(Msg &msg) noexcept
+    {
+        return std::visit([&msg]<typename ValidatorType>(ValidatorType &&validator)
+                          { return std::forward<ValidatorType>(validator)->validate(msg); },
+                          validator_);
     }
 
     template <typename SessionImpl>

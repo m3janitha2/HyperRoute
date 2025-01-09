@@ -25,7 +25,7 @@ namespace hyper::framework
 			if (auto reject_info = send_message_to_desination(msg); reject_info != true)
 				return reject_info;
 
-			return send_message_to_desination(msg);
+			return RejectInfo{};
 		}
 
 		auto next_session_index() noexcept
@@ -36,7 +36,7 @@ namespace hyper::framework
 		template <typename Msg>
 		RejectInfo send_message_to_desination(Msg &msg) noexcept
 		{
-			if constexpr (std::is_base_of_v<Msg, framework::message::FirstEvent>)
+			if constexpr (std::derived_from<Msg, framework::message::FirstEvent>)
 			{
 				auto next_index = next_session_index();
 				auto &next_destination = *destinations_[next_index];
@@ -68,7 +68,7 @@ namespace hyper::framework
 		}
 
 		template <typename Msg>
-		RejectInfo send_message_to_desination(Msg &msg, DestinationSessionPtrVarient &destination_session) const noexcept
+		RejectInfo send_message_to_desination(Msg &msg, const DestinationSessionPtrVarient &destination_session) const noexcept
 		{
 			return std::visit([&msg]<typename Destination>(Destination &&destination)
 								  requires RouterDestination<Destination, Msg>
@@ -93,7 +93,7 @@ namespace hyper::framework
 			std::cout << "Crtical Error: " << error.what();
 		}
 
-		std::vector<DestinationSessionPtrVarient *> &destinations_;
+		const std::vector<DestinationSessionPtrVarient *> &destinations_;
 		std::size_t index_{0};
 		std::unordered_map<UID, DestinationSessionPtrVarient &> uid_to_destination_{};
 	};

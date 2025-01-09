@@ -21,7 +21,7 @@ namespace hyper::protocol_b
     class ProtocolB : public framework::Protocol<ProtocolB>
     {
     public:
-        explicit ProtocolB(SourceRouter &source_router);
+        explicit ProtocolB(SourceRouter &source_router, ValidatorPtrVarient& validator);
 
         void on_connect_impl();
         void on_disconnect_impl();

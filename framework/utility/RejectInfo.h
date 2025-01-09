@@ -23,7 +23,7 @@ namespace hyper::framework
         Validation_Failed_Check_01,
     };    
     
-    constexpr const char *to_chars(InteranlRejectCode code) noexcept;
+    const char *to_chars(InteranlRejectCode code) noexcept;
     std::string to_string(InteranlRejectCode code) noexcept;
 
     using RejectInfo = ErrorInfo<InteranlRejectCode>;

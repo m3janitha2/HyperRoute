@@ -1,8 +1,10 @@
 #pragma once
 
 #include <framework/utility/RejectInfo.h>
+#include <framework/validator/Validator.h>
 #include <application/message/core/Messages.h>
 #include <application/validator/StatelessCheck01.h>
+#include <concepts>
 #include <type_traits>
 #include <cstdint>
 
@@ -18,22 +20,22 @@ namespace hyper
     };
 
     /* Example of a validator */
-    class Validator
+    class ValidatorX : public framework::Validator<ValidatorX>
     {
     public:
         template <ValidatorMsg Msg>
-        RejectInfo validate(Msg &msg)
+        RejectInfo validate_impl(Msg &msg)
         {
             std::uint64_t limit{dummy_limit_};
             if (!check_01_.is_enabled()) [[unlikely]]
-                return validate(check_01_, msg, msg.price(), msg.size(), limit);
+                return validate_(check_01_, msg, msg.price(), msg.size(), limit);
 
             return RejectInfo {};
         }
 
     private:
-        template <typename Check, ValidatorMsg Msg, typename... Args>
-        RejectInfo validate(Check &check, Msg &, Args &&...args)
+        template <typename Check, typename Msg, typename... Args>
+        RejectInfo validate_(Check &check, Msg &, Args &&...args)
         {
             if constexpr (std::derived_from<Msg, trading::NewOrderSingle>)
                 return check.on_new_order_single(std::forward<Args>(args)...);

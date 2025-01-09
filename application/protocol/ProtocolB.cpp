@@ -21,8 +21,8 @@ namespace hyper::protocol_b
         return to_chars(code);
     }
 
-    ProtocolB::ProtocolB(SourceRouter &source_router)
-        : session_(source_router, transport_)
+    ProtocolB::ProtocolB(SourceRouter &source_router, ValidatorPtrVarient& validator)
+        : session_(source_router, transport_, validator)
     {
     }
 

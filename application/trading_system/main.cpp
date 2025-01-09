@@ -3,9 +3,11 @@
 #include <framework/router/SourceRouter.h>
 #include <framework/config/Configuration.h>
 #include <framework/application_dependency/DestinationSessions.h>
+#include <framework/application_dependency/Validators.h>
 #include <application/protocol/ProtocolA.h>
 #include <application/protocol/ProtocolB.h>
 #include <application/session/DestinationSessionProtocolB.h>
+#include <application/validator/ValidatorX.h>
 #include <string.h>
 #include <random>
 #include <vector>
@@ -23,12 +25,15 @@ struct SubSystem
 
 	/* These will be created by factories within the constructor of the owner */
 	hyper::framework::SourceRouter source_router{};
-	hyper::protocol_b::ProtocolB destination_protocol{source_router};
+	hyper::ValidatorX validator{};
+	hyper::ValidatorPtrVarient validator_varient{&validator};
+	hyper::protocol_b::ProtocolB destination_protocol{source_router, validator_varient};
 	const hyper::DestinationSessionPtrVarient destination_session_varient{&destination_protocol.session()};
-	std::vector<hyper::DestinationSessionPtrVarient *> destination_sessions{};
-	hyper::framework::DestinationRouterOneToOne forwar_router{const_cast<hyper::DestinationSessionPtrVarient &>(destination_session_varient)};
-	hyper::DestinationRouterPtrVarient forward_router_variant{&forwar_router};
-	hyper::protocol_a::ProtocolA source_protocol{forward_router_variant, source_router};
+	std::vector<hyper::DestinationSessionPtrVarient *> destination_sessions{const_cast<hyper::DestinationSessionPtrVarient*>(&destination_session_varient)};
+	hyper::framework::DestinationRouterOneToOne dest_router{const_cast<hyper::DestinationSessionPtrVarient &>(destination_session_varient)};
+	hyper::framework::DestinationRouterOneToMany dest_router2{destination_sessions};
+	hyper::DestinationRouterPtrVarient dest_router_variant{&dest_router2};
+	hyper::protocol_a::ProtocolA source_protocol{dest_router_variant, source_router};
 };
 
 /* This is a basic simulator designed to simulate a client (order source) and a venue (exchange) */

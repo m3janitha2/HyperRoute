@@ -2,7 +2,7 @@
 
 namespace hyper::framework
 {
-    constexpr const char *to_chars(InteranlRejectCode code) noexcept
+    const char *to_chars(InteranlRejectCode code) noexcept
     {
         using enum InteranlRejectCode;
         switch (code)
