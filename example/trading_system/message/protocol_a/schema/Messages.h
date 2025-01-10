@@ -31,7 +31,9 @@ namespace hyper::protocol_a::schema
 #pragma pack(push, 1)
     struct Logon
     {
-        Header header{.size = sizeof(Logon), .msg_type = MsgType::Logon};
+        Header header{.size = sizeof(Logon),
+                      .msg_type = MsgType::Logon,
+                      .seq_no = 0};
         std::uint32_t a{};
         std::uint32_t b{};
 
@@ -46,7 +48,9 @@ namespace hyper::protocol_a::schema
 #pragma pack(push, 1)
     struct Logout
     {
-        Header header{sizeof(Logout), MsgType::Logout};
+        Header header{.size = sizeof(Logon),
+                      .msg_type = MsgType::Logon,
+                      .seq_no = 0};
         std::uint32_t a{};
         std::uint32_t b{};
 
@@ -61,7 +65,9 @@ namespace hyper::protocol_a::schema
 #pragma pack(push, 1)
     struct Heartbeat
     {
-        Header header{sizeof(Heartbeat), MsgType::Heartbeat};
+        Header header{.size = sizeof(Logon),
+                      .msg_type = MsgType::Logon,
+                      .seq_no = 0};
         std::uint32_t a{};
         std::uint32_t b{};
 
@@ -76,7 +82,9 @@ namespace hyper::protocol_a::schema
 #pragma pack(push, 1)
     struct NewOrderSingle
     {
-        Header header{sizeof(NewOrderSingle), MsgType::NewOrderSingle};
+        Header header{.size = sizeof(NewOrderSingle),
+                      .msg_type = MsgType::NewOrderSingle,
+                      .seq_no = 0};
         std::uint32_t a{};
         std::uint32_t b{};
         std::uint64_t cl_ord_id{};
@@ -94,7 +102,9 @@ namespace hyper::protocol_a::schema
 #pragma pack(push, 1)
     struct CancelReplaceRequest
     {
-        Header header{sizeof(CancelReplaceRequest), MsgType::CancelReplaceRequest};
+        Header header{.size = sizeof(CancelReplaceRequest),
+                      .msg_type = MsgType::CancelReplaceRequest,
+                      .seq_no = 0};
         std::uint32_t a{};
         std::uint32_t b{};
         std::uint64_t cl_ord_id{};
@@ -114,7 +124,9 @@ namespace hyper::protocol_a::schema
 #pragma pack(push, 1)
     struct CancelRequest
     {
-        Header header{sizeof(CancelRequest), MsgType::CancelRequest};
+        Header header{.size = sizeof(CancelRequest),
+                      .msg_type = MsgType::CancelRequest,
+                      .seq_no = 0};
         std::uint32_t a{};
         std::uint32_t b{};
         std::uint64_t cl_ord_id{};
@@ -134,7 +146,9 @@ namespace hyper::protocol_a::schema
 #pragma pack(push, 1)
     struct ExecutionReport
     {
-        Header header{sizeof(ExecutionReport), MsgType::ExecutionReport};
+        Header header{.size = sizeof(ExecutionReport),
+                      .msg_type = MsgType::ExecutionReport,
+                      .seq_no = 0};
         std::uint32_t a{};
         std::uint32_t b{};
         std::uint64_t cl_ord_id{};
@@ -158,7 +172,9 @@ namespace hyper::protocol_a::schema
 #pragma pack(push, 1)
     struct CancelReject
     {
-        Header header{sizeof(CancelReject), MsgType::CancelReject};
+        Header header{.size = sizeof(CancelReject),
+                      .msg_type = MsgType::CancelReject,
+                      .seq_no = 0};
         std::uint32_t a{};
         std::uint32_t b{};
         std::uint64_t cl_ord_id{};

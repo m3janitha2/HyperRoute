@@ -1,4 +1,4 @@
-#include <application/session/DestinationSessionProtocolB.h>
+#include <example/trading_system/session/DestinationSessionProtocolB.h>
 
 namespace hyper::protocol_b
 {

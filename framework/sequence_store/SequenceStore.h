@@ -4,7 +4,7 @@
 /* Persisted sequence number store. */
 /* todox: Implement file persistence. */
 namespace hyper::framework
-{    
+{
     template <typename SeqNumType>
     struct SequenceStore
     {

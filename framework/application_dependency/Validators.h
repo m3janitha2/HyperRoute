@@ -1,7 +1,7 @@
 #pragma once
 
 #include <variant>
-#include <application/validator/ValidatorX.h>
+#include <example/trading_system/validator/ValidatorX.h>
 
 namespace hyper
 {

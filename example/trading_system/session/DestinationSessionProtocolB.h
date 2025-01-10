@@ -2,9 +2,9 @@
 
 #include <framework/session/DestinationSession.h>
 #include <framework/message/UIDGenerator.h>
-#include <application/message/protocol_b/Messages.h>
-#include <application/message/protocol_a/Messages.h>
-#include <application/utility/utility.h>
+#include <example/trading_system/message/protocol_b/Messages.h>
+#include <example/trading_system/message/protocol_a/Messages.h>
+#include <example/trading_system/utility/utility.h>
 
 #include <iostream>
 

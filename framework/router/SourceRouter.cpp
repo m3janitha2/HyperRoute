@@ -1,6 +1,6 @@
 #include <framework/router/SourceRouter.h>
-#include <application/session/SourceSessions.h>
-#include <application/message/protocol_a/Messages.h>
+#include <example/trading_system/session/SourceSessions.h>
+#include <example/trading_system/message/protocol_a/Messages.h>
 
 #include <variant>
 
@@ -19,7 +19,7 @@ namespace hyper::framework
         }
         else
         {
-            return RejectInfo("uid not found", InteranlRejectCode::To_Source_Routing_Failed);
+            return RejectInfo("uid not found", InteranlRejectCode::SourceRouter_Routing_Failed);
         }
     }
 
@@ -28,6 +28,7 @@ namespace hyper::framework
         uid_to_source_session_.emplace(uid, source_session_varient);
     }
 
+    /* todox: this is odd */
     template RejectInfo SourceRouter::send_message_to_source<protocol_a::session::ExecutionReport>(protocol_a::session::ExecutionReport &msg);
     template RejectInfo SourceRouter::send_message_to_source<protocol_a::session::CancelReject>(protocol_a::session::CancelReject &msg);
 }

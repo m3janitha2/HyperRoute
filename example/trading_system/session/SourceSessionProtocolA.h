@@ -1,8 +1,8 @@
 #pragma once
 
 #include <framework/session/SourceSession.h>
-#include <application/message/protocol_a/Messages.h>
-#include <application/utility/utility.h>
+#include <example/trading_system/message/protocol_a/Messages.h>
+#include <example/trading_system/utility/utility.h>
 #include <type_traits>
 #include <iostream>
 

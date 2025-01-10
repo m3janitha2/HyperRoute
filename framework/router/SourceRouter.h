@@ -2,7 +2,7 @@
 
 #include <framework/utility/RejectInfo.h>
 #include <framework/utility/Types.h>
-#include <application/session/SourceSessionsDeclaration.h>
+#include <example/trading_system/session/SourceSessionsDeclaration.h>
 #include <unordered_map>
 
 namespace hyper::framework
@@ -14,11 +14,11 @@ namespace hyper::framework
     public:
         SourceRouter() = default;
 
-        SourceRouter(const SourceRouter&) = delete;
-        SourceRouter& operator=(const SourceRouter&) = delete;
+        SourceRouter(const SourceRouter &) = delete;
+        SourceRouter &operator=(const SourceRouter &) = delete;
 
         template <typename Msg>
-        [[nodiscard]] RejectInfo send_message_to_source(Msg &msg) noexcept;
+        RejectInfo send_message_to_source(Msg &msg) noexcept;
         void update_routing_info(UID uid, SourceSessionPtrVarient source_session_varient) noexcept;
 
         std::unordered_map<UID, SourceSessionPtrVarient> uid_to_source_session_{};

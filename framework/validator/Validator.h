@@ -12,7 +12,7 @@ namespace hyper::framework
     {
     public:
         Validator() = default;
-        
+
         Validator(const Validator &) = delete;
         Validator &operator=(const Validator &) = delete;
 

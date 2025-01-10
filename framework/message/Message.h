@@ -8,7 +8,7 @@
 namespace hyper::framework::message
 {
     /* Message interface used by the framework */
-    
+
     using TimestampClock = std::chrono::high_resolution_clock;
     using Timestamp = std::chrono::time_point<TimestampClock>;
 
@@ -41,6 +41,7 @@ namespace hyper::framework::message
     struct FirstEvent
     {
     }; /* First Message of the message chain */
+    
     struct SubsequentEvent
     {
     }; /* Subsequent Messages of the same message chain */

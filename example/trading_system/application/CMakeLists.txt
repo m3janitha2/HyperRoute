@@ -7,10 +7,12 @@ set(SOURCE_FILES
     main.cpp
     ../session/SourceSessionProtocolA.cpp
     ../protocol/ProtocolA.cpp
-    ../../framework/router/SourceRouter.cpp
-    ../../framework/utility/RejectInfo.cpp
+    ../../../framework/router/SourceRouter.cpp
+    ../../../framework/utility/RejectInfo.cpp
     ../session/DestinationSessionProtocolB.cpp
     ../protocol/ProtocolB.cpp)
 
-add_executable(HyperRoute
+add_executable(trading_system
     ${SOURCE_FILES})
+
+target_compile_options(trading_system PRIVATE -Wall -Wextra -Wpedantic)

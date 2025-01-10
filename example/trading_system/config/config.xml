@@ -19,7 +19,7 @@
       <id>1001</id>
       <protocol>ProtocolA</protocol>
       <router>
-        <type>OneToMany</type>
+        <type>RoundRobin</type>
         <destination_session_id>2000</destination_session_id>
         <destination_session_id>2001</destination_session_id>
       </router>
@@ -29,18 +29,18 @@
     </source_session>
   </source_sessions>
   <destination_sessions>
-    <destination_session name="DestinationA">
-      <name>DestinationA</name>
+    <destination_session name="Destination1">
+      <name>Destination1</name>
       <id>2000</id>
       <protocol>ProtocolB</protocol>
       <enricher>
-        <name>ProtocolB_Profile2</name>
+        <name>ProtocolB_Profile1</name>
       </enricher>
     </destination_session>
-    <destination_session name="DestinationB">
-      <name>ProtocolB</name>
+    <destination_session name="Destination2">
+      <name>Destination2</name>
       <id>2001</id>
-      <protocol>Custom1</protocol>
+      <protocol>ProtocolB</protocol>
       <enricher>
         <name>ProtocolB_Profile2</name>
       </enricher>

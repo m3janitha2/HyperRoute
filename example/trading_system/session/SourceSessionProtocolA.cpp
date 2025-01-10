@@ -1,4 +1,4 @@
-#include <application/session/SourceSessionProtocolA.h>
+#include <example/trading_system/session/SourceSessionProtocolA.h>
 #include <framework/message/UIDGenerator.h>
 
 namespace hyper::protocol_a
@@ -73,7 +73,7 @@ namespace hyper::protocol_a
         }
         else
         {
-            RejectInfo reject_info{"Invalid ClOrdID", InteranlRejectCode::Invalid_Orig_Cl_Ord_ID};
+            RejectInfo reject_info{"Invalid ClOrdID", InteranlRejectCode::SourceSession_Invalid_Original_Msg_ID};
             rejecet_message_from_transport_impl(msg, reject_info);
             return false;
         }

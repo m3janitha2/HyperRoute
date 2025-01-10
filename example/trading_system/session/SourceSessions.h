@@ -2,7 +2,7 @@
 
 #include <variant>
 
-#include <application/session/SourceSessionProtocolA.h>
+#include <example/trading_system/session/SourceSessionProtocolA.h>
 
 namespace hyper
 {

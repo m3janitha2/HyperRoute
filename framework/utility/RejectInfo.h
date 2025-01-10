@@ -7,22 +7,25 @@ namespace hyper::framework
     enum class InteranlRejectCode
     {
         Success,
-        Source_Enrichment_Failed,
-        Source_Validation_Failed,
-        To_Destination_Routing_Failed,
-        To_Destination_Validation_Failed,
-        To_Destination_Enrichement_Failed,
-        To_Destination_Encoding_Failed,
-        From_Destination_Decoding_Failed,
-        To_Source_Routing_Failed,
-        Invalid_Orig_Cl_Ord_ID,
-        Destination_Session_Not_Found_For_UID,
-        Destination_Is_Not_Connected,
-        Destination_Orig_Cl_Ord_Id_Not_Found,
-        Source_Cl_ord_Id_Not_Found,
-        Validation_Failed_Check_01,
-    };    
-    
+        /* SourceSession */
+        SourceSession_Invalid_Original_Msg_ID,
+        /* DestinationRouter */
+        DestinationRouter_No_Destinations_Available,
+        DestinationRouter_Session_Not_Found_For_UID,
+        /* SourceRouter */
+        SourceRouter_Routing_Failed,
+        /* DestinationSession */
+        DestinationSession_To_Destination_Encoding_Failed,
+        DestinationSession_From_Destination_Decoding_Failed,
+        /* Validatator */
+        Validatator_Validation_Failed,
+        /* Enricher */
+        SourceSession_Enrichment_Failed,
+        SourceSession_Validation_Failed,
+        DestinationSession_Enrichment_Failed,
+        DestinationSession_Validation_Failed,
+    };
+
     const char *to_chars(InteranlRejectCode code) noexcept;
     std::string to_string(InteranlRejectCode code) noexcept;
 

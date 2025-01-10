@@ -20,8 +20,8 @@ namespace hyper::framework
                                     const SourceRouter &source_router,
                                     const ValidatorPtrVarient &validator)
             : transport_{transport},
-              source_router_{const_cast<SourceRouter&>(source_router)},
-              validator_{const_cast<ValidatorPtrVarient&>(validator)}
+              source_router_{const_cast<SourceRouter &>(source_router)},
+              validator_{const_cast<ValidatorPtrVarient &>(validator)}
         {
         }
 
@@ -64,10 +64,12 @@ namespace hyper::framework
         [[nodiscard]] constexpr bool is_connected() const noexcept { return connected_; }
 
     private:
-        ValidatorPtrVarient &validator_{};
-        SourceRouter &source_router_;
-        DestinationEnricher destination_enricher_{};
         Transport &transport_;
+        SourceRouter &source_router_;
+        ValidatorPtrVarient &validator_{};
+
+        DestinationEnricher destination_enricher_{};
+
         bool connected_{true};
     };
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <application/message/core/BinaryMessages.h>
-#include <application/message/protocol_a/schema/Messages.h>
+#include <example/trading_system/message/core/BinaryMessages.h>
+#include <example/trading_system/message/protocol_a/schema/Messages.h>
 #include <cstdint>
 #include <iostream>
 

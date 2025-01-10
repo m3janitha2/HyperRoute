@@ -77,5 +77,5 @@ jobs:
       run: ctest --build-config ${{ matrix.build_type }}
 
     - name: Benchmark
-      working-directory: ${{github.workspace}}/build/application/trading_system/
-      run: ./HyperRoute 100 
+      working-directory: ${{github.workspace}}/build/example/trading_system/application/
+      run: ./trading_system 100 

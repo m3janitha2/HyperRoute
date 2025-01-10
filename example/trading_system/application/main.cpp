@@ -4,13 +4,14 @@
 #include <framework/application_dependency/DestinationRouters.h>
 #include <framework/application_dependency/DestinationSessions.h>
 #include <framework/application_dependency/Validators.h>
-#include <application/protocol/ProtocolA.h>
-#include <application/protocol/ProtocolB.h>
+#include <example/trading_system/protocol/ProtocolA.h>
+#include <example/trading_system/protocol/ProtocolB.h>
 #include <string.h>
 #include <random>
 #include <vector>
 #include <string>
 
+using namespace hyper;
 /* Temporary implementation until the config parser is implemented */
 /* A sample config file is located at application/config/config.xml */
 struct SubSystem
@@ -23,16 +24,16 @@ struct SubSystem
 	}
 
 	/* These will be created by factories within the constructor of the owner */
-	hyper::framework::SourceRouter source_router{};
-	hyper::ValidatorX validator{};
-	hyper::ValidatorPtrVarient validator_varient{&validator};
-	hyper::protocol_b::ProtocolB destination_protocol{source_router, validator_varient};
-	const hyper::DestinationSessionPtrVarient destination_session_varient{&destination_protocol.session()};
-	std::vector<hyper::DestinationSessionPtrVarient *> destination_sessions{const_cast<hyper::DestinationSessionPtrVarient *>(&destination_session_varient)};
-	hyper::framework::DestinationRouterOneToOne dest_router{const_cast<hyper::DestinationSessionPtrVarient &>(destination_session_varient)};
-	hyper::framework::DestinationRouterOneToMany dest_router2{destination_sessions};
-	hyper::DestinationRouterPtrVarient dest_router_variant{&dest_router};
-	hyper::protocol_a::ProtocolA source_protocol{dest_router_variant, source_router};
+	framework::SourceRouter source_router{};
+	ValidatorX validator{};
+	ValidatorPtrVarient validator_varient{&validator};
+	protocol_b::ProtocolB destination_protocol{source_router, validator_varient};
+	DestinationSessionPtrVarient destination_session_varient{&destination_protocol.session()};
+	std::vector<DestinationSessionPtrVarient *> destination_sessions{const_cast<DestinationSessionPtrVarient *>(&destination_session_varient)};
+	framework::DestinationRouterOneToOne dest_router_one_to_one{destination_session_varient};
+	framework::DestinationRouterRoundRobin dest_router_round_robin{destination_sessions};
+	DestinationRouterPtrVarient dest_router_variant{&dest_router_round_robin};
+	protocol_a::ProtocolA source_protocol{dest_router_variant, source_router};
 };
 
 /* This is a basic simulator designed to simulate a client (order source) and a venue (exchange) */
@@ -117,7 +118,7 @@ template <typename T>
 struct RandomGen
 {
 	RandomGen(T start, T end, std::mt19937 gen)
-		: dist(start, end) {}
+		: dist(start, end), gen(gen) {}
 
 	std::uniform_int_distribution<T> dist;
 	std::mt19937 gen;
@@ -146,9 +147,9 @@ int main(int argc, char **argv)
 	const auto number_of_messages = parse_arguments(argc, argv);
 
 	Simulator sim{};
-	std::vector<hyper::protocol_a::schema::NewOrderSingle> new_orders{};
-	std::vector<hyper::protocol_b::schema::ExecutionReport> new_acks{};
-	std::vector<hyper::protocol_a::schema::CancelReplaceRequest> cancel_replaces{};
+	std::vector<protocol_a::schema::NewOrderSingle> new_orders{};
+	std::vector<protocol_b::schema::ExecutionReport> new_acks{};
+	std::vector<protocol_a::schema::CancelReplaceRequest> cancel_replaces{};
 
 	std::random_device rd;
 	std::mt19937 gen(rd());
@@ -158,13 +159,13 @@ int main(int argc, char **argv)
 
 	for (auto i{0}; i < number_of_messages; i++)
 	{
-		new_orders.emplace_back(hyper::protocol_a::schema::NewOrderSingle{.a = g_uint32.next(),
+		new_orders.emplace_back(protocol_a::schema::NewOrderSingle{.a = g_uint32.next(),
 																		  .b = g_uint32.next(),
 																		  .cl_ord_id = g_uint64.next()});
-		new_acks.emplace_back(hyper::protocol_b::schema::ExecutionReport{.a = g_int.next(),
+		new_acks.emplace_back(protocol_b::schema::ExecutionReport{.a = g_int.next(),
 																		 .b = g_int.next(),
 																		 .c = g_int.next()});
-		cancel_replaces.emplace_back(hyper::protocol_a::schema::CancelReplaceRequest{.a = g_uint32.next(),
+		cancel_replaces.emplace_back(protocol_a::schema::CancelReplaceRequest{.a = g_uint32.next(),
 																					 .b = g_uint32.next(),
 																					 .cl_ord_id = g_uint64.next(),
 																					 .orig_cl_ord_id = g_uint64.next()});
@@ -186,7 +187,7 @@ int main(int argc, char **argv)
 		/* Venue received NewOrderSingle */
 		if (!sim.is_msg_received_by_destination()) [[unlikely]]
 			return -1;
-		auto &dest_new = sim.get_last_msg<hyper::protocol_b::schema::NewOrderSingle>();
+		auto &dest_new = sim.get_last_msg<protocol_b::schema::NewOrderSingle>();
 		std::cout << "venue received: " << dest_new << std::endl;
 
 		/* Venue sends ExecutionReport */
@@ -198,7 +199,7 @@ int main(int argc, char **argv)
 		/* Client received ExecutionReport */
 		if (!sim.is_msg_received_by_source()) [[unlikely]]
 			return -1;
-		auto &src_new_ack = sim.get_last_msg<hyper::protocol_a::schema::ExecutionReport>();
+		auto &src_new_ack = sim.get_last_msg<protocol_a::schema::ExecutionReport>();
 		std::cout << "client received: " << src_new_ack << std::endl;
 
 		/* Client sends CancelReplaceRequest */
@@ -210,7 +211,7 @@ int main(int argc, char **argv)
 		/* Venue received CancelReplaceRequest */
 		if (!sim.is_msg_received_by_source()) [[unlikely]]
 			return -1;
-		auto &dst_amend = sim.get_last_msg<hyper::protocol_b::schema::CancelReplaceRequest>();
+		auto &dst_amend = sim.get_last_msg<protocol_b::schema::CancelReplaceRequest>();
 		std::cout << "venue received: " << dst_amend << std::endl;
 	}
 

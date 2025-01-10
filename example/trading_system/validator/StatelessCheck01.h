@@ -1,7 +1,7 @@
 #pragma once
 
 #include <framework/utility/RejectInfo.h>
-#include <application/message/core/Messages.h>
+#include <example/trading_system/message/core/Messages.h>
 #include <type_traits>
 #include <cstdint>
 
@@ -45,7 +45,7 @@ namespace hyper
         {
             if (price * size > limit) [[unlikely]]
                 return RejectInfo{"Validation Failed Check 01",
-                                  framework::InteranlRejectCode::Validation_Failed_Check_01};
+                                  framework::InteranlRejectCode::Validatator_Validation_Failed};
 
             return RejectInfo{};
         }

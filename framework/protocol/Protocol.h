@@ -30,11 +30,9 @@ namespace hyper::framework
         std::size_t on_data(std::string_view data) noexcept;
 
         template <typename Msg>
-        [[nodiscard]] RejectInfo send_to_transport(Msg &msg) noexcept;
+        RejectInfo send_to_transport(Msg &msg) noexcept;
         template <typename Msg>
-        void persist_session_message(Msg &msg) {}
-        template <typename Msg>
-        void publish_session_message(Msg &msg) {}
+        void persist_protocol_message(Msg &msg) {}
 
         [[nodiscard]] constexpr Transport &transport() noexcept { return transport_; }
         [[nodiscard]] constexpr const Transport &transport() const noexcept { return transport_; }

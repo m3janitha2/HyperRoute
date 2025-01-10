@@ -1,8 +1,8 @@
 #pragma once
 
 #include <framework/protocol/Protocol.h>
-#include <application/session/DestinationSessionProtocolB.h>
-#include <application/message/protocol_b/Messages.h>
+#include <example/trading_system/session/DestinationSessionProtocolB.h>
+#include <example/trading_system/message/protocol_b/Messages.h>
 
 namespace hyper::protocol_b
 {

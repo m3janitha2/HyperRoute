@@ -1,8 +1,8 @@
 #pragma once
 
 #include <framework/protocol/Protocol.h>
-#include <application/session/SourceSessionProtocolA.h>
-#include <application/message/protocol_a/Messages.h>
+#include <example/trading_system/session/SourceSessionProtocolA.h>
+#include <example/trading_system/message/protocol_a/Messages.h>
 #include <type_traits>
 
 namespace hyper::protocol_a

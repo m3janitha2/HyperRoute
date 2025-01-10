@@ -24,8 +24,8 @@ namespace hyper::framework
                                const DestinationRouterPtrVarient &destination_router,
                                const SourceRouter &source_router)
             : transport_{transport},
-              destination_router_{const_cast<DestinationRouterPtrVarient&>(destination_router)},
-              source_router_{const_cast<SourceRouter&>(source_router)} {}
+              destination_router_{const_cast<DestinationRouterPtrVarient &>(destination_router)},
+              source_router_{const_cast<SourceRouter &>(source_router)} {}
 
         SourceSession(const SourceSession &) = delete;
         SourceSession &operator=(const SourceSession &) = delete;
@@ -58,10 +58,10 @@ namespace hyper::framework
         [[nodiscard]] constexpr bool is_connected() const noexcept { return connected_; }
 
     private:
+        Transport &transport_;
         DestinationRouterPtrVarient &destination_router_;
         SourceRouter &source_router_;
         SourceEnricher enricher_{};
-        Transport &transport_;
         bool connected_{true};
     };
 

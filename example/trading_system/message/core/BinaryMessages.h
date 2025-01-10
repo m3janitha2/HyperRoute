@@ -1,7 +1,7 @@
 #pragma once
 
 #include <framework/message/BinaryMessage.h>
-#include <application/message/core/Messages.h>
+#include <example/trading_system/message/core/Messages.h>
 
 namespace hyper::trading::binary
 {

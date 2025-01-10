@@ -2,8 +2,8 @@
 
 #include <framework/utility/RejectInfo.h>
 #include <framework/validator/Validator.h>
-#include <application/message/core/Messages.h>
-#include <application/validator/StatelessCheck01.h>
+#include <example/trading_system/message/core/Messages.h>
+#include <example/trading_system/validator/StatelessCheck01.h>
 #include <concepts>
 #include <type_traits>
 #include <cstdint>
@@ -47,7 +47,7 @@ namespace hyper
                 return check.on_execution_report(std::forward<Args>(args)...);
             else if constexpr (std::derived_from<Msg, trading::CancelReject>)
                 return check.on_cancel_reject(std::forward<Args>(args)...);
-        };
+        }
 
         /* Checks */
         StatelessCheck01 check_01_{};
