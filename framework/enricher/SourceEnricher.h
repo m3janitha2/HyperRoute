@@ -11,9 +11,9 @@ namespace hyper::framework
         SourceEnricher &operator=(const SourceEnricher &) = delete;
 
         template <typename Msg>
-        RejectInfo enrich_message_from_transport(Msg &msg) const noexcept { return RejectInfo{}; }
+        RejectInfo enrich_message_from_transport([[maybe_unused]] Msg &msg) const noexcept { return RejectInfo{}; }
 
         template <typename Msg>
-        RejectInfo enrich_message_to_transport(Msg &msg) const noexcept { return RejectInfo{}; }
+        RejectInfo enrich_message_to_transport([[maybe_unused]] Msg &msg) const noexcept { return RejectInfo{}; }
     };
 }

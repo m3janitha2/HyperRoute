@@ -140,17 +140,17 @@ namespace hyper::protocol_b
             transport().disconnect();
     }
 
-    SessionRejectInfo ProtocolB::validate_logon(schema::Logon &msg)
+    SessionRejectInfo ProtocolB::validate_logon([[maybe_unused]] schema::Logon &msg)
     {
         return SessionRejectInfo();
     }
 
-    SessionRejectInfo ProtocolB::validate_logout(schema::Logout &msg)
+    SessionRejectInfo ProtocolB::validate_logout([[maybe_unused]] schema::Logout &msg)
     {
         return SessionRejectInfo();
     }
 
-    SessionRejectInfo ProtocolB::validate_heartbeat(schema::Heartbeat &msg)
+    SessionRejectInfo ProtocolB::validate_heartbeat([[maybe_unused]] schema::Heartbeat &msg)
     {
         return SessionRejectInfo();
     }

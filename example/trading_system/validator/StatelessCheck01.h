@@ -23,17 +23,17 @@ namespace hyper
             return validate(price, size, limit);
         }
 
-        RejectInfo on_cancel_request(std::uint64_t price, std::uint64_t size, std::uint64_t limit)
+        RejectInfo on_cancel_request([[maybe_unused]] std::uint64_t price, [[maybe_unused]] std::uint64_t size, [[maybe_unused]] std::uint64_t limit)
         {
             return RejectInfo{};
         }
 
-        RejectInfo on_execution_report(std::uint64_t price, std::uint64_t size, std::uint64_t limit)
+        RejectInfo on_execution_report([[maybe_unused]] std::uint64_t price, [[maybe_unused]] std::uint64_t size, [[maybe_unused]] std::uint64_t limit)
         {
             return RejectInfo{};
         }
 
-        RejectInfo on_cancel_reject(std::uint64_t price, std::uint64_t size, std::uint64_t limit)
+        RejectInfo on_cancel_reject([[maybe_unused]] std::uint64_t price, [[maybe_unused]] std::uint64_t size, [[maybe_unused]] std::uint64_t limit)
         {
             return RejectInfo{};
         }

@@ -51,10 +51,10 @@ namespace hyper::framework
 		std::unordered_map<UID, DestinationSessionPtrVarient &> uid_to_destination_{};
 	};
 
-	inline auto* DestinationRouterRoundRobin::get_next_session() noexcept
+	inline auto *DestinationRouterRoundRobin::get_next_session() noexcept
 	{
-		index_ = (index_++) % destinations_.size();
-		return destinations_[0];
+		index_ = (index_ + 1) % destinations_.size();
+		return destinations_[index_];
 	}
 
 	template <typename Msg>

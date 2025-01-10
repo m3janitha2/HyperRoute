@@ -146,17 +146,17 @@ namespace hyper::protocol_a
             transport().disconnect();
     }
 
-    SessionRejectInfo protocol_a::ProtocolA::validate_logon(schema::Logon &msg)
+    SessionRejectInfo protocol_a::ProtocolA::validate_logon([[maybe_unused]] schema::Logon &msg)
     {
         return SessionRejectInfo();
     }
 
-    SessionRejectInfo protocol_a::ProtocolA::validate_logout(schema::Logout &msg)
+    SessionRejectInfo protocol_a::ProtocolA::validate_logout([[maybe_unused]] schema::Logout &msg)
     {
         return SessionRejectInfo();
     }
 
-    SessionRejectInfo protocol_a::ProtocolA::validate_heartbeat(schema::Heartbeat &msg)
+    SessionRejectInfo protocol_a::ProtocolA::validate_heartbeat([[maybe_unused]] schema::Heartbeat &msg)
     {
         return SessionRejectInfo();
     }
