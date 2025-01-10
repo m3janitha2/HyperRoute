@@ -18,8 +18,8 @@ namespace hyper::framework
         SourceRouter& operator=(const SourceRouter&) = delete;
 
         template <typename Msg>
-        RejectInfo send_message_to_source(Msg &msg);
-        void update_routing_info(UID uid, SourceSessionPtrVarient source_session_varient);
+        [[nodiscard]] RejectInfo send_message_to_source(Msg &msg) noexcept;
+        void update_routing_info(UID uid, SourceSessionPtrVarient source_session_varient) noexcept;
 
         std::unordered_map<UID, SourceSessionPtrVarient> uid_to_source_session_{};
     };

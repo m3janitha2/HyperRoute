@@ -26,12 +26,14 @@ namespace hyper::framework
 		RejectInfo on_message_from_source(Msg &msg) noexcept
 			requires RouterMsg<Msg>
 		{
-			if (auto reject_info = send_message_to_desination(msg); reject_info != true)
+			if (auto reject_info = send_message_to_desination(msg);
+				reject_info != true) [[unlikely]]
 				return reject_info;
 
 			return RejectInfo{};
 		}
 
+	private:
 		auto next_session_index() noexcept
 		{
 			return index_++ % destinations_.size();
@@ -55,7 +57,8 @@ namespace hyper::framework
 				try
 				{
 					auto uid = msg.uid();
-					if (auto it = uid_to_destination_.find(uid); it != uid_to_destination_.end())
+					if (auto it = uid_to_destination_.find(uid);
+						it != uid_to_destination_.end()) [[likely]]
 					{
 						auto &destination = it->second;
 						return send_message_to_desination(msg, destination);
@@ -83,11 +86,11 @@ namespace hyper::framework
 							  destination_session);
 		}
 
-	private:
-		void insert_destination_by_uid(UID uid, DestinationSessionPtrVarient &destination_session)
+		void insert_destination_by_uid(UID uid, DestinationSessionPtrVarient &destination_session) noexcept
 		try
 		{
-			if (auto [it, ret] = uid_to_destination_.emplace(uid, destination_session); ret != true)
+			if (auto [it, ret] = uid_to_destination_.emplace(uid, destination_session);
+				ret != true) [[unlikely]]
 			{
 				std::cout << "Crtical Error" << std::endl;
 			}

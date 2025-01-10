@@ -7,7 +7,7 @@
 namespace hyper::framework
 {
     template <typename Msg>
-    RejectInfo SourceRouter::send_message_to_source(Msg &msg)
+    RejectInfo SourceRouter::send_message_to_source(Msg &msg) noexcept
     {
         auto uid = msg.uid();
         if (auto it = uid_to_source_session_.find(uid); it != uid_to_source_session_.end())
@@ -23,7 +23,7 @@ namespace hyper::framework
         }
     }
 
-    void SourceRouter::update_routing_info(UID uid, SourceSessionPtrVarient source_session_varient)
+    void SourceRouter::update_routing_info(UID uid, SourceSessionPtrVarient source_session_varient) noexcept
     {
         uid_to_source_session_.emplace(uid, source_session_varient);
     }
