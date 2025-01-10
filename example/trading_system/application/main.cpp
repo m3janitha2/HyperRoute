@@ -28,7 +28,7 @@ struct SubSystem
 	ValidatorX validator{};
 	ValidatorPtrVarient validator_varient{&validator};
 	protocol_b::ProtocolB destination_protocol{source_router, validator_varient};
-	DestinationSessionPtrVarient destination_session_varient{&destination_protocol.session()};
+	const DestinationSessionPtrVarient destination_session_varient{&destination_protocol.session()};
 	std::vector<DestinationSessionPtrVarient *> destination_sessions{const_cast<DestinationSessionPtrVarient *>(&destination_session_varient)};
 	framework::DestinationRouterOneToOne dest_router_one_to_one{destination_session_varient};
 	framework::DestinationRouterRoundRobin dest_router_round_robin{destination_sessions};
@@ -117,8 +117,8 @@ struct Simulator
 template <typename T>
 struct RandomGen
 {
-	RandomGen(T start, T end, std::mt19937 gen)
-		: dist(start, end), gen(gen) {}
+	RandomGen(T start, T end, std::uint32_t seed = 1)
+		: dist(start, end), gen(seed) {}
 
 	std::uniform_int_distribution<T> dist;
 	std::mt19937 gen;
@@ -151,27 +151,25 @@ int main(int argc, char **argv)
 	std::vector<protocol_b::schema::ExecutionReport> new_acks{};
 	std::vector<protocol_a::schema::CancelReplaceRequest> cancel_replaces{};
 
-	std::random_device rd;
-	std::mt19937 gen(rd());
-	RandomGen<std::uint32_t> g_uint32(1, 1000, gen);
-	RandomGen<std::uint64_t> g_uint64(1, 1000, gen);
-	RandomGen<int> g_int(1, 1000, gen);
+	RandomGen<std::uint32_t> g_uint32(1, 1000);
+	RandomGen<std::uint64_t> g_uint64(1, 1000);
+	RandomGen<int> g_int(1, 1000);
 
 	for (auto i{0}; i < number_of_messages; i++)
 	{
 		new_orders.emplace_back(protocol_a::schema::NewOrderSingle{.a = g_uint32.next(),
-																		  .b = g_uint32.next(),
-																		  .cl_ord_id = g_uint64.next()});
+																   .b = g_uint32.next(),
+																   .cl_ord_id = g_uint64.next()});
 		new_acks.emplace_back(protocol_b::schema::ExecutionReport{.a = g_int.next(),
-																		 .b = g_int.next(),
-																		 .c = g_int.next()});
+																  .b = g_int.next(),
+																  .c = g_int.next()});
 		cancel_replaces.emplace_back(protocol_a::schema::CancelReplaceRequest{.a = g_uint32.next(),
-																					 .b = g_uint32.next(),
-																					 .cl_ord_id = g_uint64.next(),
-																					 .orig_cl_ord_id = g_uint64.next()});
+																			  .b = g_uint32.next(),
+																			  .cl_ord_id = g_uint64.next(),
+																			  .orig_cl_ord_id = g_uint64.next()});
 	}
 
-	RandomGen<std::size_t> g_size_t(0, number_of_messages - 1, gen);
+	RandomGen<std::size_t> g_size_t(0, number_of_messages - 1);
 
 	for (auto i{0}; i < number_of_messages; i++)
 	{
