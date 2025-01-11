@@ -148,16 +148,16 @@ namespace hyper::protocol_a
 
     SessionRejectInfo protocol_a::ProtocolA::validate_logon([[maybe_unused]] schema::Logon &msg)
     {
-        return SessionRejectInfo();
+        return SessionRejectInfo{};
     }
 
     SessionRejectInfo protocol_a::ProtocolA::validate_logout([[maybe_unused]] schema::Logout &msg)
     {
-        return SessionRejectInfo();
+        return SessionRejectInfo{};
     }
 
     SessionRejectInfo protocol_a::ProtocolA::validate_heartbeat([[maybe_unused]] schema::Heartbeat &msg)
     {
-        return SessionRejectInfo();
+        return SessionRejectInfo{};
     }
 }

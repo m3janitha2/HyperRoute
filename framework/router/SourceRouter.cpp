@@ -23,7 +23,7 @@ namespace hyper::framework
         }
     }
 
-    void SourceRouter::update_routing_info(UID uid, SourceSessionPtrVarient source_session_varient) noexcept
+    void SourceRouter::update_source_routing_info(UID uid, SourceSessionPtrVarient source_session_varient) noexcept
     {
         uid_to_source_session_.emplace(uid, source_session_varient);
     }

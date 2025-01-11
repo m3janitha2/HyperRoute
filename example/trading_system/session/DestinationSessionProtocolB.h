@@ -23,8 +23,8 @@ namespace hyper::protocol_b
             : DestinationSession<DestinationSessionProtocolB>{transport, source_router, validator} {}
 
         /* TransportEvents */
-        void on_connect_impl();
-        void on_disconnect_impl();
+        void on_connect_impl() noexcept;
+        void on_disconnect_impl() noexcept;
 
         /* Messages from the source to the destination */
         void on_message_from_transport_impl(session::ExecutionReport &msg);
@@ -54,6 +54,9 @@ namespace hyper::protocol_b
                                                       protocol_b::session::CancelReplaceRequest &dst_msg);
         RejectInfo encode_message_to_destination_impl(protocol_a::session::CancelRequest &src_msg,
                                                       protocol_b::session::CancelRequest &dst_msg);
+        template <typename SourceMsg, typename DestinationMsg>
+        void update_destination_routing_info_impl(SourceMsg &src_msg,
+                                                  DestinationMsg &dst_msg) noexcept;
 
     private:
         using SrcClOrdIDType = std::uint64_t;
@@ -70,13 +73,30 @@ namespace hyper::protocol_b
         SrcRoutingInfoByDestClOrdIDType src_routing_info_by_dest_cl_ord_id_{optimal_order_count};
 
         using DestinationIDGenarator = framework::UIDGenerator;
-        DestinationIDGenarator &venue_id_generator_{DestinationIDGenarator::instance()};
+        DestinationIDGenarator &destination_id_generator_{DestinationIDGenarator::instance()};
     };
 
     template <typename SourceMsg, typename DestinationMsg>
-    inline RejectInfo DestinationSessionProtocolB::encode_message_to_destination_impl(SourceMsg &src_msg, DestinationMsg &dst_msg)
+    inline RejectInfo DestinationSessionProtocolB::encode_message_to_destination_impl([[maybe_unused]] SourceMsg &src_msg,
+                                                                                      [[maybe_unused]] DestinationMsg &dst_msg)
     {
         std::cout << "unknown message" << std::endl;
         return RejectInfo{};
+    }
+
+    template <typename SourceMsg, typename DestinationMsg>
+    inline void DestinationSessionProtocolB::update_destination_routing_info_impl([[maybe_unused]] SourceMsg &src_msg,
+                                                                                  [[maybe_unused]] DestinationMsg &dst_msg) noexcept
+    {
+    }
+
+    template <>
+    inline void DestinationSessionProtocolB::update_destination_routing_info_impl<protocol_a::session::NewOrderSingle, protocol_b::session::NewOrderSingle>(protocol_a::session::NewOrderSingle &src_msg,
+                                                                                                                                                            protocol_b::session::NewOrderSingle &dst_msg) noexcept
+    {
+        src_routing_info_by_dest_cl_ord_id_.emplace(std::piecewise_construct,
+                                                    std::forward_as_tuple(dst_msg.msg().c),
+                                                    std::forward_as_tuple(src_msg.cl_ord_id(), src_msg.uid()));
+        dest_cl_ord_id_by_src_cl_ord_id_.emplace(src_msg.cl_ord_id(), dst_msg.msg().c);
     }
 }

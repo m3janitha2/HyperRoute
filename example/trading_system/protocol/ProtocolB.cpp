@@ -142,17 +142,17 @@ namespace hyper::protocol_b
 
     SessionRejectInfo ProtocolB::validate_logon([[maybe_unused]] schema::Logon &msg)
     {
-        return SessionRejectInfo();
+        return SessionRejectInfo{};
     }
 
     SessionRejectInfo ProtocolB::validate_logout([[maybe_unused]] schema::Logout &msg)
     {
-        return SessionRejectInfo();
+        return SessionRejectInfo{};
     }
 
     SessionRejectInfo ProtocolB::validate_heartbeat([[maybe_unused]] schema::Heartbeat &msg)
     {
-        return SessionRejectInfo();
+        return SessionRejectInfo{};
     }
 
 }

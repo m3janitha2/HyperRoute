@@ -6,6 +6,18 @@
 
 namespace hyper::framework
 {
+    /* Transport Abstraction */
+    /* - Sends messages to the wire and receives messages from the wire. */
+    /* - Implements protocols such as TCP, TCPDirect, UDP, etc. */
+    /* - Defines and uses a threading policy (e.g., single-threaded or thread pool). */
+    
+    template <typename T>
+    concept TransportCallbacksInf = requires(T t, std::string_view data) {
+        { t.on_connect() } -> std::same_as<void>;
+        { t.on_disconnect() } -> std::same_as<void>;
+        { t.on_data(data) } -> std::same_as<std::size_t>;
+    };
+
     struct TransportCallbacks
     {
         explicit TransportCallbacks(std::function<void()> connect_callback,

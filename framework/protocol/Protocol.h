@@ -19,7 +19,11 @@ namespace hyper::framework
     public:
         template <typename... Args>
         explicit Protocol(Args &&...args)
-            : session_{transport_, std::forward<Args>(args)...} {}
+            : session_{transport_, std::forward<Args>(args)...}
+        {
+            static_assert(TransportCallbacksInf<Protocol<ProtocolImpl, Session>>,
+                          "Protocol does not satisfy TransportCallbacksInf");
+        }
 
         Protocol(const Protocol &) = delete;
         Protocol &operator=(const Protocol &) = delete;
@@ -28,6 +32,10 @@ namespace hyper::framework
         void on_connect() noexcept;
         void on_disconnect() noexcept;
         std::size_t on_data(std::string_view data) noexcept;
+
+        RejectInfo connect();
+        RejectInfo disconnect();
+        [[nodiscard]] constexpr bool is_connected() const noexcept { return connected_; }
 
         template <typename Msg>
         RejectInfo send_to_transport(Msg &msg) noexcept;
@@ -39,8 +47,6 @@ namespace hyper::framework
 
         [[nodiscard]] constexpr const Session &session() const noexcept { return session_; }
         [[nodiscard]] constexpr Session &session() noexcept { return session_; }
-
-        [[nodiscard]] constexpr bool is_connected() const noexcept { return connected_; }
 
     private:
         TransportCallbacks transport_callbacks{[this]()
@@ -75,6 +81,18 @@ namespace hyper::framework
     {
         /* todox: reschedule heatbeat receiver */
         return this->impl().on_data_impl(data);
+    }
+
+    template <typename ProtocolImpl, typename Session>
+    inline RejectInfo Protocol<ProtocolImpl, Session>::connect()
+    {
+        return RejectInfo{};
+    }
+
+    template <typename ProtocolImpl, typename Session>
+    inline RejectInfo Protocol<ProtocolImpl, Session>::disconnect()
+    {
+        return RejectInfo{};
     }
 
     template <typename ProtocolImpl, typename Session>

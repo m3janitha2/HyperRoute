@@ -1,11 +1,20 @@
 #include <example/trading_system/session/DestinationSessionProtocolB.h>
+#include "DestinationSessionProtocolB.h"
 
 namespace hyper::protocol_b
 {
+    void DestinationSessionProtocolB::on_connect_impl() noexcept
+    {
+    }
+
+    void DestinationSessionProtocolB::on_disconnect_impl() noexcept
+    {
+    }
+
     void DestinationSessionProtocolB::on_message_from_transport_impl(protocol_b::session::ExecutionReport &dest_msg)
     {
-        protocol_a::schema::ExecutionReport s_msg{};
-        protocol_a::session::ExecutionReport src_msg{s_msg};
+        protocol_a::schema::ExecutionReport msg{};
+        protocol_a::session::ExecutionReport src_msg{msg};
 
         /* New Order Ack */
         if (auto it = src_routing_info_by_dest_cl_ord_id_.find(dest_msg.msg().c);
@@ -26,8 +35,8 @@ namespace hyper::protocol_b
 
     void DestinationSessionProtocolB::on_message_from_transport_impl(protocol_b::session::CancelReject &dest_msg)
     {
-        protocol_a::schema::CancelReject s_msg{};
-        protocol_a::session::CancelReject src_msg{s_msg};
+        protocol_a::schema::CancelReject msg{};
+        protocol_a::session::CancelReject src_msg{msg};
         procoess_message_from_transport(dest_msg, src_msg);
     }
 
@@ -64,31 +73,29 @@ namespace hyper::protocol_b
 
     RejectInfo DestinationSessionProtocolB::on_message_from_peer_impl(protocol_a::session::NewOrderSingle &src_msg)
     {
-        protocol_b::schema::NewOrderSingle s_msg{};
-        protocol_b::session::NewOrderSingle dst_msg{s_msg};
+        protocol_b::schema::NewOrderSingle msg{};
+        protocol_b::session::NewOrderSingle dst_msg{msg};
 
-        auto dest_cl_ord_id = venue_id_generator_.get_next_uid();
-        s_msg.c = dest_cl_ord_id;
-        src_routing_info_by_dest_cl_ord_id_.emplace(std::piecewise_construct,
-                                                    std::forward_as_tuple(dest_cl_ord_id),
-                                                    std::forward_as_tuple(src_msg.cl_ord_id(), src_msg.uid()));
-        dest_cl_ord_id_by_src_cl_ord_id_.emplace(src_msg.cl_ord_id(), dest_cl_ord_id);
-
+        auto dest_cl_ord_id = destination_id_generator_.get_next_uid();
+        msg.c = dest_cl_ord_id;
         return procoess_message_to_transport(src_msg, dst_msg);
     }
 
     RejectInfo DestinationSessionProtocolB::on_message_from_peer_impl(protocol_a::session::CancelReplaceRequest &src_msg)
     {
-        protocol_b::schema::CancelReplaceRequest s_msg{};
-        protocol_b::session::CancelReplaceRequest dst_msg{s_msg};
+        protocol_b::schema::CancelReplaceRequest msg{};
+        protocol_b::session::CancelReplaceRequest dst_msg{msg};
+
+        auto dest_cl_ord_id = destination_id_generator_.get_next_uid();
+        msg.c = dest_cl_ord_id;
 
         return procoess_message_to_transport(src_msg, dst_msg);
     }
 
     RejectInfo DestinationSessionProtocolB::on_message_from_peer_impl(protocol_a::session::CancelRequest &src_msg)
     {
-        protocol_b::schema::CancelRequest s_msg{};
-        protocol_b::session::CancelRequest dst_msg{s_msg};
+        protocol_b::schema::CancelRequest msg{};
+        protocol_b::session::CancelRequest dst_msg{msg};
         return procoess_message_to_transport(src_msg, dst_msg);
     }
 
