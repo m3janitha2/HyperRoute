@@ -54,9 +54,12 @@ namespace hyper::protocol_b
                                                       protocol_b::session::CancelReplaceRequest &dst_msg);
         RejectInfo encode_message_to_destination_impl(protocol_a::session::CancelRequest &src_msg,
                                                       protocol_b::session::CancelRequest &dst_msg);
-        template <typename SourceMsg, typename DestinationMsg>
-        void update_destination_routing_info_impl(SourceMsg &src_msg,
-                                                  DestinationMsg &dst_msg) noexcept;
+        void update_destination_routing_info_impl(protocol_a::session::NewOrderSingle &src_msg,
+                                                  protocol_b::session::NewOrderSingle &dst_msg) noexcept;
+        void update_destination_routing_info_impl(protocol_a::session::CancelReplaceRequest &src_msg,
+                                                  protocol_b::session::CancelReplaceRequest &dst_msg) noexcept;
+        void update_destination_routing_info_impl(protocol_a::session::CancelRequest &src_msg,
+                                                  protocol_b::session::CancelRequest &dst_msg) noexcept;
 
     private:
         using SrcClOrdIDType = std::uint64_t;
@@ -82,21 +85,5 @@ namespace hyper::protocol_b
     {
         std::cout << "unknown message" << std::endl;
         return RejectInfo{};
-    }
-
-    template <typename SourceMsg, typename DestinationMsg>
-    inline void DestinationSessionProtocolB::update_destination_routing_info_impl([[maybe_unused]] SourceMsg &src_msg,
-                                                                                  [[maybe_unused]] DestinationMsg &dst_msg) noexcept
-    {
-    }
-
-    template <>
-    inline void DestinationSessionProtocolB::update_destination_routing_info_impl<protocol_a::session::NewOrderSingle, protocol_b::session::NewOrderSingle>(protocol_a::session::NewOrderSingle &src_msg,
-                                                                                                                                                            protocol_b::session::NewOrderSingle &dst_msg) noexcept
-    {
-        src_routing_info_by_dest_cl_ord_id_.emplace(std::piecewise_construct,
-                                                    std::forward_as_tuple(dst_msg.msg().c),
-                                                    std::forward_as_tuple(src_msg.cl_ord_id(), src_msg.uid()));
-        dest_cl_ord_id_by_src_cl_ord_id_.emplace(src_msg.cl_ord_id(), dst_msg.msg().c);
     }
 }

@@ -130,4 +130,23 @@ namespace hyper::protocol_b
         dest_msg.b = static_cast<int>(src_msg.msg().b);
         return RejectInfo{};
     }
+
+    inline void DestinationSessionProtocolB::update_destination_routing_info_impl(protocol_a::session::NewOrderSingle &src_msg,
+                                                                                  protocol_b::session::NewOrderSingle &dst_msg) noexcept
+    {
+        src_routing_info_by_dest_cl_ord_id_.emplace(std::piecewise_construct,
+                                                    std::forward_as_tuple(dst_msg.msg().c),
+                                                    std::forward_as_tuple(src_msg.cl_ord_id(), src_msg.uid()));
+        dest_cl_ord_id_by_src_cl_ord_id_.emplace(src_msg.cl_ord_id(), dst_msg.msg().c);
+    }
+
+    void DestinationSessionProtocolB::update_destination_routing_info_impl([[maybe_unused]] protocol_a::session::CancelReplaceRequest &src_msg,
+                                                                           [[maybe_unused]] protocol_b::session::CancelReplaceRequest &dst_msg) noexcept
+    {
+    }
+
+    void DestinationSessionProtocolB::update_destination_routing_info_impl([[maybe_unused]] protocol_a::session::CancelRequest &src_msg,
+                                                                           [[maybe_unused]] protocol_b::session::CancelRequest &dst_msg) noexcept
+    {
+    }
 }

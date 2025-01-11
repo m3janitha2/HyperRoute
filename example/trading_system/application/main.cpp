@@ -81,20 +81,26 @@ struct Simulator
 
 	void set_last_recevied_msg(std::string_view data)
 	{
-		memcpy(buffer_, data.data(), data.length());
+		size_t length = sizeof(buffer_);
+		for (size_t i = 0; i < length; ++i)
+			buffer_[i] = data[i]; // Volatile write
+								  // memcpy(buffer_, data.data(), data.length());
 	}
 
 	template <typename Msg>
-	Msg &get_last_msg()
+	const Msg &get_last_msg()
 	{
-		return *reinterpret_cast<Msg *>(buffer_);
+		size_t length = sizeof(buffer_);
+		for (size_t i = 0; i < length; ++i)
+			buffer[i] = buffer_[i]; // Volatile write
+		return *reinterpret_cast<Msg *>(buffer);
 	}
 
-	[[nodiscard]] constexpr bool is_msg_received_by_destination() const noexcept { return msg_received_by_destination_; }
-	constexpr void set_msg_received_by_destination(bool is_received) noexcept { msg_received_by_destination_ = is_received; }
+	[[nodiscard]] bool is_msg_received_by_destination() const noexcept { return msg_received_by_destination_; }
+	void set_msg_received_by_destination(bool is_received) noexcept { msg_received_by_destination_ = is_received; }
 
-	[[nodiscard]] constexpr bool is_msg_received_by_source() const noexcept { return msg_received_by_destination_; }
-	constexpr void set_msg_received_by_source(bool is_received) noexcept { msg_received_by_destination_ = is_received; }
+	[[nodiscard]] bool is_msg_received_by_source() const noexcept { return msg_received_by_destination_; }
+	void set_msg_received_by_source(bool is_received) noexcept { msg_received_by_destination_ = is_received; }
 
 	void print_stat()
 	{
@@ -105,13 +111,14 @@ struct Simulator
 	}
 
 	SubSystem subsystem_{};
-	bool msg_received_by_destination_{false};
-	bool msg_received_by_source_{false};
+	volatile bool msg_received_by_destination_{false};
+	volatile bool msg_received_by_source_{false};
 	std::size_t no_of_msgs_sent_by_src_{0};
 	std::size_t no_of_msgs_received_by_src_{0};
 	std::size_t no_of_msgs_sent_by_dest_{0};
 	std::size_t no_of_msgs_received_by_dest_{0};
-	char buffer_[1024]{};
+	volatile char buffer_[1024]{};
+	char buffer[1024]{};
 };
 
 template <typename T>
