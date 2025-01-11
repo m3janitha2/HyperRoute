@@ -81,19 +81,13 @@ struct Simulator
 
 	void set_last_recevied_msg(std::string_view data)
 	{
-		size_t length = sizeof(buffer_);
-		for (size_t i = 0; i < length; ++i)
-			buffer_[i] = data[i]; // Volatile write
-								  // memcpy(buffer_, data.data(), data.length());
+		memcpy(buffer_, data.data(), data.length());
 	}
 
 	template <typename Msg>
 	const Msg &get_last_msg()
 	{
-		size_t length = sizeof(buffer_);
-		for (size_t i = 0; i < length; ++i)
-			buffer[i] = buffer_[i]; // Volatile write
-		return *reinterpret_cast<Msg *>(buffer);
+		return *reinterpret_cast<Msg *>(buffer_);
 	}
 
 	[[nodiscard]] bool is_msg_received_by_destination() const noexcept { return msg_received_by_destination_; }
@@ -117,8 +111,7 @@ struct Simulator
 	std::size_t no_of_msgs_received_by_src_{0};
 	std::size_t no_of_msgs_sent_by_dest_{0};
 	std::size_t no_of_msgs_received_by_dest_{0};
-	volatile char buffer_[1024]{};
-	char buffer[1024]{};
+	char buffer_[1024]{};
 };
 
 template <typename T>
