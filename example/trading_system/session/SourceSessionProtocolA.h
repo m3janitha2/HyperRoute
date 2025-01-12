@@ -26,19 +26,20 @@ namespace hyper::protocol_a
         void on_disconnect_impl() noexcept;
 
         /* Messages from transport */
-        template <typename Msg>
-        void on_message_from_transport_impl(Msg &msg) noexcept;
         void on_message_from_transport_impl(session::NewOrderSingle &msg) noexcept;
         void on_message_from_transport_impl(session::CancelReplaceRequest &msg) noexcept;
         void on_message_from_transport_impl(session::CancelRequest &msg) noexcept;
 
         /* Internal rejects */
-        void rejecet_message_from_transport_impl(session::NewOrderSingle &msg, RejectInfo &reject_info) noexcept;
-        void rejecet_message_from_transport_impl(session::CancelReplaceRequest &msg, RejectInfo &reject_info) noexcept;
-        void rejecet_message_from_transport_impl(session::CancelRequest &msg, RejectInfo &reject_info) noexcept;
+        void rejecet_message_from_transport_impl(session::NewOrderSingle &msg,
+                                                 RejectInfo &reject_info) noexcept;
+        void rejecet_message_from_transport_impl(session::CancelReplaceRequest &msg,
+                                                 RejectInfo &reject_info) noexcept;
+        void rejecet_message_from_transport_impl(session::CancelRequest &msg,
+                                                 RejectInfo &reject_info) noexcept;
 
         template <typename Msg>
-        void update_routing_info_impl(Msg &msg);
+        void update_routing_info_impl(Msg &msg) noexcept;
 
         /* Messages from the peer session to the transport */
         RejectInfo on_message_from_peer_impl(session::ExecutionReport &msg) noexcept;
@@ -54,17 +55,20 @@ namespace hyper::protocol_a
     };
 
     template <typename Msg>
-    inline void SourceSessionProtocolA::on_message_from_transport_impl(Msg &msg) noexcept
-    {
-        std::cout << "unknown source message" << std::endl;
-    }
-
-    template <typename Msg>
-    inline void SourceSessionProtocolA::update_routing_info_impl(Msg &msg)
+    inline void SourceSessionProtocolA::update_routing_info_impl(Msg &msg) noexcept
+    try
     {
         if constexpr (std::is_same_v<Msg, session::NewOrderSingle>)
         {
-            cl_ord_id_to_uid_.emplace(msg.msg().cl_ord_id, msg.uid());
+            if (auto [it, ret] = cl_ord_id_to_uid_.try_emplace(msg.msg().cl_ord_id, msg.uid());
+                ret != true)
+                std::cout << "Failed to update source ruting info. cl_ord_id:" << msg.msg().cl_ord_id
+                          << " uid:" << msg.uid() << std::endl;
         }
+    }
+    catch (std::exception &err)
+    {
+        std::cout << "Critical Error. Failed to update source ruting info. cl_ord_id:" << msg.msg().cl_ord_id
+                  << " uid:" << msg.uid() << " error:" << err.what() << std::endl;
     }
 }

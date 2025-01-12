@@ -11,7 +11,7 @@ namespace hyper::protocol_b
     {
     }
 
-    void DestinationSessionProtocolB::on_message_from_transport_impl(protocol_b::session::ExecutionReport &dest_msg)
+    void DestinationSessionProtocolB::on_message_from_transport_impl(protocol_b::session::ExecutionReport &dest_msg) noexcept
     {
         protocol_a::schema::ExecutionReport msg{};
         protocol_a::session::ExecutionReport src_msg{msg};
@@ -33,7 +33,7 @@ namespace hyper::protocol_b
         procoess_message_from_transport(dest_msg, src_msg);
     }
 
-    void DestinationSessionProtocolB::on_message_from_transport_impl(protocol_b::session::CancelReject &dest_msg)
+    void DestinationSessionProtocolB::on_message_from_transport_impl(protocol_b::session::CancelReject &dest_msg) noexcept
     {
         protocol_a::schema::CancelReject msg{};
         protocol_a::session::CancelReject src_msg{msg};
@@ -42,7 +42,7 @@ namespace hyper::protocol_b
 
     /* todox: move to codec */
     RejectInfo DestinationSessionProtocolB::decode_message_from_destination_impl(protocol_b::session::ExecutionReport &dst_msg,
-                                                                                 protocol_a::session::ExecutionReport &src_msg)
+                                                                                 protocol_a::session::ExecutionReport &src_msg) noexcept
     {
         // std::cout << "decode_message_from_destination:" << dst_msg << std::endl;
         auto &msg = src_msg.msg();
@@ -52,7 +52,7 @@ namespace hyper::protocol_b
     }
 
     RejectInfo DestinationSessionProtocolB::decode_message_from_destination_impl(protocol_b::session::CancelReject &dst_msg,
-                                                                                 protocol_a::session::CancelReject &src_msg)
+                                                                                 protocol_a::session::CancelReject &src_msg) noexcept
     {
         // std::cout << "decode_message_from_destination:" << dst_msg << std::endl;
         auto &msg = src_msg.msg();
@@ -61,17 +61,19 @@ namespace hyper::protocol_b
         return RejectInfo{};
     }
 
-    void DestinationSessionProtocolB::rejecet_message_from_transport_impl(protocol_b::session::ExecutionReport &msg, RejectInfo &reject_info)
+    void DestinationSessionProtocolB::rejecet_message_from_transport_impl(protocol_b::session::ExecutionReport &msg,
+                                                                          RejectInfo &reject_info) noexcept
     {
         std::cout << "message rejected. reason:" << reject_info << " msg:" << msg << std::endl;
     }
 
-    void DestinationSessionProtocolB::rejecet_message_from_transport_impl(protocol_b::session::CancelReject &msg, RejectInfo &reject_info)
+    void DestinationSessionProtocolB::rejecet_message_from_transport_impl(protocol_b::session::CancelReject &msg,
+                                                                          RejectInfo &reject_info) noexcept
     {
         std::cout << "message rejected. reason:" << reject_info << " msg:" << msg << std::endl;
     }
 
-    RejectInfo DestinationSessionProtocolB::on_message_from_peer_impl(protocol_a::session::NewOrderSingle &src_msg)
+    RejectInfo DestinationSessionProtocolB::on_message_from_peer_impl(protocol_a::session::NewOrderSingle &src_msg) noexcept
     {
         protocol_b::schema::NewOrderSingle msg{};
         protocol_b::session::NewOrderSingle dst_msg{msg};
@@ -81,7 +83,7 @@ namespace hyper::protocol_b
         return procoess_message_to_transport(src_msg, dst_msg);
     }
 
-    RejectInfo DestinationSessionProtocolB::on_message_from_peer_impl(protocol_a::session::CancelReplaceRequest &src_msg)
+    RejectInfo DestinationSessionProtocolB::on_message_from_peer_impl(protocol_a::session::CancelReplaceRequest &src_msg) noexcept
     {
         protocol_b::schema::CancelReplaceRequest msg{};
         protocol_b::session::CancelReplaceRequest dst_msg{msg};
@@ -92,7 +94,7 @@ namespace hyper::protocol_b
         return procoess_message_to_transport(src_msg, dst_msg);
     }
 
-    RejectInfo DestinationSessionProtocolB::on_message_from_peer_impl(protocol_a::session::CancelRequest &src_msg)
+    RejectInfo DestinationSessionProtocolB::on_message_from_peer_impl(protocol_a::session::CancelRequest &src_msg) noexcept
     {
         protocol_b::schema::CancelRequest msg{};
         protocol_b::session::CancelRequest dst_msg{msg};
@@ -100,7 +102,7 @@ namespace hyper::protocol_b
     }
 
     RejectInfo DestinationSessionProtocolB::encode_message_to_destination_impl(protocol_a::session::NewOrderSingle &src_msg,
-                                                                               protocol_b::session::NewOrderSingle &dst_msg)
+                                                                               protocol_b::session::NewOrderSingle &dst_msg) noexcept
     {
         // std::cout << "encode_message_to_destination:" << src_msg << std::endl;
         auto &dest_msg = dst_msg.msg();
@@ -112,7 +114,7 @@ namespace hyper::protocol_b
 
     /* todox: move to codec */
     RejectInfo DestinationSessionProtocolB::encode_message_to_destination_impl(protocol_a::session::CancelReplaceRequest &src_msg,
-                                                                               protocol_b::session::CancelReplaceRequest &dst_msg)
+                                                                               protocol_b::session::CancelReplaceRequest &dst_msg) noexcept
     {
         // std::cout << "encode_message_to_destination:" << src_msg << std::endl;
         auto &dest_msg = dst_msg.msg();
@@ -122,7 +124,7 @@ namespace hyper::protocol_b
     }
 
     RejectInfo DestinationSessionProtocolB::encode_message_to_destination_impl(protocol_a::session::CancelRequest &src_msg,
-                                                                               protocol_b::session::CancelRequest &dst_msg)
+                                                                               protocol_b::session::CancelRequest &dst_msg) noexcept
     {
         // std::cout << "encode_message_to_destination:" << src_msg << std::endl;
         auto &dest_msg = dst_msg.msg();

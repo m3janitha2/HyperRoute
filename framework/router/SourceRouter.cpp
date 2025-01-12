@@ -13,8 +13,8 @@ namespace hyper::framework
         if (auto it = uid_to_source_session_.find(uid); it != uid_to_source_session_.end())
         {
             auto source_session_var = it->second;
-            return std::visit([&msg](auto &&source_session)
-                              { return std::forward<decltype(source_session)>(source_session)->on_message_from_peer(msg); },
+            return std::visit([&msg]<typename Source>(Source &&source_session)
+                              { return std::forward<Source>(source_session)->on_message_from_peer(msg); },
                               source_session_var);
         }
         else
@@ -24,8 +24,16 @@ namespace hyper::framework
     }
 
     void SourceRouter::update_source_routing_info(UID uid, SourceSessionPtrVarient source_session_varient) noexcept
+    try
     {
-        uid_to_source_session_.emplace(uid, source_session_varient);
+        if (auto [it, ret] = uid_to_source_session_.try_emplace(uid, source_session_varient);
+            ret != true)
+            std::cout << "Failed update source routing for uid: " << uid << std::endl;
+    }
+    catch (std::exception &err)
+    {
+        std::cout << "Critical Error. Failed update source routing for uid: " << uid
+                  << " error:" << err.what() << std::endl;
     }
 
     /* todox: this is odd */

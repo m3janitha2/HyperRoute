@@ -27,33 +27,36 @@ namespace hyper::protocol_b
         void on_disconnect_impl() noexcept;
 
         /* Messages from the source to the destination */
-        void on_message_from_transport_impl(session::ExecutionReport &msg);
-        void on_message_from_transport_impl(session::CancelReject &msg);
+        void on_message_from_transport_impl(session::ExecutionReport &msg) noexcept;
+        void on_message_from_transport_impl(session::CancelReject &msg) noexcept;
 
         /* todox: move to codec */
         RejectInfo decode_message_from_destination_impl(protocol_b::session::ExecutionReport &dst_msg,
-                                                        protocol_a::session::ExecutionReport &src_msg);
+                                                        protocol_a::session::ExecutionReport &src_msg) noexcept;
         RejectInfo decode_message_from_destination_impl(protocol_b::session::CancelReject &dst_msg,
-                                                        protocol_a::session::CancelReject &src_msg);
+                                                        protocol_a::session::CancelReject &src_msg) noexcept;
 
-        void rejecet_message_from_transport_impl(protocol_b::session::ExecutionReport &msg, RejectInfo &reject_info);
-        void rejecet_message_from_transport_impl(protocol_b::session::CancelReject &msg, RejectInfo &reject_info);
+        void rejecet_message_from_transport_impl(protocol_b::session::ExecutionReport &msg,
+                                                 RejectInfo &reject_info) noexcept;
+        void rejecet_message_from_transport_impl(protocol_b::session::CancelReject &msg,
+                                                 RejectInfo &reject_info) noexcept;
 
         /* Messages from the destination to the source */
-        RejectInfo on_message_from_peer_impl(protocol_a::session::NewOrderSingle &msg);
-        RejectInfo on_message_from_peer_impl(protocol_a::session::CancelReplaceRequest &msg);
-        RejectInfo on_message_from_peer_impl(protocol_a::session::CancelRequest &msg);
+        RejectInfo on_message_from_peer_impl(protocol_a::session::NewOrderSingle &msg) noexcept;
+        RejectInfo on_message_from_peer_impl(protocol_a::session::CancelReplaceRequest &msg) noexcept;
+        RejectInfo on_message_from_peer_impl(protocol_a::session::CancelRequest &msg) noexcept;
 
         /* todox: move to codec */
         template <typename SourceMsg, typename DestinationMsg>
         RejectInfo encode_message_to_destination_impl(SourceMsg &src_msg,
-                                                      DestinationMsg &dst_msg);
+                                                      DestinationMsg &dst_msg) noexcept;
         RejectInfo encode_message_to_destination_impl(protocol_a::session::NewOrderSingle &src_msg,
-                                                      protocol_b::session::NewOrderSingle &dst_msg);
+                                                      protocol_b::session::NewOrderSingle &dst_msg) noexcept;
         RejectInfo encode_message_to_destination_impl(protocol_a::session::CancelReplaceRequest &src_msg,
-                                                      protocol_b::session::CancelReplaceRequest &dst_msg);
+                                                      protocol_b::session::CancelReplaceRequest &dst_msg) noexcept;
         RejectInfo encode_message_to_destination_impl(protocol_a::session::CancelRequest &src_msg,
-                                                      protocol_b::session::CancelRequest &dst_msg);
+                                                      protocol_b::session::CancelRequest &dst_msg) noexcept;
+
         void update_destination_routing_info_impl(protocol_a::session::NewOrderSingle &src_msg,
                                                   protocol_b::session::NewOrderSingle &dst_msg) noexcept;
         void update_destination_routing_info_impl(protocol_a::session::CancelReplaceRequest &src_msg,
@@ -81,7 +84,7 @@ namespace hyper::protocol_b
 
     template <typename SourceMsg, typename DestinationMsg>
     inline RejectInfo DestinationSessionProtocolB::encode_message_to_destination_impl([[maybe_unused]] SourceMsg &src_msg,
-                                                                                      [[maybe_unused]] DestinationMsg &dst_msg)
+                                                                                      [[maybe_unused]] DestinationMsg &dst_msg) noexcept
     {
         std::cout << "unknown message" << std::endl;
         return RejectInfo{};

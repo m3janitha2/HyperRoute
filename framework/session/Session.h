@@ -2,6 +2,7 @@
 
 #include <framework/utility/CrtpBase.h>
 #include <framework/utility/RejectInfo.h>
+#include <framework/transport/Transport.h>
 #include <type_traits>
 #include <concepts>
 
@@ -10,15 +11,20 @@ namespace hyper::framework
     /* application message session abstraction. */
     template <typename SessionImpl>
     concept SessionInf = requires(SessionImpl ds) {
-        { ds.on_connect_impl() } -> std::same_as<void>;
-        { ds.on_disconnect_impl() } -> std::same_as<void>;
+        { ds.impl().on_connect_impl() } -> std::same_as<void>;
+        { ds.impl().on_disconnect_impl() } -> std::same_as<void>;
     };
 
     template <typename SessionImpl>
     class Session : public CrtpBase<SessionImpl>
     {
     public:
-        explicit Session() = default;
+        explicit Session(Transport &transport)
+            : transport_(transport)
+        {
+            static_assert(SessionInf<Session<SessionImpl>>,
+                          "The Session implementation does not satisfy SessionInf");
+        }
 
         Session(const Session &) = delete;
         Session &operator=(const Session &) = delete;
@@ -28,8 +34,12 @@ namespace hyper::framework
         void on_disconnect() noexcept;
         [[nodiscard]] constexpr bool is_connected() const noexcept { return connected_; }
 
+        template <typename Msg>
+        RejectInfo send_message_to_transport(Msg &msg) noexcept;
+
     private:
         bool connected_{true};
+        Transport &transport_;
     };
 
     template <typename SessionImpl>
@@ -42,5 +52,13 @@ namespace hyper::framework
     inline void Session<SessionImpl>::on_disconnect() noexcept
     {
         this->impl().on_disconnect_impl();
+    }
+
+    template <typename SessionImpl>
+    template <typename Msg>
+    inline RejectInfo Session<SessionImpl>::send_message_to_transport(Msg &msg) noexcept
+    {
+        msg.update_out_timestamp();
+        return transport_.send_data(msg.data());
     }
 }
