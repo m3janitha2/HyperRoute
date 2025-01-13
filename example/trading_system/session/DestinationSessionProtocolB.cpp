@@ -15,6 +15,7 @@ namespace hyper::protocol_b
     {
         protocol_a::schema::ExecutionReport msg{};
         protocol_a::session::ExecutionReport src_msg{msg};
+
         procoess_message_from_transport(dest_msg, src_msg);
     }
 
@@ -22,6 +23,7 @@ namespace hyper::protocol_b
     {
         protocol_a::schema::CancelReject msg{};
         protocol_a::session::CancelReject src_msg{msg};
+        
         procoess_message_from_transport(dest_msg, src_msg);
     }
 
@@ -82,6 +84,7 @@ namespace hyper::protocol_b
     {
         protocol_b::schema::NewOrderSingle msg{};
         protocol_b::session::NewOrderSingle dst_msg{msg};
+
         handle_cl_ord_id_to_destination(dst_msg);
         return procoess_message_to_transport(src_msg, dst_msg);
     }
@@ -119,7 +122,6 @@ namespace hyper::protocol_b
         auto &dest_msg = dst_msg.msg();
         dest_msg.a = src_msg.msg().a;
         dest_msg.b = static_cast<int>(src_msg.msg().b);
-        // codec::encode(source,dest;)
         return RejectInfo{};
     }
 

@@ -1,5 +1,5 @@
 #include <framework/router/SourceRouter.h>
-#include <example/trading_system/session/SourceSessions.h>
+#include <framework/application_dependency/SourceSessions.h>
 #include <example/trading_system/message/protocol_a/Messages.h>
 
 #include <variant>

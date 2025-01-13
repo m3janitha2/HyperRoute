@@ -21,8 +21,8 @@ namespace hyper::framework
         explicit Protocol(Args &&...args)
             : session_{transport_, std::forward<Args>(args)...}
         {
-            static_assert(TransportCallbacksInf<Protocol<ProtocolImpl, Session>>,
-                          "Protocol does not satisfy TransportCallbacksInf");
+            static_assert(TransportCallbackInf<Protocol<ProtocolImpl, Session>>,
+                          "Protocol does not satisfy TransportCallbackInf");
         }
 
         Protocol(const Protocol &) = delete;

@@ -2,7 +2,6 @@
 #include <framework/utility/RejectInfo.h>
 #include <functional>
 #include <string_view>
-#include <iostream>
 
 namespace hyper::framework
 {
@@ -10,9 +9,9 @@ namespace hyper::framework
     /* - Sends messages to the wire and receives messages from the wire. */
     /* - Implements protocols such as TCP, TCPDirect, UDP, etc. */
     /* - Defines and uses a threading policy (e.g., single-threaded or thread pool). */
-    
+
     template <typename T>
-    concept TransportCallbacksInf = requires(T t, std::string_view data) {
+    concept TransportCallbackInf = requires(T t, std::string_view data) {
         { t.on_connect() } -> std::same_as<void>;
         { t.on_disconnect() } -> std::same_as<void>;
         { t.on_data(data) } -> std::same_as<std::size_t>;
@@ -38,20 +37,15 @@ namespace hyper::framework
         explicit Transport(const TransportCallbacks &transport_callbacks)
             : transport_callbacks_{transport_callbacks} {}
 
+        Transport(const Transport &) = delete;
+        Transport &operator=(const Transport &) = delete;
+
         void connect() { transport_callbacks_.connect_callback_(); }
         void disconnect() { transport_callbacks_.disconnect_callback_(); }
         std::size_t on_data(std::string_view data) { return transport_callbacks_.data_callback_(data); }
 
-        RejectInfo send_data(std::string_view data)
-        {
-            receive_data_cb_for_test_(data);
-            return RejectInfo{};
-        }
-
-        void set_receive_data_cb_for_test(const std::function<void(std::string_view data)> &cb)
-        {
-            receive_data_cb_for_test_ = cb;
-        }
+        RejectInfo send_data(std::string_view data) noexcept;
+        void set_receive_data_cb_for_test(const std::function<void(std::string_view data)> &cb) noexcept;
 
     private:
         const TransportCallbacks &transport_callbacks_;
