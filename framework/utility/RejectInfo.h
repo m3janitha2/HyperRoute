@@ -17,6 +17,8 @@ namespace hyper::framework
         /* DestinationSession */
         DestinationSession_To_Destination_Encoding_Failed,
         DestinationSession_From_Destination_Decoding_Failed,
+        DestinationSession_Invalid_Original_Msg_ID,
+        DestinationSession_Source_Msg_ID_Not_Found,
         /* Validatator */
         Validatator_Validation_Failed,
         /* Enricher */

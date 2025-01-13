@@ -46,7 +46,8 @@ namespace hyper::protocol_a::session
         }
 
         /* message interface required for the framework */
-        std::uint64_t cl_ord_id() { return msg().cl_ord_id; }
+        [[nodiscard]] constexpr std::uint64_t cl_ord_id() const noexcept { return msg().cl_ord_id; }
+        constexpr void cl_ord_id(std::uint64_t id) noexcept { msg().cl_ord_id = id; }
         std::uint64_t orig_cl_ord_id() { return msg().orig_cl_ord_id; }
         std::uint64_t price() { return msg().a; }
         std::uint64_t size() { return msg().b; }
@@ -113,7 +114,8 @@ namespace hyper::protocol_a::session
         }
 
         /* message interface required for the framework */
-        std::uint64_t cl_ord_id() { return msg().cl_ord_id; }
+        [[nodiscard]] constexpr std::uint64_t cl_ord_id() const noexcept { return msg().cl_ord_id; }
+        constexpr void cl_ord_id(std::uint64_t id) noexcept { msg().cl_ord_id = id; }
         std::uint64_t price() { return msg().a; }
         std::uint64_t size() { return msg().b; }
     };

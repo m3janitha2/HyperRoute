@@ -6,7 +6,7 @@
 #include <chrono>
 #include <memory>
 
-namespace hyper::framework::message::binary
+namespace hyper::framework
 {
     /* Binary message abstraction. */
     template <typename Msg>

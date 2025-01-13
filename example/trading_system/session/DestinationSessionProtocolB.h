@@ -11,6 +11,7 @@
 namespace hyper::protocol_b
 {
     using RejectInfo = framework::RejectInfo;
+    using InteranlRejectCode = framework::InteranlRejectCode;
     using SourceRouter = framework::SourceRouter;
     using Transport = framework::Transport;
 
@@ -30,16 +31,21 @@ namespace hyper::protocol_b
         void on_message_from_transport_impl(session::ExecutionReport &msg) noexcept;
         void on_message_from_transport_impl(session::CancelReject &msg) noexcept;
 
+        RejectInfo handle_message_from_transport_impl(protocol_b::session::ExecutionReport &dst_msg,
+                                                      protocol_a::session::ExecutionReport &src_msg) noexcept;
+        RejectInfo handle_message_from_transport_impl(protocol_b::session::CancelReject &dst_msg,
+                                                      protocol_a::session::CancelReject &src_msg) noexcept;
+
         /* todox: move to codec */
         RejectInfo decode_message_from_destination_impl(protocol_b::session::ExecutionReport &dst_msg,
                                                         protocol_a::session::ExecutionReport &src_msg) noexcept;
         RejectInfo decode_message_from_destination_impl(protocol_b::session::CancelReject &dst_msg,
                                                         protocol_a::session::CancelReject &src_msg) noexcept;
 
-        void rejecet_message_from_transport_impl(protocol_b::session::ExecutionReport &msg,
-                                                 RejectInfo &reject_info) noexcept;
-        void rejecet_message_from_transport_impl(protocol_b::session::CancelReject &msg,
-                                                 RejectInfo &reject_info) noexcept;
+        void reject_message_from_transport_impl(protocol_b::session::ExecutionReport &msg,
+                                                RejectInfo &reject_info) noexcept;
+        void reject_message_from_transport_impl(protocol_b::session::CancelReject &msg,
+                                                RejectInfo &reject_info) noexcept;
 
         /* Messages from the destination to the source */
         RejectInfo on_message_from_peer_impl(protocol_a::session::NewOrderSingle &msg) noexcept;
@@ -65,6 +71,13 @@ namespace hyper::protocol_b
                                                   protocol_b::session::CancelRequest &dst_msg) noexcept;
 
     private:
+        template <typename DestMsg>
+        void handle_cl_ord_id_to_destination(DestMsg &dst_msg);
+        template <typename SrcMsg, typename DestMsg>
+        RejectInfo handle_orig_cl_ord_id_to_destination(SrcMsg &src_msg, DestMsg &dst_msg);
+        template <typename DestMsg, typename SrcMsg>
+        RejectInfo handle_cl_ord_id_from_destination(DestMsg &dst_msg, SrcMsg &src_msg);
+
         using SrcClOrdIDType = std::uint64_t;
         using DestClOrdIDType = std::uint64_t;
         /* Consider using a Boost Multi-Index Container */

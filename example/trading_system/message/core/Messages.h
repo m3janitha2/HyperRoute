@@ -4,9 +4,9 @@
 
 namespace hyper::trading
 {
-    using Message = hyper::framework::message::Message;
-    using FirstEvent = hyper::framework::message::FirstEvent;
-    using SubsequentEvent = hyper::framework::message::SubsequentEvent;
+    using Message = hyper::framework::Message;
+    using FirstEvent = hyper::framework::FirstEvent;
+    using SubsequentEvent = hyper::framework::SubsequentEvent;
 
     /* Message interface supported by the system */
 

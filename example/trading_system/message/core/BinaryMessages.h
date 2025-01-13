@@ -8,7 +8,7 @@ namespace hyper::trading::binary
     /* Binary messages supported by the system */
     
     template <typename Msg>
-    using BinaryMessage = framework::message::binary::BinaryMessage<Msg>;
+    using BinaryMessage = framework::BinaryMessage<Msg>;
 
     template <typename Msg>
     struct NewOrderSingle : public BinaryMessage<Msg>, trading::NewOrderSingle

@@ -34,19 +34,19 @@ namespace hyper::protocol_a
         procoess_message_from_transport(msg);
     }
 
-    void SourceSessionProtocolA::rejecet_message_from_transport_impl(session::NewOrderSingle &msg,
+    void SourceSessionProtocolA::reject_message_from_transport_impl(session::NewOrderSingle &msg,
                                                                      RejectInfo &reject_info) noexcept
     {
         std::cout << "msg rejected: " << msg << " reason: " << reject_info << std::endl;
     }
 
-    void SourceSessionProtocolA::rejecet_message_from_transport_impl(session::CancelReplaceRequest &msg,
+    void SourceSessionProtocolA::reject_message_from_transport_impl(session::CancelReplaceRequest &msg,
                                                                      RejectInfo &reject_info) noexcept
     {
         std::cout << "msg rejected: " << msg << " reason: " << reject_info << std::endl;
     }
 
-    void SourceSessionProtocolA::rejecet_message_from_transport_impl(session::CancelRequest &msg,
+    void SourceSessionProtocolA::reject_message_from_transport_impl(session::CancelRequest &msg,
                                                                      RejectInfo &reject_info) noexcept
     {
         std::cout << "msg rejected: " << msg << " reason: " << reject_info << std::endl;
@@ -74,7 +74,7 @@ namespace hyper::protocol_a
         else
         {
             RejectInfo reject_info{"Invalid ClOrdID", InteranlRejectCode::SourceSession_Invalid_Original_Msg_ID};
-            rejecet_message_from_transport_impl(msg, reject_info);
+            reject_message_from_transport_impl(msg, reject_info);
             return false;
         }
     }

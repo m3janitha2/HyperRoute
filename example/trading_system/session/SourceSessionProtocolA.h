@@ -31,11 +31,11 @@ namespace hyper::protocol_a
         void on_message_from_transport_impl(session::CancelRequest &msg) noexcept;
 
         /* Internal rejects */
-        void rejecet_message_from_transport_impl(session::NewOrderSingle &msg,
+        void reject_message_from_transport_impl(session::NewOrderSingle &msg,
                                                  RejectInfo &reject_info) noexcept;
-        void rejecet_message_from_transport_impl(session::CancelReplaceRequest &msg,
+        void reject_message_from_transport_impl(session::CancelReplaceRequest &msg,
                                                  RejectInfo &reject_info) noexcept;
-        void rejecet_message_from_transport_impl(session::CancelRequest &msg,
+        void reject_message_from_transport_impl(session::CancelRequest &msg,
                                                  RejectInfo &reject_info) noexcept;
 
         template <typename Msg>

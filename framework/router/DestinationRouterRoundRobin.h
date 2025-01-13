@@ -60,7 +60,7 @@ namespace hyper::framework
 	template <typename Msg>
 	inline RejectInfo DestinationRouterRoundRobin::send_message_to_desination(Msg &msg) noexcept
 	{
-		if constexpr (std::derived_from<Msg, framework::message::FirstEvent>)
+		if constexpr (std::derived_from<Msg, FirstEvent>)
 			return send_first_event_to_next_available_desination(msg);
 		else
 			return send_subsequent_events_to_the_same_desination(msg);

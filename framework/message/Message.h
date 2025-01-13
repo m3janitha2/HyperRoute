@@ -1,16 +1,30 @@
 #pragma once
 
+#include <framework/utility/CrtpBase.h>
 #include <framework/utility/Types.h>
 #include <string_view>
 #include <chrono>
-#include <ostream>
+#include <type_traits>
+#include <concepts>
 
-namespace hyper::framework::message
+namespace hyper::framework
 {
-    /* Message interface used by the framework */
-
     using TimestampClock = std::chrono::high_resolution_clock;
     using Timestamp = std::chrono::time_point<TimestampClock>;
+
+    /* Minimum message interface required by the framework */
+    template <typename Msg>
+    concept MessageInf = requires(Msg msg, Timestamp timestamp) {
+        { msg.uid() } -> std::same_as<UID>;
+        { msg.in_timestamp() };
+        { msg.in_timestamp(timestamp) } -> std::same_as<void>;
+        { msg.out_timestamp() };
+        { msg.out_timestamp(timestamp) } -> std::same_as<void>;
+        { msg.latency_in_ns() };
+        /* Implemented in the derived message type */
+        { msg.msg() };
+        { msg.data() } -> std::same_as<std::string_view>;
+    };
 
     class Message
     {
@@ -41,7 +55,7 @@ namespace hyper::framework::message
     struct FirstEvent
     {
     }; /* First Message of the message chain */
-    
+
     struct SubsequentEvent
     {
     }; /* Subsequent Messages of the same message chain */

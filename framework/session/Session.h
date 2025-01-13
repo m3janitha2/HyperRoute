@@ -2,6 +2,7 @@
 
 #include <framework/utility/CrtpBase.h>
 #include <framework/utility/RejectInfo.h>
+#include <framework/message/Message.h>
 #include <framework/transport/Transport.h>
 #include <type_traits>
 #include <concepts>
@@ -34,8 +35,10 @@ namespace hyper::framework
         void on_disconnect() noexcept;
         [[nodiscard]] constexpr bool is_connected() const noexcept { return connected_; }
 
-        template <typename Msg>
+        template <MessageInf Msg>
         RejectInfo send_message_to_transport(Msg &msg) noexcept;
+        template <MessageInf Msg>
+        inline void on_message_from_transport(Msg &msg) noexcept;
 
     private:
         bool connected_{true};
@@ -53,12 +56,19 @@ namespace hyper::framework
     {
         this->impl().on_disconnect_impl();
     }
-
+    
     template <typename SessionImpl>
-    template <typename Msg>
+    template <MessageInf Msg>
     inline RejectInfo Session<SessionImpl>::send_message_to_transport(Msg &msg) noexcept
     {
         msg.update_out_timestamp();
         return transport_.send_data(msg.data());
+    }
+
+    template <typename SessionImpl>
+    template <MessageInf Msg>
+    inline void Session<SessionImpl>::on_message_from_transport(Msg &msg) noexcept
+    {
+        this->impl().on_message_from_transport_impl(msg);
     }
 }

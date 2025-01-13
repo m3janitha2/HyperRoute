@@ -15,4 +15,4 @@ set(SOURCE_FILES
 add_executable(trading_system
     ${SOURCE_FILES})
 
-target_compile_options(trading_system PRIVATE -Wall -Wextra -Wpedantic -fconcepts-diagnostics-depth=5)
+target_compile_options(trading_system PRIVATE -Wall -Wextra -Wpedantic -fconcepts-diagnostics-depth=10)
