@@ -6,6 +6,7 @@
 #include <framework/sequence_store/SequenceStore.h>
 #include <cstdint>
 #include <string_view>
+#include <type_traits>
 
 namespace hyper::framework
 {
@@ -13,6 +14,14 @@ namespace hyper::framework
     /* - Receive data from the Transport */
     /* - Handle the protocol session */
     /* - Dispatch application messages to the Session */
+
+    template <typename ProtocolImpl>
+    concept ProtocolInf = requires(ProtocolImpl p, std::string_view data) {
+        { p.impl().on_connect_impl() } -> std::same_as<void>;
+        { p.impl().on_disconnect_impl() } -> std::same_as<void>;
+        { p.impl().on_data_impl(data) } -> std::same_as<std::size_t>;
+    };
+
     template <typename ProtocolImpl, typename Session>
     class Protocol : public CrtpBase<ProtocolImpl>
     {
@@ -23,6 +32,7 @@ namespace hyper::framework
         {
             static_assert(TransportCallbackInf<Protocol<ProtocolImpl, Session>>,
                           "Protocol does not satisfy TransportCallbackInf");
+            static_assert(ProtocolInf<Protocol<ProtocolImpl, Session>>);
         }
 
         Protocol(const Protocol &) = delete;
