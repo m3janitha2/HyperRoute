@@ -1,8 +1,7 @@
 #pragma once
 
 #include <variant>
-
-#include <example/trading_system/session/DestinationSessionProtocolB.h>
+#include <examples/trading_system/session/DestinationSessionProtocolB.h>
 
 namespace hyper
 {

@@ -1,4 +1,4 @@
-#include <example/trading_system/session/SourceSessionProtocolA.h>
+#include <examples/trading_system/session/SourceSessionProtocolA.h>
 #include <framework/message/UIDGenerator.h>
 #include "SourceSessionProtocolA.h"
 

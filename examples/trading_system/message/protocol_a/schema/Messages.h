@@ -5,7 +5,8 @@
 
 namespace hyper::protocol_a::schema
 {
-    /* Message schema of Protocol A */
+    /* Message schema for Protocol A */
+    /* This is a primitive, FIX-like binary schema to demonstrate usage */
 
     enum class MsgType : std::uint8_t
     {

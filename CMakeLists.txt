@@ -39,7 +39,7 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(googletest)
 
-add_subdirectory(example)
+add_subdirectory(examples)
 add_subdirectory(framework)
 
 

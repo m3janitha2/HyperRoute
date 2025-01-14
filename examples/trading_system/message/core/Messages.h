@@ -10,7 +10,6 @@ namespace hyper::trading
 
     /* Message interface supported by the system */
 
-
     struct NewOrderSingle : public Message, FirstEvent
     {
     };

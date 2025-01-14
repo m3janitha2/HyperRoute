@@ -1,7 +1,5 @@
 #pragma once
 
-#include <framework/utility/RejectInfo.h>
-#include <framework/message/Message.h>
 #include <framework/router/DestinationRouter.h>
 #include <framework/application_dependency/DestinationSessions.h>
 #include <cstdint>

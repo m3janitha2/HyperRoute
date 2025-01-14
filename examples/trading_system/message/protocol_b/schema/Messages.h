@@ -5,7 +5,9 @@
 
 namespace hyper::protocol_b::schema
 {
-    /* Message schema of Protocol B */
+    /* Message schema for Protocol B */
+    /* This is a primitive, FIX-like binary schema to demonstrate usage */
+    /* 60-70% of the schema is duplicated from Protocol A for implementation simplicity */
     
     enum class MsgType : std::uint32_t
     {

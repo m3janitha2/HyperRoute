@@ -2,8 +2,8 @@
 
 #include <framework/utility/RejectInfo.h>
 #include <framework/validator/Validator.h>
-#include <example/trading_system/message/core/Messages.h>
-#include <example/trading_system/validator/StatelessCheck01.h>
+#include <examples/trading_system/message/core/Messages.h>
+#include <examples/trading_system/validator/StatelessCheck01.h>
 #include <concepts>
 #include <type_traits>
 #include <cstdint>

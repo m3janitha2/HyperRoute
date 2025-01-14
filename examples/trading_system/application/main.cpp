@@ -4,8 +4,8 @@
 #include <framework/application_dependency/DestinationRouters.h>
 #include <framework/application_dependency/DestinationSessions.h>
 #include <framework/application_dependency/Validators.h>
-#include <example/trading_system/protocol/ProtocolA.h>
-#include <example/trading_system/protocol/ProtocolB.h>
+#include <examples/trading_system/protocol/ProtocolA.h>
+#include <examples/trading_system/protocol/ProtocolB.h>
 #include <string.h>
 #include <random>
 #include <vector>

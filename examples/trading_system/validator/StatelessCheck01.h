@@ -1,7 +1,7 @@
 #pragma once
 
 #include <framework/utility/RejectInfo.h>
-#include <example/trading_system/message/core/Messages.h>
+#include <examples/trading_system/message/core/Messages.h>
 #include <type_traits>
 #include <cstdint>
 

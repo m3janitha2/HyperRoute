@@ -1,11 +1,15 @@
 #pragma once
 
 #include <framework/protocol/Protocol.h>
-#include <example/trading_system/session/DestinationSessionProtocolB.h>
-#include <example/trading_system/message/protocol_b/Messages.h>
+#include <examples/trading_system/session/SourceSessionProtocolA.h>
+#include <examples/trading_system/message/protocol_a/Messages.h>
+#include <type_traits>
 
-namespace hyper::protocol_b
+namespace hyper::protocol_a
 {
+    /* Protocol implementation for Protocol A */
+    /* This is a primitive, FIX-like binary protocol designed to demonstrate usage */
+    
     enum class SessionRejectCode
     {
         Success,
@@ -18,11 +22,11 @@ namespace hyper::protocol_b
 
     using SessionRejectInfo = framework::ErrorInfo<SessionRejectCode>;
 
-    class ProtocolB : public framework::Protocol<ProtocolB, DestinationSessionProtocolB>
+    class ProtocolA : public framework::Protocol<ProtocolA, SourceSessionProtocolA>
     {
     public:
-        explicit ProtocolB(const SourceRouter &source_router,
-                           const ValidatorPtrVarient &validator);
+        explicit ProtocolA(const DestinationRouterPtrVarient &destination_router,
+                           const SourceRouter &source_router);
 
         void on_connect_impl();
         void on_disconnect_impl();

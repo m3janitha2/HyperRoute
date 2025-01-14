@@ -2,9 +2,9 @@
 
 #include <framework/session/DestinationSession.h>
 #include <framework/message/UIDGenerator.h>
-#include <example/trading_system/message/protocol_b/Messages.h>
-#include <example/trading_system/message/protocol_a/Messages.h>
-#include <example/trading_system/utility/utility.h>
+#include <examples/trading_system/message/protocol_b/Messages.h>
+#include <examples/trading_system/message/protocol_a/Messages.h>
+#include <examples/trading_system/utility/utility.h>
 
 #include <iostream>
 
@@ -14,6 +14,8 @@ namespace hyper::protocol_b
     using InteranlRejectCode = framework::InteranlRejectCode;
     using SourceRouter = framework::SourceRouter;
     using Transport = framework::Transport;
+
+    /* Application message session implementation for the destination session (Protocol B) */
 
     class DestinationSessionProtocolB : public framework::DestinationSession<DestinationSessionProtocolB>
     {

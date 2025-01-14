@@ -1,8 +1,8 @@
 #pragma once
 
 #include <framework/session/SourceSession.h>
-#include <example/trading_system/message/protocol_a/Messages.h>
-#include <example/trading_system/utility/utility.h>
+#include <examples/trading_system/message/protocol_a/Messages.h>
+#include <examples/trading_system/utility/utility.h>
 #include <type_traits>
 #include <iostream>
 
@@ -13,6 +13,8 @@ namespace hyper::protocol_a
     using Transport = framework::Transport;
     using UID = framework::UID;
 
+    /* Application message session implementation for the source session (Protocol A) */
+    
     class SourceSessionProtocolA : public framework::SourceSession<SourceSessionProtocolA>
     {
     public:

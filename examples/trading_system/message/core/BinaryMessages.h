@@ -1,12 +1,12 @@
 #pragma once
 
 #include <framework/message/BinaryMessage.h>
-#include <example/trading_system/message/core/Messages.h>
+#include <examples/trading_system/message/core/Messages.h>
 
 namespace hyper::trading::binary
 {
     /* Binary messages supported by the system */
-    
+
     template <typename Msg>
     using BinaryMessage = framework::BinaryMessage<Msg>;
 
