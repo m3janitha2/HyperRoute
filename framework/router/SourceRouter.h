@@ -2,7 +2,7 @@
 
 #include <framework/utility/RejectInfo.h>
 #include <framework/utility/Types.h>
-#include <example/trading_system/session/SourceSessionsDeclaration.h>
+#include <framework/application_dependency/SourceSessionDeclarations.h>
 #include <unordered_map>
 
 namespace hyper::framework

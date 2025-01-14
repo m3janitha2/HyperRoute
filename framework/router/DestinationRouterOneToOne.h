@@ -7,7 +7,7 @@ namespace hyper::framework
 {
 	/* Route messages from the source to the destination session. */
 	/* Reject the message if destination session is disconnected */
-	class DestinationRouterOneToOne
+	class DestinationRouterOneToOne : public DestinationRouter<DestinationRouterOneToOne>
 	{
 	public:
 		explicit DestinationRouterOneToOne(const DestinationSessionPtrVarient &destination_session)
@@ -17,8 +17,7 @@ namespace hyper::framework
 		DestinationRouterOneToOne &operator=(const DestinationRouterOneToOne &) = delete;
 
 		template <typename Msg>
-		RejectInfo on_message_from_source(Msg &msg) noexcept
-			requires RouterMsg<Msg>
+		RejectInfo on_message_from_source_impl(Msg &msg) noexcept
 		{
 			return send_message_to_desination(msg);
 		}
@@ -34,7 +33,6 @@ namespace hyper::framework
 	inline RejectInfo DestinationRouterOneToOne::send_message_to_desination(Msg &msg) noexcept
 	{
 		return std::visit([&msg]<typename Destination>(Destination &&destination)
-							  requires RouterDestination<Destination, Msg>
 						  { if(!std::forward<Destination>(destination)->is_connected()) [[unlikely]]
 									return RejectInfo{"", InteranlRejectCode::DestinationRouter_No_Destinations_Available};
 								else

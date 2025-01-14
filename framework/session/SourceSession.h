@@ -37,6 +37,8 @@ namespace hyper::framework
               source_router_{const_cast<SourceRouter &>(source_router)} {}
 
         template <MessageInf Msg>
+        inline void on_message_from_transport_impl(Msg &msg) noexcept;
+        template <MessageInf Msg>
         RejectInfo on_message_from_peer(Msg &msg) noexcept;
         template <MessageInf Msg>
         RejectInfo procoess_message_to_transport(Msg &msg) noexcept;
@@ -46,6 +48,8 @@ namespace hyper::framework
         RejectInfo enrich_message_to_transport(Msg &msg) noexcept;
         template <MessageInf Msg>
         RejectInfo enrich_message_from_transport(Msg &msg) noexcept;
+        template <MessageInf Msg>
+        RejectInfo handle_message_from_transport(Msg &msg) noexcept;
         template <MessageInf Msg>
         RejectInfo send_message_to_peer(Msg &msg) noexcept;
         template <MessageInf Msg>
@@ -58,6 +62,13 @@ namespace hyper::framework
         SourceRouter &source_router_;
         SourceEnricher enricher_{};
     };
+
+    template <typename SessionImpl>
+    template <MessageInf Msg>
+    inline void SourceSession<SessionImpl>::on_message_from_transport_impl(Msg &msg) noexcept
+    {
+        procoess_message_from_transport(msg);
+    }
 
     template <typename SessionImpl>
     template <MessageInf Msg>
@@ -94,6 +105,10 @@ namespace hyper::framework
             reject_info != true) [[unlikely]]
             reject_message_from_transport(msg, reject_info);
 
+        if (auto reject_info = handle_message_from_transport(msg);
+            reject_info != true) [[unlikely]]
+            reject_message_from_transport(msg, reject_info);
+
         if (auto reject_info = send_message_to_peer(msg);
             reject_info != true) [[unlikely]]
             reject_message_from_transport(msg, reject_info);
@@ -118,6 +133,13 @@ namespace hyper::framework
     inline RejectInfo SourceSession<SessionImpl>::enrich_message_from_transport(Msg &msg) noexcept
     {
         return enricher_.enrich_message_from_transport(msg);
+    }
+
+    template <typename SessionImpl>
+    template <MessageInf Msg>
+    inline RejectInfo SourceSession<SessionImpl>::handle_message_from_transport(Msg &msg) noexcept
+    {
+        return this->impl().handle_message_from_transport_impl(msg);
     }
 
     template <typename SessionImpl>
@@ -148,4 +170,5 @@ namespace hyper::framework
 
         return this->impl().update_routing_info_impl(msg);
     }
+
 }

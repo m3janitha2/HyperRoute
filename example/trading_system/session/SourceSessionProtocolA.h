@@ -26,17 +26,17 @@ namespace hyper::protocol_a
         void on_disconnect_impl() noexcept;
 
         /* Messages from transport */
-        void on_message_from_transport_impl(session::NewOrderSingle &msg) noexcept;
-        void on_message_from_transport_impl(session::CancelReplaceRequest &msg) noexcept;
-        void on_message_from_transport_impl(session::CancelRequest &msg) noexcept;
+        RejectInfo handle_message_from_transport_impl(session::NewOrderSingle &msg) noexcept;
+        RejectInfo handle_message_from_transport_impl(session::CancelReplaceRequest &msg) noexcept;
+        RejectInfo handle_message_from_transport_impl(session::CancelRequest &msg) noexcept;
 
         /* Internal rejects */
         void reject_message_from_transport_impl(session::NewOrderSingle &msg,
-                                                 RejectInfo &reject_info) noexcept;
+                                                RejectInfo &reject_info) noexcept;
         void reject_message_from_transport_impl(session::CancelReplaceRequest &msg,
-                                                 RejectInfo &reject_info) noexcept;
+                                                RejectInfo &reject_info) noexcept;
         void reject_message_from_transport_impl(session::CancelRequest &msg,
-                                                 RejectInfo &reject_info) noexcept;
+                                                RejectInfo &reject_info) noexcept;
 
         template <typename Msg>
         void update_routing_info_impl(Msg &msg) noexcept;
@@ -46,8 +46,9 @@ namespace hyper::protocol_a
         RejectInfo on_message_from_peer_impl(session::CancelReject &msg) noexcept;
 
     private:
+        RejectInfo enrich_uid_from_cl_ord_id(session::NewOrderSingle &msg) noexcept;
         template <typename Msg>
-        bool enrich_uid_from_orig_cl_ord_id(Msg &msg) noexcept;
+        RejectInfo enrich_uid_from_orig_cl_ord_id(Msg &msg) noexcept;
 
         using ClOrdIdType = decltype(schema::NewOrderSingle::cl_ord_id);
         using ClOrdIDToUIDMap = std::unordered_map<ClOrdIdType, UID>;

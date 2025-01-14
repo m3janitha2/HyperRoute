@@ -13,7 +13,7 @@ namespace hyper::framework
 	/* Route messages from the source session to destination sessions using a round-robin pattern */
 	/* Attempt the next available session if the current session is not connected */
 	/* Reject the message if all sessions are disconnected */
-	class DestinationRouterRoundRobin
+	class DestinationRouterRoundRobin : public DestinationRouter<DestinationRouterRoundRobin>
 	{
 	public:
 		explicit DestinationRouterRoundRobin(const std::vector<DestinationSessionPtrVarient *> &destinations)
@@ -23,8 +23,7 @@ namespace hyper::framework
 		DestinationRouterRoundRobin &operator=(const DestinationRouterRoundRobin &) = delete;
 
 		template <typename Msg>
-		RejectInfo on_message_from_source(Msg &msg) noexcept
-			requires RouterMsg<Msg>
+		RejectInfo on_message_from_source_impl(Msg &msg) noexcept
 		{
 			if (auto reject_info = send_message_to_desination(msg);
 				reject_info != true) [[unlikely]]
@@ -115,7 +114,7 @@ namespace hyper::framework
 
 	{
 		return std::visit([&msg]<typename Destination>(Destination &&destination)
-							  requires RouterDestination<Destination, Msg>
+							  requires RouterDestinationSessionInf<Destination, Msg>
 						  { return std::forward<Destination>(destination)->on_message_from_peer(msg); },
 						  destination_session);
 	}

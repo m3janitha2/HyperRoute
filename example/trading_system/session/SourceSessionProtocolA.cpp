@@ -1,5 +1,6 @@
 #include <example/trading_system/session/SourceSessionProtocolA.h>
 #include <framework/message/UIDGenerator.h>
+#include "SourceSessionProtocolA.h"
 
 namespace hyper::protocol_a
 {
@@ -10,46 +11,40 @@ namespace hyper::protocol_a
 
     void SourceSessionProtocolA::on_disconnect_impl() noexcept {}
 
-    void SourceSessionProtocolA::on_message_from_transport_impl(session::NewOrderSingle &msg) noexcept
+    RejectInfo SourceSessionProtocolA::handle_message_from_transport_impl(session::NewOrderSingle &msg) noexcept
     {
-        auto uid = UIDGenerator::instance().get_next_uid();
-        msg.uid(uid);
-
-        procoess_message_from_transport(msg);
+        return enrich_uid_from_cl_ord_id(msg);
     }
 
-    void SourceSessionProtocolA::on_message_from_transport_impl(session::CancelReplaceRequest &msg) noexcept
+    RejectInfo SourceSessionProtocolA::handle_message_from_transport_impl(session::CancelReplaceRequest &msg) noexcept
     {
-        if (!enrich_uid_from_orig_cl_ord_id(msg)) [[unlikely]]
-            return;
-
-        procoess_message_from_transport(msg);
+        return enrich_uid_from_orig_cl_ord_id(msg);
     }
 
-    void SourceSessionProtocolA::on_message_from_transport_impl(session::CancelRequest &msg) noexcept
+    RejectInfo SourceSessionProtocolA::handle_message_from_transport_impl(session::CancelRequest &msg) noexcept
     {
-        if (!enrich_uid_from_orig_cl_ord_id(msg)) [[unlikely]]
-            return;
-
-        procoess_message_from_transport(msg);
+        return enrich_uid_from_orig_cl_ord_id(msg);
     }
 
     void SourceSessionProtocolA::reject_message_from_transport_impl(session::NewOrderSingle &msg,
-                                                                     RejectInfo &reject_info) noexcept
+                                                                    RejectInfo &reject_info) noexcept
     {
         std::cout << "msg rejected: " << msg << " reason: " << reject_info << std::endl;
+        /* create reject and send to transport */
     }
 
     void SourceSessionProtocolA::reject_message_from_transport_impl(session::CancelReplaceRequest &msg,
-                                                                     RejectInfo &reject_info) noexcept
+                                                                    RejectInfo &reject_info) noexcept
     {
         std::cout << "msg rejected: " << msg << " reason: " << reject_info << std::endl;
+        /* create reject and send to transport */
     }
 
     void SourceSessionProtocolA::reject_message_from_transport_impl(session::CancelRequest &msg,
-                                                                     RejectInfo &reject_info) noexcept
+                                                                    RejectInfo &reject_info) noexcept
     {
         std::cout << "msg rejected: " << msg << " reason: " << reject_info << std::endl;
+        /* create reject and send to transport */
     }
 
     RejectInfo SourceSessionProtocolA::on_message_from_peer_impl(session::ExecutionReport &msg) noexcept
@@ -62,20 +57,24 @@ namespace hyper::protocol_a
         return procoess_message_to_transport(msg);
     }
 
-    template <typename Msg>
-    bool SourceSessionProtocolA::enrich_uid_from_orig_cl_ord_id(Msg &msg) noexcept
+    RejectInfo SourceSessionProtocolA::enrich_uid_from_cl_ord_id(session::NewOrderSingle &msg) noexcept
     {
-        if (auto it = cl_ord_id_to_uid_.find(msg.orig_cl_ord_id()); it != cl_ord_id_to_uid_.end())
+        auto uid = UIDGenerator::instance().get_next_uid();
+        msg.uid(uid);
+        return RejectInfo();
+    }
+
+    template <typename Msg>
+    RejectInfo SourceSessionProtocolA::enrich_uid_from_orig_cl_ord_id(Msg &msg) noexcept
+    {
+        if (auto it = cl_ord_id_to_uid_.find(msg.orig_cl_ord_id());
+            it == cl_ord_id_to_uid_.end()) [[unlikely]]
+            return RejectInfo{"Invalid Origianl ClOrdID", InteranlRejectCode::SourceSession_Invalid_Original_Msg_ID};
+        else
         {
             auto uid = it->second;
             msg.uid(uid);
-            return true;
         }
-        else
-        {
-            RejectInfo reject_info{"Invalid ClOrdID", InteranlRejectCode::SourceSession_Invalid_Original_Msg_ID};
-            reject_message_from_transport_impl(msg, reject_info);
-            return false;
-        }
+        return RejectInfo{};
     }
 }
