@@ -54,10 +54,7 @@ jobs:
       id: strings
       shell: bash
       run: |
-        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-    - name: Create folder
-      run: |
-        mkdir ${{ runner.workspace }}/boost && ls -lrt ${{ runner.workspace }}/boost        
+        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"    
         
     - name: Build Boost
       id: boost
