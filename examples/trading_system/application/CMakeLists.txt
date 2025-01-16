@@ -7,6 +7,7 @@ set(SOURCE_FILES
     main.cpp
     ../session/SourceSessionProtocolA.cpp
     ../protocol/ProtocolA.cpp
+    ../../../framework/config/Configuration.cpp
     ../../../framework/router/SourceRouter.cpp
     ../../../framework/utility/RejectInfo.cpp
     ../../../framework/transport/Transport.cpp

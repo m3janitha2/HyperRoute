@@ -19,7 +19,7 @@ struct SubSystem
 	SubSystem()
 	{
 		/* todox: */
-		// Configuration cfg{"application/config/config.xml"};
+		framework::Configuration cfg{"application/config/config.xml"};
 		// auto x = cfg.source_sesssion_cfg_by_name("SourceA");
 	}
 
