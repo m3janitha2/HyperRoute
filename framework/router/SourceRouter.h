@@ -21,6 +21,7 @@ namespace hyper::framework
         RejectInfo send_message_to_source(Msg &msg) noexcept;
         void update_source_routing_info(UID uid, SourceSessionPtrVarient source_session_varient) noexcept;
 
+    private:
         std::unordered_map<UID, SourceSessionPtrVarient> uid_to_source_session_{};
     };
 }
