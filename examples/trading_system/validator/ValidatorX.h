@@ -11,6 +11,7 @@
 namespace hyper
 {
     using RejectInfo = framework::RejectInfo;
+    using Configuration = framework::Configuration;
 
     /* Message interface required by the validator */
     template <typename Msg>
@@ -23,6 +24,9 @@ namespace hyper
     class ValidatorX : public framework::Validator<ValidatorX>
     {
     public:
+        explicit ValidatorX(const Configuration& config)
+            : framework::Validator<ValidatorX>{config} {}
+
         template <ValidatorMsg Msg>
         RejectInfo validate_impl(Msg &msg)
         {

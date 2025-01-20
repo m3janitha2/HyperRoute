@@ -12,7 +12,8 @@ set(SOURCE_FILES
     ../../../framework/utility/RejectInfo.cpp
     ../../../framework/transport/Transport.cpp
     ../session/DestinationSessionProtocolB.cpp
-    ../protocol/ProtocolB.cpp)
+    ../protocol/ProtocolB.cpp
+    ../../../framework/application/application.cpp)
 
 add_executable(trading_system
     ${SOURCE_FILES})

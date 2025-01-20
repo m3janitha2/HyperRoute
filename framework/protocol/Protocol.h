@@ -5,7 +5,6 @@
 #include <framework/transport/Transport.h>
 #include <framework/sequence_store/SequenceStore.h>
 #include <framework/config/Configuration.h>
-#include <framework/config/ConfigManager.h>
 #include <cstdint>
 #include <string_view>
 #include <type_traits>

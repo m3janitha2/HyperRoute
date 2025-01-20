@@ -3,6 +3,9 @@
 #include <framework/utility/CrtpBase.h>
 #include <framework/utility/RejectInfo.h>
 #include <framework/message/Message.h>
+#include <framework/application_dependency/DestinationSessions.h>
+#include <framework/application_dependency/DestinationProtocols.h>
+#include <framework/config/Configuration.h>
 #include <type_traits>
 #include <concepts>
 
@@ -14,6 +17,8 @@ namespace hyper::framework
 		/* figureout how to pass MessageInf as Msg ?? */
 		{ r.on_message_from_source(msg) } -> std::same_as<RejectInfo>;
 	};
+
+	using DestinationProtocolByUid = std::unordered_map<std::size_t, DestinationProtocolPtrVarient>;
 
 	template <typename RouterImpl>
 	class DestinationRouter : public CrtpBase<RouterImpl>

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <framework/router/DestinationRouter.h>
-#include <framework/application_dependency/DestinationSessions.h>
 
 namespace hyper::framework
 {
@@ -10,8 +9,15 @@ namespace hyper::framework
 	class DestinationRouterOneToOne : public DestinationRouter<DestinationRouterOneToOne>
 	{
 	public:
-		explicit DestinationRouterOneToOne(const DestinationSessionPtrVarient &destination_session)
-			: destination_session_(destination_session) {}
+		explicit DestinationRouterOneToOne(const Configuration &config,
+										   const DestinationProtocolByUid &destinations)
+		{
+			auto id = config.get<std::size_t>("destination_session_id");
+			auto &protocol = destinations.at(id);
+			destination_session_ = &(std::visit([]<typename Protocol>(Protocol &p) -> decltype(auto)
+												{ return p->session(); },
+												protocol));
+		}
 
 		DestinationRouterOneToOne(const DestinationRouterOneToOne &) = delete;
 		DestinationRouterOneToOne &operator=(const DestinationRouterOneToOne &) = delete;
@@ -26,7 +32,7 @@ namespace hyper::framework
 		template <typename Msg>
 		RejectInfo send_message_to_desination(Msg &msg) noexcept;
 
-		const DestinationSessionPtrVarient &destination_session_;
+		DestinationSessionPtrVarient destination_session_;
 	};
 
 	template <typename Msg>

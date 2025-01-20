@@ -4,6 +4,7 @@
 #include <framework/utility/RejectInfo.h>
 #include <framework/message/Message.h>
 #include <framework/transport/Transport.h>
+#include <framework/config/Configuration.h>
 #include <type_traits>
 #include <concepts>
 

@@ -18,18 +18,24 @@ namespace hyper::framework
     using DestinationProtocolFactory =
         Factory<DestinationProtocolPtrVarient, DestinationProtocolCreator>;
 
-    inline void register_all_protocols()
+    template <typename Type>
+    inline void register_destination_protocol(const std::string &key)
     {
         auto &factory = DestinationProtocolFactory::instance();
+        factory.register_type(
+            key,
+            [](const Configuration &config,
+               SourceRouter &source_router,
+               ValidatorPtrVarient &validator)
+            {
+                return std::make_shared<Type>(config,
+                                              source_router,
+                                              validator);
+            });
+    }
 
-        factory.register_type("ProtocolB",
-                              [](const Configuration &config,
-                                 SourceRouter &source_router,
-                                 ValidatorPtrVarient &validator)
-                              {
-                                  return std::make_shared<protocol_b::ProtocolB>(config,
-                                                                                 source_router,
-                                                                                 validator);
-                              });
+    inline void register_all_destination_protocols()
+    {
+        register_destination_protocol<protocol_b::ProtocolB>("ProtocolB");
     }
 }

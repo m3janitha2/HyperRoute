@@ -1,6 +1,7 @@
 #include <framework/config/ConfigManager.h>
 #include <boost/property_tree/xml_parser.hpp>
 #include <iostream>
+#include "ConfigManager.h"
 
 namespace hyper::framework
 {
@@ -20,6 +21,7 @@ namespace hyper::framework
         pt::read_xml(config_file, root_config_);
         parse_child_config_by_name("configuration.source_sessions", source_sessions_, source_session_by_id_);
         parse_child_config_by_name("configuration.destination_sessions", destination_sessions_, destination_session_by_id_);
+        parse_child_config_by_name("configuration.validators", validators_, validator_by_id_);
     }
 
     const std::vector<Configuration> &ConfigManager::get_source_sessions() const
@@ -32,6 +34,10 @@ namespace hyper::framework
         return destination_sessions_;
     }
 
+    const std::vector<Configuration> &ConfigManager::get_validators() const
+    {
+        return validators_;
+    }
     const Configuration &ConfigManager::get_source_session_by_id(std::size_t id) const
     {
         if (auto it = source_session_by_id_.find(id);

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <framework/router/DestinationRouter.h>
-#include <framework/application_dependency/DestinationSessions.h>
 #include <cstdint>
 #include <vector>
 #include <iostream>
@@ -14,8 +13,25 @@ namespace hyper::framework
 	class DestinationRouterRoundRobin : public DestinationRouter<DestinationRouterRoundRobin>
 	{
 	public:
-		explicit DestinationRouterRoundRobin(const std::vector<DestinationSessionPtrVarient *> &destinations)
-			: destinations_{destinations} {}
+		// explicit DestinationRouterRoundRobin(const std::vector<DestinationSessionPtrVarient *> &destinations)
+		// 	: destinations_{destinations} {}
+
+		explicit DestinationRouterRoundRobin(const Configuration &config,
+											 const DestinationProtocolByUid &destinations)
+		{
+			for (const auto &node : config)
+			{
+				if (node.first == "destination_session_id")
+				{
+					auto id = node.second.get_value<std::size_t>();
+					auto &protocol = destinations.at(id);
+					DestinationSessionPtrVarient session = &(std::visit([]<typename Protocol>(Protocol &p) -> decltype(auto)
+																		{ return p->session(); },
+																		protocol));
+					destinations_.emplace_back(session);
+				}
+			}
+		}
 
 		DestinationRouterRoundRobin(const DestinationRouterRoundRobin &) = delete;
 		DestinationRouterRoundRobin &operator=(const DestinationRouterRoundRobin &) = delete;
@@ -31,7 +47,7 @@ namespace hyper::framework
 		}
 
 	private:
-		auto *get_next_session() noexcept;
+		auto &get_next_session() noexcept;
 		template <typename Msg>
 		RejectInfo send_message_to_desination(Msg &msg) noexcept;
 		template <typename Msg>
@@ -43,12 +59,13 @@ namespace hyper::framework
 		RejectInfo send_message_to_desination(Msg &msg, const DestinationSessionPtrVarient &destination_session) const noexcept;
 		void cache_destination_by_uid(UID uid, DestinationSessionPtrVarient &destination_session) noexcept;
 
-		const std::vector<DestinationSessionPtrVarient *> &destinations_;
+		// const std::vector<DestinationSessionPtrVarient *> &destinations_;
+		std::vector<DestinationSessionPtrVarient> destinations_;
 		decltype(destinations_.size()) index_{0};
 		std::unordered_map<UID, DestinationSessionPtrVarient &> uid_to_destination_{};
 	};
 
-	inline auto *DestinationRouterRoundRobin::get_next_session() noexcept
+	inline auto &DestinationRouterRoundRobin::get_next_session() noexcept
 	{
 		index_ = (index_ + 1) % destinations_.size();
 		return destinations_[index_];
@@ -68,7 +85,7 @@ namespace hyper::framework
 	{
 		for (decltype(destinations_.size()) i{0}; i < destinations_.size(); i++)
 		{
-			auto &destination = *get_next_session();
+			auto &destination = get_next_session();
 			if (is_destination_connected(destination))
 			{
 				auto reject_info = send_message_to_desination(msg, destination);

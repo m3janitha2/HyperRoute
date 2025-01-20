@@ -1,66 +1,66 @@
 
-#include <framework/config/ConfigManager.h>
-#include <framework/router/SourceRouter.h>
-#include <framework/application_dependency/DestinationRouters.h>
-#include <framework/application_dependency/DestinationSessions.h>
-#include <framework/application_dependency/Validators.h>
-#include <examples/trading_system/protocol/ProtocolA.h>
-#include <examples/trading_system/protocol/ProtocolB.h>
+// #include <framework/config/ConfigManager.h>
+// #include <framework/router/SourceRouter.h>
+// #include <framework/application_dependency/DestinationRouters.h>
+// #include <framework/application_dependency/DestinationSessions.h>
+// #include <framework/application_dependency/Validators.h>
+// #include <examples/trading_system/protocol/ProtocolA.h>
+// #include <examples/trading_system/protocol/ProtocolB.h>
 #include <string.h>
 #include <random>
 #include <vector>
 #include <string>
-#include <framework/application_dependency/DestinationProtocols.h>
-#include <framework/factory/ProtocolFactory.h>
+// #include <framework/application_dependency/DestinationProtocols.h>
+#include <framework/application/application.h>
 
 using namespace hyper;
 /* Temporary implementation until the config parser is implemented */
 /* A sample config file is located at application/config/config.xml */
-struct SubSystem
-{
-	SubSystem()
-	{
-		framework::ConfigManager::instance().init("/mnt/d/linux/m3janitha2/github/HyperRoute/examples/trading_system/config/config.xml");
+// struct SubSystem
+// {
+// 	SubSystem()
+// 	{
+// 		framework::ConfigManager::instance().init("/mnt/d/linux/m3janitha2/github/HyperRoute/examples/trading_system/config/config.xml");
 
-		// source_router
-		// validators
-		load_destination_sessions();
-	}
+// 		// source_router
+// 		// validators
+// 		load_destination_sessions();
+// 	}
 
-	void load_destination_sessions()
-	{
-		auto &factory = framework::DestinationProtocolFactory::instance();
-		framework::register_all_protocols();
+// 	void load_destination_sessions()
+// 	{
+// 		auto &factory = framework::DestinationProtocolFactory::instance();
+// 		framework::register_all_protocols();
 
-		for (auto &cfg_manager = framework::ConfigManager::instance();
-			 auto &session_cfg : cfg_manager.get_destination_sessions())
-		{
-			auto name = session_cfg.get<std::string>("name");
-			auto id = session_cfg.get<std::size_t>("id");
-			auto protocol_name = session_cfg.get<std::string>("protocol");
-			auto protocol = factory.create(protocol_name,
-										   session_cfg, *source_router_.get(), validator_);
-			destination_protocols_by_id_.emplace(id, std::move(protocol));
-		}
-	}
+// 		for (auto &cfg_manager = framework::ConfigManager::instance();
+// 			 auto &session_cfg : cfg_manager.get_destination_sessions())
+// 		{
+// 			auto name = session_cfg.get<std::string>("name");
+// 			auto id = session_cfg.get<std::size_t>("id");
+// 			auto protocol_name = session_cfg.get<std::string>("protocol");
+// 			auto protocol = factory.create(protocol_name,
+// 										   session_cfg, *source_router_.get(), validator_);
+// 			destination_protocols_by_id_.emplace(id, std::move(protocol));
+// 		}
+// 	}
 
-	std::unique_ptr<framework::SourceRouter> source_router_{};
-	ValidatorPtrVarient validator_{};
-	std::unordered_map<std::size_t, DestinationProtocolPtrVarient> destination_protocols_by_id_{};
-	std::unordered_map<std::size_t, SourceSessionPtrVarient> source_protocols_by_id_{};
+// 	std::unique_ptr<framework::SourceRouter> source_router_{};
+// 	ValidatorPtrVarient validator_{};
+// 	std::unordered_map<std::size_t, DestinationProtocolPtrVarient> destination_protocols_by_id_{};
+// 	std::unordered_map<std::size_t, SourceSessionPtrVarient> source_protocols_by_id_{};
 
-	/* These will be created by factories within the constructor of the owner */
-	framework::SourceRouter source_router{};
-	ValidatorX validator{};
-	ValidatorPtrVarient validator_varient{&validator};
-	// std::shared_ptr<protocol_b::ProtocolB> destination_protocol{std::make_shared<protocol_b::ProtocolB>(source_router, validator_varient)};
-	// const DestinationSessionPtrVarient destination_session_varient{&destination_protocol->session()};
-	// std::vector<DestinationSessionPtrVarient *> destination_sessions{const_cast<DestinationSessionPtrVarient *>(&destination_session_varient)};
-	// framework::DestinationRouterOneToOne dest_router_one_to_one{destination_session_varient};
-	// framework::DestinationRouterRoundRobin dest_router_round_robin{destination_sessions};
-	// DestinationRouterPtrVarient dest_router_variant{&dest_router_round_robin};
-	// protocol_a::ProtocolA source_protocol{dest_router_variant, source_router};
-};
+// 	/* These will be created by factories within the constructor of the owner */
+// 	framework::SourceRouter source_router{};
+// 	//ValidatorX validator{};
+// 	//ValidatorPtrVarient validator_varient{&validator};
+// 	// std::shared_ptr<protocol_b::ProtocolB> destination_protocol{std::make_shared<protocol_b::ProtocolB>(source_router, validator_varient)};
+// 	// const DestinationSessionPtrVarient destination_session_varient{&destination_protocol->session()};
+// 	// std::vector<DestinationSessionPtrVarient *> destination_sessions{const_cast<DestinationSessionPtrVarient *>(&destination_session_varient)};
+// 	// framework::DestinationRouterOneToOne dest_router_one_to_one{destination_session_varient};
+// 	// framework::DestinationRouterRoundRobin dest_router_round_robin{destination_sessions};
+// 	// DestinationRouterPtrVarient dest_router_variant{&dest_router_round_robin};
+// 	// protocol_a::ProtocolA source_protocol{dest_router_variant, source_router};
+// };
 
 /* This is a basic simulator designed to simulate a client (order source) and a venue (exchange) */
 // struct Simulator
@@ -171,6 +171,9 @@ catch (const std::invalid_argument &e)
 int main(int argc, char **argv)
 {
 	const auto number_of_messages = parse_arguments(argc, argv);
+
+	auto& app = framework::Application::instance();
+	app.init("/mnt/d/linux/m3janitha2/github/HyperRoute/examples/trading_system/config/config.xml");
 
 	// Simulator sim{};
 	// std::vector<protocol_a::schema::NewOrderSingle> new_orders{};

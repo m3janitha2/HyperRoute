@@ -1,6 +1,13 @@
 <?xml version="1.0"?>
 <configuration version="1.0">
   <filename>abcd</filename>
+  <validators>
+    <validator>
+      <name>Validator1</name>
+      <id>5001</id>
+      <type>ValidatorX</type>
+    </validator>
+  </validators>
   <source_sessions>
     <source_session>
       <name>Source1</name>
@@ -33,6 +40,7 @@
       <name>Destination1</name>
       <id>2000</id>
       <protocol>ProtocolB</protocol>
+      <validator_id>5001</validator_id>
       <enricher>
         <name>ProtocolB_Profile1</name>
       </enricher>
@@ -41,14 +49,10 @@
       <name>Destination2</name>
       <id>2001</id>
       <protocol>ProtocolB</protocol>
+      <validator_id>5001</validator_id>
       <enricher>
         <name>ProtocolB_Profile2</name>
       </enricher>
     </destination_session>
   </destination_sessions>
-  <validator>
-      <name>Validator1</name>
-      <id>2001</id>
-      <type>ValidatorX</type>
-  </validator>
 </configuration>

@@ -18,6 +18,7 @@ namespace hyper::framework
 
         const std::vector<Configuration> &get_source_sessions() const;
         const std::vector<Configuration> &get_destination_sessions() const;
+        const std::vector<Configuration> &get_validators() const;
 
         const Configuration &get_source_session_by_id(std::size_t id) const;
         const Configuration &get_destination_session_by_id(std::size_t id) const;
@@ -33,7 +34,9 @@ namespace hyper::framework
         Configuration root_config_;
         std::vector<Configuration> source_sessions_;
         std::vector<Configuration> destination_sessions_;
+        std::vector<Configuration> validators_;
         std::unordered_map<std::size_t, Configuration> source_session_by_id_;
         std::unordered_map<std::size_t, Configuration> destination_session_by_id_;
+        std::unordered_map<std::size_t, Configuration> validator_by_id_;
     };
 }
