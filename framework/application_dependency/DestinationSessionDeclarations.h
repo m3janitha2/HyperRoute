@@ -1,7 +1,7 @@
 #pragma once
 
 #include <variant>
-#include <examples/trading_system/session/DestinationSessionProtocolB.h>
+#include <memory>
 
 namespace hyper
 {
@@ -10,6 +10,7 @@ namespace hyper
         class DestinationSessionProtocolB;
     }
 
-    using DestinationSessionPtrVarient = std::variant<std::monostate,
-                                                      protocol_b::DestinationSessionProtocolB *>;
+    using DestinationSessionPtrVarient =
+        std::variant<std::monostate,
+                     protocol_b::DestinationSessionProtocolB *>;
 };

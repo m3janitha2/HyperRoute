@@ -9,7 +9,7 @@ namespace hyper::protocol_a
 {
     /* Protocol implementation for Protocol A */
     /* This is a primitive, FIX-like binary protocol designed to demonstrate usage */
-    
+
     enum class SessionRejectCode
     {
         Success,
@@ -21,11 +21,13 @@ namespace hyper::protocol_a
     std::string to_string(SessionRejectCode code);
 
     using SessionRejectInfo = framework::ErrorInfo<SessionRejectCode>;
+    using Configuration = framework::Configuration;
 
     class ProtocolA : public framework::Protocol<ProtocolA, SourceSessionProtocolA>
     {
     public:
-        explicit ProtocolA(const DestinationRouterPtrVarient &destination_router,
+        explicit ProtocolA(const Configuration &config,
+                           const DestinationRouterPtrVarient &destination_router,
                            const SourceRouter &source_router);
 
         void on_connect_impl();

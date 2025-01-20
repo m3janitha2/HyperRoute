@@ -4,6 +4,8 @@
 #include <framework/utility/RejectInfo.h>
 #include <framework/transport/Transport.h>
 #include <framework/sequence_store/SequenceStore.h>
+#include <framework/config/Configuration.h>
+#include <framework/config/ConfigManager.h>
 #include <cstdint>
 #include <string_view>
 #include <type_traits>
@@ -27,16 +29,20 @@ namespace hyper::framework
     {
     public:
         template <typename... Args>
-        explicit Protocol(Args &&...args)
-            : session_{transport_, std::forward<Args>(args)...}
+        explicit Protocol(const Configuration &config, Args &&...args)
+            : config_(config),
+              session_{transport_, std::forward<Args>(args)...}
         {
             static_assert(TransportCallbackInf<Protocol<ProtocolImpl, Session>>,
                           "Protocol does not satisfy TransportCallbackInf");
             static_assert(ProtocolInf<Protocol<ProtocolImpl, Session>>);
+            load(config);
         }
 
         Protocol(const Protocol &) = delete;
         Protocol &operator=(const Protocol &) = delete;
+
+        void load(const Configuration &config);
 
         /* TransportCallbacks */
         void on_connect() noexcept;
@@ -59,6 +65,9 @@ namespace hyper::framework
         [[nodiscard]] constexpr Session &session() noexcept { return session_; }
 
     private:
+        const Configuration &config_;
+        std::size_t id_{0};
+        std::string name_{};
         TransportCallbacks transport_callbacks{[this]()
                                                { on_connect(); },
                                                [this]()
@@ -69,10 +78,18 @@ namespace hyper::framework
         Session session_;
         SequenceStore<std::uint64_t> sequence_store_{};
         bool connected_{false};
+
         /* todox: HeatbeatTimer producer_ */
         /* todox: HeatbeatTimer receiver_ */
         /* todox: PersistStore msg_stroe_ */
     };
+
+    template <typename ProtocolImpl, typename Session>
+    inline void Protocol<ProtocolImpl, Session>::load(const Configuration &config)
+    {
+        id_ = config.get<std::size_t>("id");
+        name_ = config.get<std::string>("name");
+    }
 
     template <typename ProtocolImpl, typename Session>
     inline void Protocol<ProtocolImpl, Session>::on_connect() noexcept

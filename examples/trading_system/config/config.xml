@@ -2,7 +2,7 @@
 <configuration version="1.0">
   <filename>abcd</filename>
   <source_sessions>
-    <source_session name="Source1">
+    <source_session>
       <name>Source1</name>
       <id>1000</id>
       <protocol>ProtocolA</protocol>
@@ -14,7 +14,7 @@
         <name>ProtocolA_Profile1</name>
       </enricher>
     </source_session>
-    <source_session name="Source2">
+    <source_session>
       <name>Source2</name>
       <id>1001</id>
       <protocol>ProtocolA</protocol>
@@ -29,7 +29,7 @@
     </source_session>
   </source_sessions>
   <destination_sessions>
-    <destination_session name="Destination1">
+    <destination_session>
       <name>Destination1</name>
       <id>2000</id>
       <protocol>ProtocolB</protocol>
@@ -37,7 +37,7 @@
         <name>ProtocolB_Profile1</name>
       </enricher>
     </destination_session>
-    <destination_session name="Destination2">
+    <destination_session>
       <name>Destination2</name>
       <id>2001</id>
       <protocol>ProtocolB</protocol>
@@ -46,4 +46,9 @@
       </enricher>
     </destination_session>
   </destination_sessions>
+  <validator>
+      <name>Validator1</name>
+      <id>2001</id>
+      <type>ValidatorX</type>
+  </validator>
 </configuration>

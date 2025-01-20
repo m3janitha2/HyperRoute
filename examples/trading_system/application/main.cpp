@@ -1,5 +1,5 @@
 
-#include <framework/config/Configuration.h>
+#include <framework/config/ConfigManager.h>
 #include <framework/router/SourceRouter.h>
 #include <framework/application_dependency/DestinationRouters.h>
 #include <framework/application_dependency/DestinationSessions.h>
@@ -10,6 +10,8 @@
 #include <random>
 #include <vector>
 #include <string>
+#include <framework/application_dependency/DestinationProtocols.h>
+#include <framework/factory/ProtocolFactory.h>
 
 using namespace hyper;
 /* Temporary implementation until the config parser is implemented */
@@ -18,101 +20,125 @@ struct SubSystem
 {
 	SubSystem()
 	{
-		/* todox: */
-		framework::Configuration cfg{"application/config/config.xml"};
-		// auto x = cfg.source_sesssion_cfg_by_name("SourceA");
+		framework::ConfigManager::instance().init("/mnt/d/linux/m3janitha2/github/HyperRoute/examples/trading_system/config/config.xml");
+
+		// source_router
+		// validators
+		load_destination_sessions();
 	}
+
+	void load_destination_sessions()
+	{
+		auto &factory = framework::DestinationProtocolFactory::instance();
+		framework::register_all_protocols();
+
+		for (auto &cfg_manager = framework::ConfigManager::instance();
+			 auto &session_cfg : cfg_manager.get_destination_sessions())
+		{
+			auto name = session_cfg.get<std::string>("name");
+			auto id = session_cfg.get<std::size_t>("id");
+			auto protocol_name = session_cfg.get<std::string>("protocol");
+			auto protocol = factory.create(protocol_name,
+										   session_cfg, *source_router_.get(), validator_);
+			destination_protocols_by_id_.emplace(id, std::move(protocol));
+		}
+	}
+
+	std::unique_ptr<framework::SourceRouter> source_router_{};
+	ValidatorPtrVarient validator_{};
+	std::unordered_map<std::size_t, DestinationProtocolPtrVarient> destination_protocols_by_id_{};
+	std::unordered_map<std::size_t, SourceSessionPtrVarient> source_protocols_by_id_{};
 
 	/* These will be created by factories within the constructor of the owner */
 	framework::SourceRouter source_router{};
 	ValidatorX validator{};
 	ValidatorPtrVarient validator_varient{&validator};
-	protocol_b::ProtocolB destination_protocol{source_router, validator_varient};
-	const DestinationSessionPtrVarient destination_session_varient{&destination_protocol.session()};
-	std::vector<DestinationSessionPtrVarient *> destination_sessions{const_cast<DestinationSessionPtrVarient *>(&destination_session_varient)};
-	framework::DestinationRouterOneToOne dest_router_one_to_one{destination_session_varient};
-	framework::DestinationRouterRoundRobin dest_router_round_robin{destination_sessions};
-	DestinationRouterPtrVarient dest_router_variant{&dest_router_round_robin};
-	protocol_a::ProtocolA source_protocol{dest_router_variant, source_router};
+	// std::shared_ptr<protocol_b::ProtocolB> destination_protocol{std::make_shared<protocol_b::ProtocolB>(source_router, validator_varient)};
+	// const DestinationSessionPtrVarient destination_session_varient{&destination_protocol->session()};
+	// std::vector<DestinationSessionPtrVarient *> destination_sessions{const_cast<DestinationSessionPtrVarient *>(&destination_session_varient)};
+	// framework::DestinationRouterOneToOne dest_router_one_to_one{destination_session_varient};
+	// framework::DestinationRouterRoundRobin dest_router_round_robin{destination_sessions};
+	// DestinationRouterPtrVarient dest_router_variant{&dest_router_round_robin};
+	// protocol_a::ProtocolA source_protocol{dest_router_variant, source_router};
 };
 
 /* This is a basic simulator designed to simulate a client (order source) and a venue (exchange) */
-struct Simulator
-{
-	Simulator()
-	{
-		subsystem_.destination_protocol.transport().set_receive_data_cb_for_test([this](std::string_view data)
-																				 { on_data_from_destination_session(data); });
-		subsystem_.source_protocol.transport().set_receive_data_cb_for_test([this](std::string_view data)
-																			{ on_data_from_source_session(data); });
-	}
+// struct Simulator
+// {
+// 	Simulator()
+// 	{
+// 		subsystem_.destination_protocol->transport().set_receive_data_cb_for_test([this](std::string_view data)
+// 																				  { on_data_from_destination_session(data); });
+// 		subsystem_.source_protocol.transport().set_receive_data_cb_for_test([this](std::string_view data)
+// 																			{ on_data_from_source_session(data); });
+// 	}
 
-	void on_data_from_source_session(std::string_view data)
-	{
-		// std::cout << "client recevied message" << std::endl;
-		set_msg_received_by_source(true);
-		no_of_msgs_received_by_src_++;
-		set_last_recevied_msg(data);
-	}
+// 	void on_data_from_source_session(std::string_view data)
+// 	{
+// 		// std::cout << "client recevied message" << std::endl;
+// 		set_msg_received_by_source(true);
+// 		no_of_msgs_received_by_src_++;
+// 		set_last_recevied_msg(data);
+// 	}
 
-	void on_data_from_destination_session(std::string_view data)
-	{
-		// std::cout << "venue recevied message" << std::endl;
-		set_msg_received_by_destination(true);
-		no_of_msgs_received_by_dest_++;
-		set_last_recevied_msg(data);
-	}
+// 	void on_data_from_destination_session(std::string_view data)
+// 	{
+// 		// std::cout << "venue recevied message" << std::endl;
+// 		set_msg_received_by_destination(true);
+// 		no_of_msgs_received_by_dest_++;
+// 		set_last_recevied_msg(data);
+// 	}
 
-	void send_request_to_source_session(std::string_view data)
-	{
-		/* Reset the destination before the request is sent from the source */
-		set_msg_received_by_destination(false);
-		no_of_msgs_sent_by_src_++;
-		subsystem_.source_protocol.transport().on_data(data);
-	}
+// 	void send_request_to_source_session(std::string_view data)
+// 	{
+// 		/* Reset the destination before the request is sent from the source */
+// 		set_msg_received_by_destination(false);
+// 		no_of_msgs_sent_by_src_++;
+// 		subsystem_.source_protocol.transport().on_data(data);
+// 	}
 
-	void send_response_to_destination_session(std::string_view data)
-	{
-		/* Reset the source before the response is sent from the destination */
-		set_msg_received_by_source(false);
-		no_of_msgs_sent_by_dest_++;
-		subsystem_.destination_protocol.transport().on_data(data);
-	}
+// 	void send_response_to_destination_session(std::string_view data)
+// 	{
+// 		/* Reset the source before the response is sent from the destination */
+// 		set_msg_received_by_source(false);
+// 		no_of_msgs_sent_by_dest_++;
+// 		subsystem_.destination_protocol->transport().on_data(data);
+// 	}
 
-	void set_last_recevied_msg(std::string_view data)
-	{
-		memcpy(buffer_, data.data(), data.length());
-	}
+// 	void set_last_recevied_msg(std::string_view data)
+// 	{
+// 		memcpy(buffer_, data.data(), data.length());
+// 	}
 
-	template <typename Msg>
-	const Msg &get_last_msg()
-	{
-		return *reinterpret_cast<Msg *>(buffer_);
-	}
+// 	template <typename Msg>
+// 	const Msg &get_last_msg()
+// 	{
+// 		return *reinterpret_cast<Msg *>(buffer_);
+// 	}
 
-	[[nodiscard]] bool is_msg_received_by_destination() const noexcept { return msg_received_by_destination_; }
-	void set_msg_received_by_destination(bool is_received) noexcept { msg_received_by_destination_ = is_received; }
+// 	[[nodiscard]] bool is_msg_received_by_destination() const noexcept { return msg_received_by_destination_; }
+// 	void set_msg_received_by_destination(bool is_received) noexcept { msg_received_by_destination_ = is_received; }
 
-	[[nodiscard]] bool is_msg_received_by_source() const noexcept { return msg_received_by_destination_; }
-	void set_msg_received_by_source(bool is_received) noexcept { msg_received_by_destination_ = is_received; }
+// 	[[nodiscard]] bool is_msg_received_by_source() const noexcept { return msg_received_by_destination_; }
+// 	void set_msg_received_by_source(bool is_received) noexcept { msg_received_by_destination_ = is_received; }
 
-	void print_stat()
-	{
-		std::cout << "no_of_msgs_sent_by_src:" << no_of_msgs_sent_by_src_ << std::endl
-				  << "no_of_msgs_received_by_dest:" << no_of_msgs_received_by_dest_ << std::endl
-				  << "no_of_msgs_sent_by_dest:" << no_of_msgs_sent_by_dest_ << std::endl
-				  << "no_of_msgs_received_by_src:" << no_of_msgs_received_by_src_ << std::endl;
-	}
+// 	void print_stat()
+// 	{
+// 		std::cout << "no_of_msgs_sent_by_src:" << no_of_msgs_sent_by_src_ << std::endl
+// 				  << "no_of_msgs_received_by_dest:" << no_of_msgs_received_by_dest_ << std::endl
+// 				  << "no_of_msgs_sent_by_dest:" << no_of_msgs_sent_by_dest_ << std::endl
+// 				  << "no_of_msgs_received_by_src:" << no_of_msgs_received_by_src_ << std::endl;
+// 	}
 
-	SubSystem subsystem_{};
-	volatile bool msg_received_by_destination_{false};
-	volatile bool msg_received_by_source_{false};
-	std::size_t no_of_msgs_sent_by_src_{0};
-	std::size_t no_of_msgs_received_by_src_{0};
-	std::size_t no_of_msgs_sent_by_dest_{0};
-	std::size_t no_of_msgs_received_by_dest_{0};
-	char buffer_[1024]{};
-};
+// 	SubSystem subsystem_{};
+// 	volatile bool msg_received_by_destination_{false};
+// 	volatile bool msg_received_by_source_{false};
+// 	std::size_t no_of_msgs_sent_by_src_{0};
+// 	std::size_t no_of_msgs_received_by_src_{0};
+// 	std::size_t no_of_msgs_sent_by_dest_{0};
+// 	std::size_t no_of_msgs_received_by_dest_{0};
+// 	char buffer_[1024]{};
+// };
 
 template <typename T>
 struct RandomGen
@@ -146,73 +172,73 @@ int main(int argc, char **argv)
 {
 	const auto number_of_messages = parse_arguments(argc, argv);
 
-	Simulator sim{};
-	std::vector<protocol_a::schema::NewOrderSingle> new_orders{};
-	std::vector<protocol_b::schema::ExecutionReport> new_acks{};
-	std::vector<protocol_a::schema::CancelReplaceRequest> cancel_replaces{};
+	// Simulator sim{};
+	// std::vector<protocol_a::schema::NewOrderSingle> new_orders{};
+	// std::vector<protocol_b::schema::ExecutionReport> new_acks{};
+	// std::vector<protocol_a::schema::CancelReplaceRequest> cancel_replaces{};
 
-	RandomGen<std::uint32_t> g_uint32(1, 1000);
-	RandomGen<std::uint64_t> g_uint64(1, 1000);
-	RandomGen<int> g_int(1, 1000);
+	// RandomGen<std::uint32_t> g_uint32(1, 1000);
+	// RandomGen<std::uint64_t> g_uint64(1, 1000);
+	// RandomGen<int> g_int(1, 1000);
 
-	for (auto i{0}; i < number_of_messages; i++)
-	{
-		new_orders.emplace_back(protocol_a::schema::NewOrderSingle{.a = g_uint32.next(),
-																   .b = g_uint32.next(),
-																   .cl_ord_id = g_uint64.next()});
-		new_acks.emplace_back(protocol_b::schema::ExecutionReport{.a = g_int.next(),
-																  .b = g_int.next(),
-																  .c = g_int.next()});
-		cancel_replaces.emplace_back(protocol_a::schema::CancelReplaceRequest{.a = g_uint32.next(),
-																			  .b = g_uint32.next(),
-																			  .cl_ord_id = g_uint64.next(),
-																			  .orig_cl_ord_id = g_uint64.next()});
-	}
+	// for (auto i{0}; i < number_of_messages; i++)
+	// {
+	// 	new_orders.emplace_back(protocol_a::schema::NewOrderSingle{.a = g_uint32.next(),
+	// 															   .b = g_uint32.next(),
+	// 															   .cl_ord_id = g_uint64.next()});
+	// 	new_acks.emplace_back(protocol_b::schema::ExecutionReport{.a = g_int.next(),
+	// 															  .b = g_int.next(),
+	// 															  .c = g_int.next()});
+	// 	cancel_replaces.emplace_back(protocol_a::schema::CancelReplaceRequest{.a = g_uint32.next(),
+	// 																		  .b = g_uint32.next(),
+	// 																		  .cl_ord_id = g_uint64.next(),
+	// 																		  .orig_cl_ord_id = g_uint64.next()});
+	// }
 
-	RandomGen<std::size_t> g_size_t(0, number_of_messages - 1);
+	// RandomGen<std::size_t> g_size_t(0, number_of_messages - 1);
 
-	for (auto i{0}; i < number_of_messages; i++)
-	{
-		auto msg_index = g_size_t.next();
+	// for (auto i{0}; i < number_of_messages; i++)
+	// {
+	// 	auto msg_index = g_size_t.next();
 
-		/* Simulate an order chain */
-		auto &new_order = new_orders[msg_index];
-		std::string_view new_order_data{reinterpret_cast<char *>(&new_order), new_order.header.size};
+	// 	/* Simulate an order chain */
+	// 	auto &new_order = new_orders[msg_index];
+	// 	std::string_view new_order_data{reinterpret_cast<char *>(&new_order), new_order.header.size};
 
-		/* Client sends NewOrderSingle */
-		sim.send_request_to_source_session(new_order_data);
+	// 	/* Client sends NewOrderSingle */
+	// 	sim.send_request_to_source_session(new_order_data);
 
-		/* Venue received NewOrderSingle */
-		if (!sim.is_msg_received_by_destination()) [[unlikely]]
-			return -1;
-		auto &dest_new = sim.get_last_msg<protocol_b::schema::NewOrderSingle>();
-		std::cout << "venue received: " << dest_new << std::endl;
+	// 	/* Venue received NewOrderSingle */
+	// 	if (!sim.is_msg_received_by_destination()) [[unlikely]]
+	// 		return -1;
+	// 	auto &dest_new = sim.get_last_msg<protocol_b::schema::NewOrderSingle>();
+	// 	std::cout << "venue received: " << dest_new << std::endl;
 
-		/* Venue sends ExecutionReport */
-		auto &new_ack = new_acks[msg_index];
-		new_ack.c = dest_new.c;
-		std::string_view new_ack_data{reinterpret_cast<char *>(&new_ack), new_ack.header.size};
-		sim.send_response_to_destination_session(new_ack_data);
+	// 	/* Venue sends ExecutionReport */
+	// 	auto &new_ack = new_acks[msg_index];
+	// 	new_ack.c = dest_new.c;
+	// 	std::string_view new_ack_data{reinterpret_cast<char *>(&new_ack), new_ack.header.size};
+	// 	sim.send_response_to_destination_session(new_ack_data);
 
-		/* Client received ExecutionReport */
-		if (!sim.is_msg_received_by_source()) [[unlikely]]
-			return -1;
-		auto &src_new_ack = sim.get_last_msg<protocol_a::schema::ExecutionReport>();
-		std::cout << "client received: " << src_new_ack << std::endl;
+	// 	/* Client received ExecutionReport */
+	// 	if (!sim.is_msg_received_by_source()) [[unlikely]]
+	// 		return -1;
+	// 	auto &src_new_ack = sim.get_last_msg<protocol_a::schema::ExecutionReport>();
+	// 	std::cout << "client received: " << src_new_ack << std::endl;
 
-		/* Client sends CancelReplaceRequest */
-		auto &amend = cancel_replaces[msg_index];
-		amend.orig_cl_ord_id = new_order.cl_ord_id;
-		std::string_view amend_data{reinterpret_cast<char *>(&amend), amend.header.size};
-		sim.send_request_to_source_session(amend_data);
+	// 	/* Client sends CancelReplaceRequest */
+	// 	auto &amend = cancel_replaces[msg_index];
+	// 	amend.orig_cl_ord_id = new_order.cl_ord_id;
+	// 	std::string_view amend_data{reinterpret_cast<char *>(&amend), amend.header.size};
+	// 	sim.send_request_to_source_session(amend_data);
 
-		/* Venue received CancelReplaceRequest */
-		if (!sim.is_msg_received_by_source()) [[unlikely]]
-			return -1;
-		auto &dst_amend = sim.get_last_msg<protocol_b::schema::CancelReplaceRequest>();
-		std::cout << "venue received: " << dst_amend << std::endl;
-	}
+	// 	/* Venue received CancelReplaceRequest */
+	// 	if (!sim.is_msg_received_by_source()) [[unlikely]]
+	// 		return -1;
+	// 	auto &dst_amend = sim.get_last_msg<protocol_b::schema::CancelReplaceRequest>();
+	// 	std::cout << "venue received: " << dst_amend << std::endl;
+	// }
 
-	sim.print_stat();
+	// sim.print_stat();
 	return 0;
 }

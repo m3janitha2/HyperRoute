@@ -21,12 +21,14 @@ namespace hyper::protocol_b
     std::string to_string(SessionRejectCode code);
 
     using SessionRejectInfo = framework::ErrorInfo<SessionRejectCode>;
+    using Configuration = framework::Configuration;
 
     class ProtocolB : public framework::Protocol<ProtocolB, DestinationSessionProtocolB>
     {
     public:
-        explicit ProtocolB(const SourceRouter &source_router,
-                           const ValidatorPtrVarient &validator);
+        explicit ProtocolB(const Configuration &config,
+                           SourceRouter &source_router,
+                           ValidatorPtrVarient &validator);
 
         void on_connect_impl();
         void on_disconnect_impl();

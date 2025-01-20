@@ -21,9 +21,10 @@ namespace hyper::protocol_a
         return to_chars(code);
     }
 
-    ProtocolA::ProtocolA(const DestinationRouterPtrVarient &destination_router,
+    ProtocolA::ProtocolA(const Configuration &config,
+                         const DestinationRouterPtrVarient &destination_router,
                          const SourceRouter &source_router)
-        : Protocol{destination_router, source_router} {}
+        : Protocol{config, destination_router, source_router} {}
 
     void ProtocolA::on_connect_impl()
     {

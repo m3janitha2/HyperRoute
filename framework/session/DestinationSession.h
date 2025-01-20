@@ -16,7 +16,7 @@ namespace hyper::framework
     /* - Receive messages from the Source and forward them to the transport */
 
     template <typename SessionImpl, typename SourceMsg, typename DestinationMsg>
-    
+
     concept DestinationSessionInf = requires(SessionImpl ds,
                                              SourceMsg src_msg, DestinationMsg dst_msg,
                                              RejectInfo reject_info) {
@@ -33,11 +33,12 @@ namespace hyper::framework
     {
     public:
         explicit DestinationSession(Transport &transport,
-                                    const SourceRouter &source_router,
-                                    const ValidatorPtrVarient &validator)
+                                    SourceRouter &source_router,
+                                    ValidatorPtrVarient &validator)
             : Session<SessionImpl>{transport},
-              source_router_{const_cast<SourceRouter &>(source_router)},
-              validator_{const_cast<ValidatorPtrVarient &>(validator)} {}
+              source_router_{source_router},
+              validator_{validator} {}
+
         /* DestinationSessionInf */
         template <MessageInf Msg>
         RejectInfo on_message_from_peer(Msg &msg) noexcept;
