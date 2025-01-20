@@ -1,21 +1,25 @@
 <?xml version="1.0"?>
 <configuration version="1.0">
-  <filename>abcd</filename>
   <validators>
     <validator>
       <name>Validator1</name>
-      <id>5001</id>
+      <id>1000</id>
+      <type>ValidatorX</type>
+    </validator>
+    <validator>
+      <name>Validator2</name>
+      <id>1001</id>
       <type>ValidatorX</type>
     </validator>
   </validators>
   <source_sessions>
     <source_session>
       <name>Source1</name>
-      <id>1000</id>
+      <id>2000</id>
       <protocol>ProtocolA</protocol>
       <router>
         <type>OneToOne</type>
-        <destination_session_id>2000</destination_session_id>
+        <destination_session_id>3000</destination_session_id>
       </router>
       <enricher>
         <name>ProtocolA_Profile1</name>
@@ -23,12 +27,12 @@
     </source_session>
     <source_session>
       <name>Source2</name>
-      <id>1001</id>
+      <id>2001</id>
       <protocol>ProtocolA</protocol>
       <router>
         <type>RoundRobin</type>
-        <destination_session_id>2000</destination_session_id>
-        <destination_session_id>2001</destination_session_id>
+        <destination_session_id>3000</destination_session_id>
+        <destination_session_id>3001</destination_session_id>
       </router>
       <enricher>
         <name>ProtocolA_Profile2</name>
@@ -38,18 +42,18 @@
   <destination_sessions>
     <destination_session>
       <name>Destination1</name>
-      <id>2000</id>
+      <id>3000</id>
       <protocol>ProtocolB</protocol>
-      <validator_id>5001</validator_id>
+      <validator_id>1000</validator_id>
       <enricher>
         <name>ProtocolB_Profile1</name>
       </enricher>
     </destination_session>
     <destination_session>
       <name>Destination2</name>
-      <id>2001</id>
+      <id>3001</id>
       <protocol>ProtocolB</protocol>
-      <validator_id>5001</validator_id>
+      <validator_id>1000</validator_id>
       <enricher>
         <name>ProtocolB_Profile2</name>
       </enricher>

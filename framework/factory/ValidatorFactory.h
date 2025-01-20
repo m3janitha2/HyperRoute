@@ -15,14 +15,20 @@ namespace hyper::framework
     using ValidatorFactory =
         Factory<ValidatorPtrVarient, ValidatorCreator>;
 
-    inline void register_all_validators()
+    template <typename Type>
+    inline void register_validator(const std::string &key)
     {
         auto &factory = ValidatorFactory::instance();
+        factory.register_type(
+            key,
+            [](const Configuration &config)
+            {
+                return std::make_shared<Type>(config);
+            });
+    }
 
-        factory.register_type("ValidatorX",
-                              [](const Configuration &config)
-                              {
-                                  return std::make_shared<ValidatorX>(config);
-                              });
+    inline void register_all_validators()
+    {
+        register_validator<ValidatorX>("ValidatorX");
     }
 }

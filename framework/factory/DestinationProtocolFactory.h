@@ -28,9 +28,7 @@ namespace hyper::framework
                SourceRouter &source_router,
                ValidatorPtrVarient &validator)
             {
-                return std::make_shared<Type>(config,
-                                              source_router,
-                                              validator);
+                return std::make_shared<Type>(config, source_router, validator);
             });
     }
 

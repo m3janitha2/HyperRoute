@@ -27,9 +27,7 @@ namespace hyper::framework
                const DestinationRouterPtrVarient &destination_router,
                const SourceRouter &source_router)
             {
-                return std::make_shared<protocol_a::ProtocolA>(config,
-                                                               destination_router,
-                                                               source_router);
+                return std::make_shared<Type>(config, destination_router, source_router);
             });
     }
 
