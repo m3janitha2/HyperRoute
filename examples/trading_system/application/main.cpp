@@ -4,7 +4,7 @@
 #include <random>
 #include <memory>
 #include <vector>
-#include <framework/application/application.h>
+#include <framework/application/Application.h>
 #include <framework/simulator/Simulator.h>
 #include <examples/trading_system/protocol/ProtocolA.h>
 #include <examples/trading_system/protocol/ProtocolB.h>
