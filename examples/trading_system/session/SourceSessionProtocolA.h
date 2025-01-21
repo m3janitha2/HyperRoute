@@ -65,13 +65,13 @@ namespace hyper::protocol_a
         {
             if (auto [it, ret] = cl_ord_id_to_uid_.try_emplace(msg.msg().cl_ord_id, msg.uid());
                 ret != true)
-                std::cout << "Failed to update source ruting info. cl_ord_id:" << msg.msg().cl_ord_id
+                std::cout << "Failed to update source routing info. cl_ord_id:" << msg.msg().cl_ord_id
                           << " uid:" << msg.uid() << std::endl;
         }
     }
     catch (std::exception &err)
     {
-        std::cout << "Critical Error. Failed to update source ruting info. cl_ord_id:" << msg.msg().cl_ord_id
+        std::cout << "Critical Error. Failed to update source routing info. cl_ord_id:" << msg.msg().cl_ord_id
                   << " uid:" << msg.uid() << " error:" << err.what() << std::endl;
     }
 }

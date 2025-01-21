@@ -83,4 +83,4 @@ jobs:
 
     - name: Benchmark
       working-directory: ${{github.workspace}}/build/examples/trading_system/application/
-      run: ./trading_system 100 
+      run: ./trading_system "${{github.workspace}}examples/trading_system/config/config.xml" 100 
