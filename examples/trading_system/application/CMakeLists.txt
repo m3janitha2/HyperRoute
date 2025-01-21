@@ -13,7 +13,7 @@ set(SOURCE_FILES
     ../../../framework/transport/Transport.cpp
     ../session/DestinationSessionProtocolB.cpp
     ../protocol/ProtocolB.cpp
-    ../../../framework/application/application.cpp)
+    ../../../framework/application/Application.cpp)
 
 add_executable(trading_system
     ${SOURCE_FILES})
