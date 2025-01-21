@@ -1,6 +1,5 @@
 #pragma once
 
-#include <framework/config/ConfigManager.h>
 #include <framework/application_dependency/DestinationProtocols.h>
 #include <framework/application_dependency/SourceProtocolDeclarations.h>
 #include <memory>

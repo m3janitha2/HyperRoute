@@ -30,7 +30,7 @@ namespace hyper::framework
 
     inline void register_all_destination_routers()
     {
-        register_destination_router<DestinationRouterOneToOne>("DestinationRouterOneToOne");
-        register_destination_router<DestinationRouterRoundRobin>("DestinationRouterRoundRobin");
+        register_destination_router<DestinationRouterOneToOne>("OneToOne");
+        register_destination_router<DestinationRouterRoundRobin>("RoundRobin");
     }
 }

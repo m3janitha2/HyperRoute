@@ -12,16 +12,19 @@ namespace hyper::framework
     class Validator : public CrtpBase<ValidatorImpl>
     {
     public:
-        explicit Validator(const Configuration& config)
-            :config_(config){}
+        explicit Validator(const Configuration &config)
+            : config_(config) {}
 
         Validator(const Validator &) = delete;
         Validator &operator=(const Validator &) = delete;
 
         template <typename Msg>
-        RejectInfo validate(Msg &msg) { return this->impl().validate_impl(msg); }
+        RejectInfo validate(Msg &msg)
+        {
+            return this->impl().validate_impl(msg);
+        }
 
-private:
-        const Configuration& config_;
+    private:
+        const Configuration &config_;
     };
 }

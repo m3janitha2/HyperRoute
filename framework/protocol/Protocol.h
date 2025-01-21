@@ -63,6 +63,8 @@ namespace hyper::framework
         [[nodiscard]] constexpr const Session &session() const noexcept { return session_; }
         [[nodiscard]] constexpr Session &session() noexcept { return session_; }
 
+        [[nodiscard]] constexpr const std::string& name() const noexcept  { return name_; }
+
     private:
         const Configuration &config_;
         std::size_t id_{0};

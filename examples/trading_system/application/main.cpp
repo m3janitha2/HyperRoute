@@ -1,247 +1,203 @@
-
-// #include <framework/config/ConfigManager.h>
-// #include <framework/router/SourceRouter.h>
-// #include <framework/application_dependency/DestinationRouters.h>
-// #include <framework/application_dependency/DestinationSessions.h>
-// #include <framework/application_dependency/Validators.h>
-// #include <examples/trading_system/protocol/ProtocolA.h>
-// #include <examples/trading_system/protocol/ProtocolB.h>
-#include <string.h>
-#include <random>
-#include <vector>
+#include <iostream>
+#include <stdexcept>
 #include <string>
-// #include <framework/application_dependency/DestinationProtocols.h>
+#include <random>
+#include <memory>
+#include <vector>
 #include <framework/application/application.h>
+#include <examples/trading_system/protocol/ProtocolA.h>
+#include <examples/trading_system/protocol/ProtocolB.h>
+#include <framework/simulator/Simulator.h>
 
 using namespace hyper;
-/* Temporary implementation until the config parser is implemented */
-/* A sample config file is located at application/config/config.xml */
-// struct SubSystem
-// {
-// 	SubSystem()
-// 	{
-// 		framework::ConfigManager::instance().init("/mnt/d/linux/m3janitha2/github/HyperRoute/examples/trading_system/config/config.xml");
 
-// 		// source_router
-// 		// validators
-// 		load_destination_sessions();
-// 	}
-
-// 	void load_destination_sessions()
-// 	{
-// 		auto &factory = framework::DestinationProtocolFactory::instance();
-// 		framework::register_all_protocols();
-
-// 		for (auto &cfg_manager = framework::ConfigManager::instance();
-// 			 auto &session_cfg : cfg_manager.get_destination_sessions())
-// 		{
-// 			auto name = session_cfg.get<std::string>("name");
-// 			auto id = session_cfg.get<std::size_t>("id");
-// 			auto protocol_name = session_cfg.get<std::string>("protocol");
-// 			auto protocol = factory.create(protocol_name,
-// 										   session_cfg, *source_router_.get(), validator_);
-// 			destination_protocols_by_id_.emplace(id, std::move(protocol));
-// 		}
-// 	}
-
-// 	std::unique_ptr<framework::SourceRouter> source_router_{};
-// 	ValidatorPtrVarient validator_{};
-// 	std::unordered_map<std::size_t, DestinationProtocolPtrVarient> destination_protocols_by_id_{};
-// 	std::unordered_map<std::size_t, SourceSessionPtrVarient> source_protocols_by_id_{};
-
-// 	/* These will be created by factories within the constructor of the owner */
-// 	framework::SourceRouter source_router{};
-// 	//ValidatorX validator{};
-// 	//ValidatorPtrVarient validator_varient{&validator};
-// 	// std::shared_ptr<protocol_b::ProtocolB> destination_protocol{std::make_shared<protocol_b::ProtocolB>(source_router, validator_varient)};
-// 	// const DestinationSessionPtrVarient destination_session_varient{&destination_protocol->session()};
-// 	// std::vector<DestinationSessionPtrVarient *> destination_sessions{const_cast<DestinationSessionPtrVarient *>(&destination_session_varient)};
-// 	// framework::DestinationRouterOneToOne dest_router_one_to_one{destination_session_varient};
-// 	// framework::DestinationRouterRoundRobin dest_router_round_robin{destination_sessions};
-// 	// DestinationRouterPtrVarient dest_router_variant{&dest_router_round_robin};
-// 	// protocol_a::ProtocolA source_protocol{dest_router_variant, source_router};
-// };
-
-/* This is a basic simulator designed to simulate a client (order source) and a venue (exchange) */
-// struct Simulator
-// {
-// 	Simulator()
-// 	{
-// 		subsystem_.destination_protocol->transport().set_receive_data_cb_for_test([this](std::string_view data)
-// 																				  { on_data_from_destination_session(data); });
-// 		subsystem_.source_protocol.transport().set_receive_data_cb_for_test([this](std::string_view data)
-// 																			{ on_data_from_source_session(data); });
-// 	}
-
-// 	void on_data_from_source_session(std::string_view data)
-// 	{
-// 		// std::cout << "client recevied message" << std::endl;
-// 		set_msg_received_by_source(true);
-// 		no_of_msgs_received_by_src_++;
-// 		set_last_recevied_msg(data);
-// 	}
-
-// 	void on_data_from_destination_session(std::string_view data)
-// 	{
-// 		// std::cout << "venue recevied message" << std::endl;
-// 		set_msg_received_by_destination(true);
-// 		no_of_msgs_received_by_dest_++;
-// 		set_last_recevied_msg(data);
-// 	}
-
-// 	void send_request_to_source_session(std::string_view data)
-// 	{
-// 		/* Reset the destination before the request is sent from the source */
-// 		set_msg_received_by_destination(false);
-// 		no_of_msgs_sent_by_src_++;
-// 		subsystem_.source_protocol.transport().on_data(data);
-// 	}
-
-// 	void send_response_to_destination_session(std::string_view data)
-// 	{
-// 		/* Reset the source before the response is sent from the destination */
-// 		set_msg_received_by_source(false);
-// 		no_of_msgs_sent_by_dest_++;
-// 		subsystem_.destination_protocol->transport().on_data(data);
-// 	}
-
-// 	void set_last_recevied_msg(std::string_view data)
-// 	{
-// 		memcpy(buffer_, data.data(), data.length());
-// 	}
-
-// 	template <typename Msg>
-// 	const Msg &get_last_msg()
-// 	{
-// 		return *reinterpret_cast<Msg *>(buffer_);
-// 	}
-
-// 	[[nodiscard]] bool is_msg_received_by_destination() const noexcept { return msg_received_by_destination_; }
-// 	void set_msg_received_by_destination(bool is_received) noexcept { msg_received_by_destination_ = is_received; }
-
-// 	[[nodiscard]] bool is_msg_received_by_source() const noexcept { return msg_received_by_destination_; }
-// 	void set_msg_received_by_source(bool is_received) noexcept { msg_received_by_destination_ = is_received; }
-
-// 	void print_stat()
-// 	{
-// 		std::cout << "no_of_msgs_sent_by_src:" << no_of_msgs_sent_by_src_ << std::endl
-// 				  << "no_of_msgs_received_by_dest:" << no_of_msgs_received_by_dest_ << std::endl
-// 				  << "no_of_msgs_sent_by_dest:" << no_of_msgs_sent_by_dest_ << std::endl
-// 				  << "no_of_msgs_received_by_src:" << no_of_msgs_received_by_src_ << std::endl;
-// 	}
-
-// 	SubSystem subsystem_{};
-// 	volatile bool msg_received_by_destination_{false};
-// 	volatile bool msg_received_by_source_{false};
-// 	std::size_t no_of_msgs_sent_by_src_{0};
-// 	std::size_t no_of_msgs_received_by_src_{0};
-// 	std::size_t no_of_msgs_sent_by_dest_{0};
-// 	std::size_t no_of_msgs_received_by_dest_{0};
-// 	char buffer_[1024]{};
-// };
-
+/** Random number generator for a specified range of type T. */
 template <typename T>
-struct RandomGen
+class RandomGen
 {
-	RandomGen(T start, T end, std::uint32_t seed = 1)
-		: dist(start, end), gen(seed) {}
+public:
+    RandomGen(T start, T end, std::uint32_t seed = 1)
+        : dist_(start, end), gen_(seed) {}
 
-	std::uniform_int_distribution<T> dist;
-	std::mt19937 gen;
-	T next() { return dist(gen); }
+    T next() noexcept { return dist_(gen_); }
+
+private:
+    std::uniform_int_distribution<T> dist_;
+    std::mt19937 gen_;
 };
 
-int parse_arguments(int argc, char **argv)
-try
+/** Parses command-line arguments */
+std::size_t parse_arguments(int argc, char **argv)
 {
-	if (argc != 2)
-	{
-		std::cerr << "Usage: " << argv[0] << " <integer>\n";
-		return -1;
-	}
+    if (argc != 2)
+    {
+        throw std::invalid_argument("Usage: " + std::string(argv[0]) + " <positive_integer>");
+    }
 
-	return std::stoi(argv[1]);
+    try
+    {
+        int value = std::stoi(argv[1]);
+        if (value <= 0)
+        {
+            throw std::invalid_argument("The argument must be a positive integer greater than 0.");
+        }
+        return static_cast<std::size_t>(value);
+    }
+    catch (const std::invalid_argument &)
+    {
+        throw std::invalid_argument("The argument is not a valid integer.");
+    }
+    catch (const std::out_of_range &)
+    {
+        throw std::out_of_range("The argument is out of range for an integer.");
+    }
 }
-catch (const std::invalid_argument &e)
+
+/** Initializes protocol sessions */
+void initialize_protocol_sessions(framework::Application &application,
+                                  std::shared_ptr<protocol_a::ProtocolA> &protocol_a,
+                                  std::shared_ptr<protocol_b::ProtocolB> &protocol_b)
 {
-	std::cerr << "Error: The argument is not a valid integer.\n";
-	return -1;
+    // Retrieve protocol sessions by ID
+    auto src_protocol_variant = application.get_source_protocol_session_by_id(2000);
+    protocol_a = std::get<std::shared_ptr<protocol_a::ProtocolA>>(src_protocol_variant);
+
+    auto dst_protocol_variant = application.get_destination_protocol_session_by_id(3000);
+    protocol_b = std::get<std::shared_ptr<protocol_b::ProtocolB>>(dst_protocol_variant);
+}
+
+/** Simulate the order flow */
+void simulate_order_flow(std::size_t number_of_messages,
+                         framework::Simulator<protocol_a::ProtocolA> &sim_src,
+                         framework::Simulator<protocol_b::ProtocolB> &sim_dst,
+                         std::vector<protocol_a::schema::NewOrderSingle> &new_orders,
+                         std::vector<protocol_b::schema::ExecutionReport> &execution_reports,
+                         std::vector<protocol_a::schema::CancelReplaceRequest> &cancel_replaces)
+{
+    RandomGen<std::size_t> message_selector(0, number_of_messages - 1);
+
+    for (std::size_t i = 0; i < number_of_messages; ++i)
+    {
+        auto msg_index = message_selector.next();
+
+        // Simulate a NewOrderSingle
+        auto &new_order = new_orders[msg_index];
+        std::string_view new_order_data{reinterpret_cast<char *>(&new_order), new_order.header.size};
+
+        // Client sends NewOrderSingle
+        sim_src.send_request(new_order_data);
+
+        // Venue receives NewOrderSingle
+        if (!sim_dst.has_received_message())
+        {
+            std::cerr << "Error: Venue did not receive the NewOrderSingle." << std::endl;
+            return;
+        }
+        auto &received_order = sim_dst.get_last_message<protocol_b::schema::NewOrderSingle>();
+        std::cout << "Venue received: " << received_order << std::endl;
+
+        // Simulate ExecutionReport (acknowledgment of order)
+        auto &execution_report = execution_reports[msg_index];
+		execution_report.c = received_order.c;
+        std::string_view execution_report_data{reinterpret_cast<char *>(&execution_report), execution_report.header.size};
+
+        // Client sends ExecutionReport
+        sim_dst.send_request(execution_report_data);
+
+        // Venue receives ExecutionReport
+        if (!sim_src.has_received_message())
+        {
+            std::cerr << "Error: Venue did not receive the execution report." << std::endl;
+            return;
+        }
+        auto &received_execution_report = sim_dst.get_last_message<protocol_a::schema::ExecutionReport>();
+        std::cout << "Venue received execution report: " << received_execution_report << std::endl;
+
+        // Simulate CancelReplaceRequest (if needed)
+        auto &cancel_replace = cancel_replaces[msg_index];
+		cancel_replace.orig_cl_ord_id = new_order.cl_ord_id;
+        std::string_view cancel_replace_data{reinterpret_cast<char *>(&cancel_replace), cancel_replace.header.size};
+
+        // Client sends CancelReplaceRequest
+        sim_src.send_request(cancel_replace_data);
+
+        // Venue receives CancelReplaceRequest
+        if (!sim_dst.has_received_message())
+        {
+            std::cerr << "Error: Venue did not receive the cancel replace request." << std::endl;
+            return;
+        }
+        auto &received_cancel_replace = sim_dst.get_last_message<protocol_a::schema::CancelReplaceRequest>();
+        std::cout << "Venue received cancel replace request: " << received_cancel_replace << std::endl;
+    }
 }
 
 int main(int argc, char **argv)
 {
-	const auto number_of_messages = parse_arguments(argc, argv);
+    try
+    {
+        // Get the number of messages to process from command line argument
+        const auto number_of_messages = parse_arguments(argc, argv);
+        std::cout << "Number of messages to process: " << number_of_messages << std::endl;
 
-	auto& app = framework::Application::instance();
-	app.init("/mnt/d/linux/m3janitha2/github/HyperRoute/examples/trading_system/config/config.xml");
+        // Initialize the application
+        auto &application = framework::Application::instance();
+        application.init("/mnt/d/linux/m3janitha2/github/HyperRoute/examples/trading_system/config/config.xml");
 
-	// Simulator sim{};
-	// std::vector<protocol_a::schema::NewOrderSingle> new_orders{};
-	// std::vector<protocol_b::schema::ExecutionReport> new_acks{};
-	// std::vector<protocol_a::schema::CancelReplaceRequest> cancel_replaces{};
+        // Initialize protocol sessions
+        std::shared_ptr<protocol_a::ProtocolA> protocol_a;
+        std::shared_ptr<protocol_b::ProtocolB> protocol_b;
+        initialize_protocol_sessions(application, protocol_a, protocol_b);
 
-	// RandomGen<std::uint32_t> g_uint32(1, 1000);
-	// RandomGen<std::uint64_t> g_uint64(1, 1000);
-	// RandomGen<int> g_int(1, 1000);
+        // Output source and destination protocol names
+        std::cout << "Source: " << protocol_a->name() << std::endl
+                  << "Destination: " << protocol_b->name() << std::endl;
 
-	// for (auto i{0}; i < number_of_messages; i++)
-	// {
-	// 	new_orders.emplace_back(protocol_a::schema::NewOrderSingle{.a = g_uint32.next(),
-	// 															   .b = g_uint32.next(),
-	// 															   .cl_ord_id = g_uint64.next()});
-	// 	new_acks.emplace_back(protocol_b::schema::ExecutionReport{.a = g_int.next(),
-	// 															  .b = g_int.next(),
-	// 															  .c = g_int.next()});
-	// 	cancel_replaces.emplace_back(protocol_a::schema::CancelReplaceRequest{.a = g_uint32.next(),
-	// 																		  .b = g_uint32.next(),
-	// 																		  .cl_ord_id = g_uint64.next(),
-	// 																		  .orig_cl_ord_id = g_uint64.next()});
-	// }
+        // Simulators for source and destination protocols
+        framework::Simulator<protocol_a::ProtocolA> sim_src(*protocol_a);
+        framework::Simulator<protocol_b::ProtocolB> sim_dst(*protocol_b);
 
-	// RandomGen<std::size_t> g_size_t(0, number_of_messages - 1);
+        // Create vectors to hold protocol schema messages
+        std::vector<protocol_a::schema::NewOrderSingle> new_orders;
+        std::vector<protocol_b::schema::ExecutionReport> execution_reports;
+        std::vector<protocol_a::schema::CancelReplaceRequest> cancel_replaces;
 
-	// for (auto i{0}; i < number_of_messages; i++)
-	// {
-	// 	auto msg_index = g_size_t.next();
+        // Random generators for different types
+        RandomGen<std::uint32_t> uint32_generator(1, 1000);
+        RandomGen<std::uint64_t> uint64_generator(1, 1000);
+        RandomGen<int> int_generator(1, 1000);
 
-	// 	/* Simulate an order chain */
-	// 	auto &new_order = new_orders[msg_index];
-	// 	std::string_view new_order_data{reinterpret_cast<char *>(&new_order), new_order.header.size};
+        // Generate messages
+        for (std::size_t i = 0; i < number_of_messages; ++i)
+        {
+            new_orders.emplace_back(protocol_a::schema::NewOrderSingle{
+                .a = uint32_generator.next(),
+                .b = uint32_generator.next(),
+                .cl_ord_id = uint64_generator.next()});
 
-	// 	/* Client sends NewOrderSingle */
-	// 	sim.send_request_to_source_session(new_order_data);
+            execution_reports.emplace_back(protocol_b::schema::ExecutionReport{
+                .a = int_generator.next(),
+                .b = int_generator.next(),
+                .c = int_generator.next()});
 
-	// 	/* Venue received NewOrderSingle */
-	// 	if (!sim.is_msg_received_by_destination()) [[unlikely]]
-	// 		return -1;
-	// 	auto &dest_new = sim.get_last_msg<protocol_b::schema::NewOrderSingle>();
-	// 	std::cout << "venue received: " << dest_new << std::endl;
+            cancel_replaces.emplace_back(protocol_a::schema::CancelReplaceRequest{
+                .a = uint32_generator.next(),
+                .b = uint32_generator.next(),
+                .cl_ord_id = uint64_generator.next(),
+                .orig_cl_ord_id = uint64_generator.next()});
+        }
 
-	// 	/* Venue sends ExecutionReport */
-	// 	auto &new_ack = new_acks[msg_index];
-	// 	new_ack.c = dest_new.c;
-	// 	std::string_view new_ack_data{reinterpret_cast<char *>(&new_ack), new_ack.header.size};
-	// 	sim.send_response_to_destination_session(new_ack_data);
+        // Optionally print the number of generated messages for verification
+        std::cout << "Generated " << number_of_messages << " messages for NewOrderSingle, ExecutionReport, and CancelReplaceRequest." << std::endl;
 
-	// 	/* Client received ExecutionReport */
-	// 	if (!sim.is_msg_received_by_source()) [[unlikely]]
-	// 		return -1;
-	// 	auto &src_new_ack = sim.get_last_msg<protocol_a::schema::ExecutionReport>();
-	// 	std::cout << "client received: " << src_new_ack << std::endl;
+        // Simulate order flow
+        simulate_order_flow(number_of_messages, sim_src, sim_dst, new_orders, execution_reports, cancel_replaces);
 
-	// 	/* Client sends CancelReplaceRequest */
-	// 	auto &amend = cancel_replaces[msg_index];
-	// 	amend.orig_cl_ord_id = new_order.cl_ord_id;
-	// 	std::string_view amend_data{reinterpret_cast<char *>(&amend), amend.header.size};
-	// 	sim.send_request_to_source_session(amend_data);
-
-	// 	/* Venue received CancelReplaceRequest */
-	// 	if (!sim.is_msg_received_by_source()) [[unlikely]]
-	// 		return -1;
-	// 	auto &dst_amend = sim.get_last_msg<protocol_b::schema::CancelReplaceRequest>();
-	// 	std::cout << "venue received: " << dst_amend << std::endl;
-	// }
-
-	// sim.print_stat();
-	return 0;
+        return EXIT_SUCCESS;
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return EXIT_FAILURE;
+    }
 }

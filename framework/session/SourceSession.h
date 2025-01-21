@@ -33,7 +33,7 @@ namespace hyper::framework
                                const DestinationRouterPtrVarient &destination_router,
                                const SourceRouter &source_router)
             : Session<SessionImpl>{transport},
-              destination_router_{const_cast<DestinationRouterPtrVarient &>(destination_router)},
+              destination_router_{destination_router},
               source_router_{const_cast<SourceRouter &>(source_router)} {}
 
         template <MessageInf Msg>
@@ -58,7 +58,7 @@ namespace hyper::framework
         void update_source_routing_info(Msg &msg) noexcept;
 
     private:
-        DestinationRouterPtrVarient &destination_router_;
+        DestinationRouterPtrVarient destination_router_;
         SourceRouter &source_router_;
         SourceEnricher enricher_{};
     };

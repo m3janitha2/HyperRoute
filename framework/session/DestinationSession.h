@@ -34,7 +34,7 @@ namespace hyper::framework
     public:
         explicit DestinationSession(Transport &transport,
                                     SourceRouter &source_router,
-                                    ValidatorPtrVarient &validator)
+                                    const ValidatorPtrVarient &validator)
             : Session<SessionImpl>{transport},
               source_router_{source_router},
               validator_{validator} {}
@@ -73,7 +73,7 @@ namespace hyper::framework
 
     private:
         SourceRouter &source_router_;
-        ValidatorPtrVarient &validator_{};
+        ValidatorPtrVarient validator_{};
         DestinationEnricher destination_enricher_{};
     };
 

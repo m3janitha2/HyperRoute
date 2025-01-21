@@ -1,4 +1,5 @@
 #include <framework/application/Application.h>
+#include <framework/config/ConfigManager.h>
 #include <framework/factory/ValidatorFactory.h>
 #include <framework/factory/DestinationProtocolFactory.h>
 #include <framework/factory/DestinationRouterFactory.h>
@@ -10,6 +11,7 @@ namespace hyper::framework
 {
     void Application::init(const std::string &config_file)
     {
+        framework::ConfigManager::instance().init(config_file);
         source_router_ = std::make_unique<framework::SourceRouter>();
         load_validators();
         load_destination_protocol_sessions();
@@ -57,14 +59,14 @@ namespace hyper::framework
         throw std::runtime_error("Destination protocol session not found for ID: " + std::to_string(id));
     }
 
-    // SourceProtocolPtrVarient &Application::get_source_protocol_session_by_id(std::size_t id)
-    // {
-    //     if (auto it = source_protocol_sessions_.find(id); it != source_protocol_sessions_.end())
-    //     {
-    //         return it->second;
-    //     }
-    //     throw std::runtime_error("Source protocol session not found for ID: " + std::to_string(id));
-    // }
+    SourceProtocolPtrVarient &Application::get_source_protocol_session_by_id(std::size_t id)
+    {
+        if (auto it = source_protocol_sessions_.find(id); it != source_protocol_sessions_.end())
+        {
+            return it->second;
+        }
+        throw std::runtime_error("Source protocol session not found for ID: " + std::to_string(id));
+    }
 
     void Application::load_validators()
     {
@@ -77,7 +79,7 @@ namespace hyper::framework
             auto id = config.get<std::size_t>("id");
             auto &factory = framework::ValidatorFactory::instance();
             auto validator = factory.create(type, config);
-            validators_.emplace(id, std::move(validator));
+            validators_.emplace(id, validator);
         }
     }
 
@@ -104,11 +106,10 @@ namespace hyper::framework
         framework::register_all_destination_routers();
         framework::register_all_source_protocols();
 
-        for (auto &cfg_manager = framework::ConfigManager::instance();
-             auto &config : cfg_manager.get_destination_sessions())
+        for (const auto &config : framework::ConfigManager::instance().get_source_sessions())
         {
-            auto &router_config = config.get_child("router");
-            auto router_type = config.get<std::string>("type");
+            const auto &router_config = config.get_child("router");
+            const auto router_type = router_config.get<std::string>("type");
             auto &router_factory = framework::DestinationRouterFactory::instance();
             auto router = router_factory.create(router_type,
                                                 router_config, destination_protocol_sessions_);
