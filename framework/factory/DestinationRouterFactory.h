@@ -13,8 +13,7 @@ namespace hyper::framework
         std::function<DestinationRouterPtrVarient(const Configuration &config,
                                                   const DestinationProtocolByUid &destinations)>;
 
-    using DestinationRouterFactory =
-        Factory<DestinationRouterPtrVarient, DestinationRouterCreator>;
+    using DestinationRouterFactory = Factory<DestinationRouterCreator>;
 
     template <typename Type>
     inline void register_destination_router(const std::string &key)

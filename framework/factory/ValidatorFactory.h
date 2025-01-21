@@ -12,8 +12,7 @@ namespace hyper::framework
     using ValidatorCreator =
         std::function<ValidatorPtrVarient(const Configuration &config)>;
 
-    using ValidatorFactory =
-        Factory<ValidatorPtrVarient, ValidatorCreator>;
+    using ValidatorFactory = Factory<ValidatorCreator>;
 
     template <typename Type>
     inline void register_validator(const std::string &key)

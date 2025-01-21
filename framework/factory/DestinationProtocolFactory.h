@@ -15,8 +15,7 @@ namespace hyper::framework
                                                     SourceRouter &source_router,
                                                     ValidatorPtrVarient &validator)>;
 
-    using DestinationProtocolFactory =
-        Factory<DestinationProtocolPtrVarient, DestinationProtocolCreator>;
+    using DestinationProtocolFactory = Factory<DestinationProtocolCreator>;
 
     template <typename Type>
     inline void register_destination_protocol(const std::string &key)

@@ -9,7 +9,7 @@
 
 namespace hyper::framework
 {
-    template <typename ReturnType, typename CreatorType>
+    template <typename CreatorType>
     class Factory
     {
     public:
@@ -32,7 +32,7 @@ namespace hyper::framework
         }
 
         template <typename... Args>
-        ReturnType create(const std::string &key, Args &&...args) const
+        decltype(auto) create(const std::string &key, Args &&...args) const
         {
             auto it = creators_.find(key);
             if (it == creators_.end())
