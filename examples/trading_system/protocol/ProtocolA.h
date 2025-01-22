@@ -27,8 +27,8 @@ namespace hyper::protocol_a
     {
     public:
         explicit ProtocolA(const Configuration &config,
-                           const DestinationRouterPtrVarient &destination_router,
-                           const SourceRouter &source_router);
+                           const DestinationRouterPtrVariant &destination_router,
+                           SourceRouter &source_router);
 
         void on_connect_impl();
         void on_disconnect_impl();

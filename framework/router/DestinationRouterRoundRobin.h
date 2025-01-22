@@ -1,6 +1,7 @@
 #pragma once
 
 #include <framework/router/DestinationRouter.h>
+#include <framework/application_dependency/DestinationSessions.h>
 #include <cstdint>
 #include <vector>
 #include <iostream>
@@ -13,9 +14,6 @@ namespace hyper::framework
 	class DestinationRouterRoundRobin : public DestinationRouter<DestinationRouterRoundRobin>
 	{
 	public:
-		// explicit DestinationRouterRoundRobin(const std::vector<DestinationSessionPtrVarient *> &destinations)
-		// 	: destinations_{destinations} {}
-
 		explicit DestinationRouterRoundRobin(const Configuration &config,
 											 const DestinationProtocolByUid &destinations)
 		{
@@ -25,7 +23,7 @@ namespace hyper::framework
 				{
 					auto id = node.second.get_value<std::size_t>();
 					auto &protocol = destinations.at(id);
-					DestinationSessionPtrVarient session = &(std::visit([]<typename Protocol>(Protocol &p) -> decltype(auto)
+					DestinationSessionPtrVariant session = &(std::visit([]<typename Protocol>(Protocol &p) -> decltype(auto)
 																		{ return p->session(); },
 																		protocol));
 					destinations_.emplace_back(session);
@@ -54,15 +52,14 @@ namespace hyper::framework
 		RejectInfo send_first_event_to_next_available_desination(Msg &msg) noexcept;
 		template <typename Msg>
 		RejectInfo send_subsequent_events_to_the_same_desination(Msg &msg) noexcept;
-		bool is_destination_connected(const DestinationSessionPtrVarient &destination_session) const noexcept;
+		bool is_destination_connected(const DestinationSessionPtrVariant &destination_session) const noexcept;
 		template <typename Msg>
-		RejectInfo send_message_to_desination(Msg &msg, const DestinationSessionPtrVarient &destination_session) const noexcept;
-		void cache_destination_by_uid(UID uid, DestinationSessionPtrVarient &destination_session) noexcept;
+		RejectInfo send_message_to_desination(Msg &msg, const DestinationSessionPtrVariant &destination_session) const noexcept;
+		void cache_destination_by_uid(UID uid, DestinationSessionPtrVariant &destination_session) noexcept;
 
-		// const std::vector<DestinationSessionPtrVarient *> &destinations_;
-		std::vector<DestinationSessionPtrVarient> destinations_;
+		std::vector<DestinationSessionPtrVariant> destinations_;
 		decltype(destinations_.size()) index_{0};
-		std::unordered_map<UID, DestinationSessionPtrVarient &> uid_to_destination_{};
+		std::unordered_map<UID, DestinationSessionPtrVariant &> uid_to_destination_{};
 	};
 
 	inline auto &DestinationRouterRoundRobin::get_next_session() noexcept
@@ -117,7 +114,7 @@ namespace hyper::framework
 		return RejectInfo{"Exception. Destination session not found for uid", InteranlRejectCode::DestinationRouter_Session_Not_Found_For_UID};
 	}
 
-	inline bool DestinationRouterRoundRobin::is_destination_connected(const DestinationSessionPtrVarient &destination_session) const noexcept
+	inline bool DestinationRouterRoundRobin::is_destination_connected(const DestinationSessionPtrVariant &destination_session) const noexcept
 	{
 		return std::visit([]<typename Destination>(Destination &&destination)
 						  { return std::forward<Destination>(destination)->is_connected(); },
@@ -125,7 +122,7 @@ namespace hyper::framework
 	}
 
 	template <typename Msg>
-	inline RejectInfo DestinationRouterRoundRobin::send_message_to_desination(Msg &msg, const DestinationSessionPtrVarient &destination_session) const noexcept
+	inline RejectInfo DestinationRouterRoundRobin::send_message_to_desination(Msg &msg, const DestinationSessionPtrVariant &destination_session) const noexcept
 
 	{
 		return std::visit([&msg]<typename Destination>(Destination &&destination)
@@ -134,7 +131,7 @@ namespace hyper::framework
 						  destination_session);
 	}
 
-	inline void DestinationRouterRoundRobin::cache_destination_by_uid(UID uid, DestinationSessionPtrVarient &destination_session) noexcept
+	inline void DestinationRouterRoundRobin::cache_destination_by_uid(UID uid, DestinationSessionPtrVariant &destination_session) noexcept
 	try
 	{
 		if (auto [it, ret] = uid_to_destination_.emplace(uid, destination_session);

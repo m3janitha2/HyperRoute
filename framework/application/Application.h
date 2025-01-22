@@ -25,9 +25,9 @@ namespace hyper::framework
         void run();
         void stop();
 
-        ValidatorPtrVarient &get_validator_by_id(std::size_t id);
-        DestinationProtocolPtrVarient &get_destination_protocol_session_by_id(std::size_t id);
-        SourceProtocolPtrVarient &get_source_protocol_session_by_id(std::size_t id);
+        ValidatorPtrVariant &get_validator_by_id(std::size_t id);
+        DestinationProtocolPtrVariant &get_destination_protocol_session_by_id(std::size_t id);
+        SourceProtocolPtrVariant &get_source_protocol_session_by_id(std::size_t id);
 
     private:
         Application() = default;
@@ -37,8 +37,8 @@ namespace hyper::framework
         void load_source_protocol_sessions();
 
         std::unique_ptr<framework::SourceRouter> source_router_;
-        std::unordered_map<std::size_t, ValidatorPtrVarient> validators_{};
-        std::unordered_map<std::size_t, DestinationProtocolPtrVarient> destination_protocol_sessions_{};
-        std::unordered_map<std::size_t, SourceProtocolPtrVarient> source_protocol_sessions_{};
+        std::unordered_map<std::size_t, ValidatorPtrVariant> validators_{};
+        std::unordered_map<std::size_t, DestinationProtocolPtrVariant> destination_protocol_sessions_{};
+        std::unordered_map<std::size_t, SourceProtocolPtrVariant> source_protocol_sessions_{};
     };
 }

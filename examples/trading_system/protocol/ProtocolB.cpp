@@ -23,7 +23,7 @@ namespace hyper::protocol_b
 
     ProtocolB::ProtocolB(const Configuration &config,
                          SourceRouter &source_router,
-                         ValidatorPtrVarient &validator)
+                         const ValidatorPtrVariant &validator)
         : Protocol{config, source_router, validator} {}
 
     void ProtocolB::on_connect_impl()

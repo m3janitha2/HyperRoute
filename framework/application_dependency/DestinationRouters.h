@@ -8,6 +8,6 @@
 
 namespace hyper
 {
-    using DestinationRouterPtrVarient = std::variant<std::shared_ptr<framework::DestinationRouterOneToOne>,
+    using DestinationRouterPtrVariant = std::variant<std::shared_ptr<framework::DestinationRouterOneToOne>,
                                                      std::shared_ptr<framework::DestinationRouterRoundRobin>>;
 };

@@ -6,6 +6,6 @@
 
 namespace hyper
 {
-    using DestinationSessionPtrVarient =
+    using DestinationSessionPtrVariant =
         std::variant<protocol_b::DestinationSessionProtocolB *>;
 };

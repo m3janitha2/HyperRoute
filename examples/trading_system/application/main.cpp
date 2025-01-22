@@ -9,41 +9,42 @@
 #include <examples/trading_system/protocol/ProtocolA.h>
 #include <examples/trading_system/protocol/ProtocolB.h>
 #include <examples/trading_system/application/TestMessageStore.h>
+#include <examples/trading_system/application/Factory.h>
 
 using namespace hyper;
 
 /** Parses command-line arguments to retrieve config file path and number of messages */
 std::pair<std::string, std::size_t> parse_arguments(int argc, char **argv)
 {
-    if (argc != 3)
-    {
-        throw std::invalid_argument("Usage: " + std::string(argv[0]) + " <path_to_config_file> <number_of_messages>");
-    }
+	if (argc != 3)
+	{
+		throw std::invalid_argument("Usage: " + std::string(argv[0]) + " <path_to_config_file> <number_of_messages>");
+	}
 
-    std::string config_file_path = argv[1];
-    if (config_file_path.empty())
-    {
-        config_file_path = "/mnt/d/linux/m3janitha2/github/HyperRoute/examples/trading_system/config/config.xml";
-        std::cerr << "Warning: Config file path was empty. Using default path: " << config_file_path << std::endl;
-    }
+	std::string config_file_path = argv[1];
+	if (config_file_path.empty())
+	{
+		config_file_path = "/mnt/d/linux/m3janitha2/github/HyperRoute/examples/trading_system/config/config.xml";
+		std::cerr << "Warning: Config file path was empty. Using default path: " << config_file_path << std::endl;
+	}
 
-    try
-    {
-        int value = std::stoi(argv[2]);
-        if (value <= 0)
-        {
-            throw std::invalid_argument("The number of messages must be a positive integer greater than 0.");
-        }
-        return {config_file_path, static_cast<std::size_t>(value)};
-    }
-    catch (const std::invalid_argument &)
-    {
-        throw std::invalid_argument("The second argument (number of messages) is not a valid integer.");
-    }
-    catch (const std::out_of_range &)
-    {
-        throw std::out_of_range("The number of messages is out of range for an integer.");
-    }
+	try
+	{
+		int value = std::stoi(argv[2]);
+		if (value <= 0)
+		{
+			throw std::invalid_argument("The number of messages must be a positive integer greater than 0.");
+		}
+		return {config_file_path, static_cast<std::size_t>(value)};
+	}
+	catch (const std::invalid_argument &)
+	{
+		throw std::invalid_argument("The second argument (number of messages) is not a valid integer.");
+	}
+	catch (const std::out_of_range &)
+	{
+		throw std::out_of_range("The number of messages is out of range for an integer.");
+	}
 }
 
 /** Initializes protocol sessions */
@@ -117,9 +118,15 @@ int main(int argc, char **argv)
 {
 	try
 	{
-        // Parse command-line arguments
-        auto [config_file_path, number_of_messages] = parse_arguments(argc, argv);
+		// Parse command-line arguments
+		auto [config_file_path, number_of_messages] = parse_arguments(argc, argv);
 		std::cout << "Number of messages to process: " << number_of_messages << std::endl;
+
+		// Register all types
+		register_all_validators();
+		register_all_destination_protocols();
+		register_all_destination_routers();
+		register_all_source_protocols();
 
 		// Initialize the application
 		auto &application = framework::Application::instance();

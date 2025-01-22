@@ -19,8 +19,8 @@ namespace hyper::protocol_a
     {
     public:
         explicit SourceSessionProtocolA(Transport &transport,
-                                        const DestinationRouterPtrVarient &destination_router,
-                                        const SourceRouter &source_router)
+                                        const DestinationRouterPtrVariant &destination_router,
+                                        SourceRouter &source_router)
             : SourceSession<SourceSessionProtocolA>{transport, destination_router, source_router} {}
 
         /* TransportEvents */

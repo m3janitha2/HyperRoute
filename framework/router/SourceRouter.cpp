@@ -23,10 +23,10 @@ namespace hyper::framework
         }
     }
 
-    void SourceRouter::update_source_routing_info(UID uid, SourceSessionPtrVarient source_session_varient) noexcept
+    void SourceRouter::update_source_routing_info(UID uid, SourceSessionPtrVariant source_session_Variant) noexcept
     try
     {
-        if (auto [it, ret] = uid_to_source_session_.try_emplace(uid, source_session_varient);
+        if (auto [it, ret] = uid_to_source_session_.try_emplace(uid, source_session_Variant);
             ret != true)
             std::cout << "Failed update source routing for uid: " << uid << std::endl;
     }

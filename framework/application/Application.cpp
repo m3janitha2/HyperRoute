@@ -4,7 +4,7 @@
 #include <framework/factory/DestinationProtocolFactory.h>
 #include <framework/factory/DestinationRouterFactory.h>
 #include <framework/factory/SourceProtocolFactory.h>
-#include <framework/application_dependency/SourceProtocols.h>
+
 #include <iostream>
 
 namespace hyper::framework
@@ -21,27 +21,13 @@ namespace hyper::framework
 
     void Application::run()
     {
-        // if (source_router_)
-        // {
-        //     source_router_->start();
-        //     std::cout << "Application is running..." << std::endl;
-        // }
-        // else
-        // {
-        //     throw std::runtime_error("Source router is not initialized.");
-        // }
     }
 
     void Application::stop()
     {
-        // if (source_router_)
-        // {
-        //     source_router_->stop();
-        //     std::cout << "Application has stopped." << std::endl;
-        // }
     }
 
-    ValidatorPtrVarient &Application::get_validator_by_id(std::size_t id)
+    ValidatorPtrVariant &Application::get_validator_by_id(std::size_t id)
     {
         if (auto it = validators_.find(id); it != validators_.end())
         {
@@ -50,7 +36,7 @@ namespace hyper::framework
         throw std::runtime_error("Validator not found for ID: " + std::to_string(id));
     }
 
-    DestinationProtocolPtrVarient &Application::get_destination_protocol_session_by_id(std::size_t id)
+    DestinationProtocolPtrVariant &Application::get_destination_protocol_session_by_id(std::size_t id)
     {
         if (auto it = destination_protocol_sessions_.find(id); it != destination_protocol_sessions_.end())
         {
@@ -59,7 +45,7 @@ namespace hyper::framework
         throw std::runtime_error("Destination protocol session not found for ID: " + std::to_string(id));
     }
 
-    SourceProtocolPtrVarient &Application::get_source_protocol_session_by_id(std::size_t id)
+    SourceProtocolPtrVariant &Application::get_source_protocol_session_by_id(std::size_t id)
     {
         if (auto it = source_protocol_sessions_.find(id); it != source_protocol_sessions_.end())
         {
@@ -70,8 +56,6 @@ namespace hyper::framework
 
     void Application::load_validators()
     {
-        framework::register_all_validators();
-
         for (auto &cfg_manager = framework::ConfigManager::instance();
              auto &config : cfg_manager.get_validators())
         {
@@ -85,8 +69,6 @@ namespace hyper::framework
 
     void Application::load_destination_protocol_sessions()
     {
-        framework::register_all_destination_protocols();
-
         for (auto &cfg_manager = framework::ConfigManager::instance();
              auto &config : cfg_manager.get_destination_sessions())
         {
@@ -103,9 +85,6 @@ namespace hyper::framework
 
     void Application::load_source_protocol_sessions()
     {
-        framework::register_all_destination_routers();
-        framework::register_all_source_protocols();
-
         for (const auto &config : framework::ConfigManager::instance().get_source_sessions())
         {
             const auto &router_config = config.get_child("router");

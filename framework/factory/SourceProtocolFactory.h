@@ -2,17 +2,18 @@
 #pragma once
 
 #include <framework/factory/Factory.h>
-#include <framework/application_dependency/SourceProtocols.h>
 #include <framework/config/Configuration.h>
+#include <framework/application_dependency/DestinationRouterDeclarations.h>
+#include <framework/application_dependency/SourceProtocolDeclarations.h>
 
 namespace hyper::framework
 {
     class SourceRouter;
 
     using SourceProtocolCreator =
-        std::function<SourceProtocolPtrVarient(const Configuration &config,
-                                               const DestinationRouterPtrVarient &destination_router,
-                                               const SourceRouter &source_router)>;
+        std::function<SourceProtocolPtrVariant(const Configuration &config,
+                                               const DestinationRouterPtrVariant &destination_router,
+                                               SourceRouter &source_router)>;
 
     using SourceProtocolFactory = Factory<SourceProtocolCreator>;
 
@@ -23,15 +24,10 @@ namespace hyper::framework
         factory.register_type(
             key,
             [](const Configuration &config,
-               const DestinationRouterPtrVarient &destination_router,
-               const SourceRouter &source_router)
+               const DestinationRouterPtrVariant &destination_router,
+               SourceRouter &source_router)
             {
                 return std::make_shared<Type>(config, destination_router, source_router);
             });
-    }
-
-    inline void register_all_source_protocols()
-    {
-        register_source_protocol<protocol_a::ProtocolA>("ProtocolA");
     }
 }

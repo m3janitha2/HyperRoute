@@ -28,7 +28,7 @@ namespace hyper::protocol_b
     public:
         explicit ProtocolB(const Configuration &config,
                            SourceRouter &source_router,
-                           ValidatorPtrVarient &validator);
+                           const ValidatorPtrVariant &validator);
 
         void on_connect_impl();
         void on_disconnect_impl();

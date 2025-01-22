@@ -2,18 +2,18 @@
 #pragma once
 
 #include <framework/factory/Factory.h>
-#include <framework/application_dependency/DestinationProtocols.h>
-#include <framework/application_dependency/Validators.h>
 #include <framework/config/Configuration.h>
+#include <framework/application_dependency/ValidatorDeclarations.h>
+#include <framework/application_dependency/DestinationProtocolDeclarations.h>
 
 namespace hyper::framework
 {
     class SourceRouter;
 
     using DestinationProtocolCreator =
-        std::function<DestinationProtocolPtrVarient(const Configuration &config,
+        std::function<DestinationProtocolPtrVariant(const Configuration &config,
                                                     SourceRouter &source_router,
-                                                    ValidatorPtrVarient &validator)>;
+                                                    const ValidatorPtrVariant &validator)>;
 
     using DestinationProtocolFactory = Factory<DestinationProtocolCreator>;
 
@@ -25,14 +25,9 @@ namespace hyper::framework
             key,
             [](const Configuration &config,
                SourceRouter &source_router,
-               ValidatorPtrVarient &validator)
+               const ValidatorPtrVariant &validator)
             {
                 return std::make_shared<Type>(config, source_router, validator);
             });
-    }
-
-    inline void register_all_destination_protocols()
-    {
-        register_destination_protocol<protocol_b::ProtocolB>("ProtocolB");
     }
 }

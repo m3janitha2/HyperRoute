@@ -1,6 +1,8 @@
 #pragma once
 
 #include <framework/router/DestinationRouter.h>
+#include <framework/application_dependency/DestinationSessions.h>
+#include <framework/application_dependency/DestinationProtocols.h>
 
 namespace hyper::framework
 {
@@ -32,7 +34,7 @@ namespace hyper::framework
 		template <typename Msg>
 		RejectInfo send_message_to_desination(Msg &msg) noexcept;
 
-		DestinationSessionPtrVarient destination_session_;
+		DestinationSessionPtrVariant destination_session_;
 	};
 
 	template <typename Msg>

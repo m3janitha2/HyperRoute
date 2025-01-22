@@ -2,15 +2,13 @@
 #pragma once
 
 #include <framework/factory/Factory.h>
-#include <framework/application_dependency/Validators.h>
 #include <framework/config/Configuration.h>
+#include <framework/application_dependency/ValidatorDeclarations.h>
 
 namespace hyper::framework
 {
-    class SourceRouter;
-
     using ValidatorCreator =
-        std::function<ValidatorPtrVarient(const Configuration &config)>;
+        std::function<ValidatorPtrVariant(const Configuration &config)>;
 
     using ValidatorFactory = Factory<ValidatorCreator>;
 
@@ -24,10 +22,5 @@ namespace hyper::framework
             {
                 return std::make_shared<Type>(config);
             });
-    }
-
-    inline void register_all_validators()
-    {
-        register_validator<ValidatorX>("ValidatorX");
     }
 }

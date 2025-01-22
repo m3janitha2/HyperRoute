@@ -10,6 +10,6 @@ namespace hyper
         class ProtocolA;
     }
 
-    using SourceProtocolPtrVarient =
+    using SourceProtocolPtrVariant =
         std::variant<std::shared_ptr<protocol_a::ProtocolA>>;
 };

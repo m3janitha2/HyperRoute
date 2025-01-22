@@ -2,15 +2,14 @@
 #pragma once
 
 #include <framework/factory/Factory.h>
-#include <framework/application_dependency/DestinationRouters.h>
 #include <framework/config/Configuration.h>
+#include <framework/router/DestinationRouter.h>
+#include <framework/application_dependency/DestinationRouterDeclarations.h>
 
 namespace hyper::framework
 {
-    class SourceRouter;
-
     using DestinationRouterCreator =
-        std::function<DestinationRouterPtrVarient(const Configuration &config,
+        std::function<DestinationRouterPtrVariant(const Configuration &config,
                                                   const DestinationProtocolByUid &destinations)>;
 
     using DestinationRouterFactory = Factory<DestinationRouterCreator>;
@@ -25,11 +24,5 @@ namespace hyper::framework
             {
                 return std::make_shared<Type>(config, destinations);
             });
-    }
-
-    inline void register_all_destination_routers()
-    {
-        register_destination_router<DestinationRouterOneToOne>("OneToOne");
-        register_destination_router<DestinationRouterRoundRobin>("RoundRobin");
     }
 }

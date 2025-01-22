@@ -22,7 +22,7 @@ namespace hyper::protocol_b
     public:
         explicit DestinationSessionProtocolB(Transport &transport,
                                              SourceRouter &source_router,
-                                             ValidatorPtrVarient &validator)
+                                             const ValidatorPtrVariant &validator)
             : DestinationSession<DestinationSessionProtocolB>{transport, source_router, validator} {}
 
         /* TransportEvents */

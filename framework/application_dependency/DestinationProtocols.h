@@ -6,6 +6,6 @@
 
 namespace hyper
 {
-    using DestinationProtocolPtrVarient =
+    using DestinationProtocolPtrVariant =
         std::variant<std::shared_ptr<protocol_b::ProtocolB>>;
 };

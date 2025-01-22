@@ -30,11 +30,11 @@ namespace hyper::framework
     {
     public:
         explicit SourceSession(Transport &transport,
-                               const DestinationRouterPtrVarient &destination_router,
-                               const SourceRouter &source_router)
+                               const DestinationRouterPtrVariant &destination_router,
+                               SourceRouter &source_router)
             : Session<SessionImpl>{transport},
               destination_router_{destination_router},
-              source_router_{const_cast<SourceRouter &>(source_router)} {}
+              source_router_{source_router} {}
 
         template <MessageInf Msg>
         inline void on_message_from_transport_impl(Msg &msg) noexcept;
@@ -58,7 +58,7 @@ namespace hyper::framework
         void update_source_routing_info(Msg &msg) noexcept;
 
     private:
-        DestinationRouterPtrVarient destination_router_;
+        DestinationRouterPtrVariant destination_router_;
         SourceRouter &source_router_;
         SourceEnricher enricher_{};
     };
@@ -164,8 +164,8 @@ namespace hyper::framework
     {
         if constexpr (std::derived_from<Msg, FirstEvent>)
         {
-            SourceSessionPtrVarient source_session_varient{&(this->impl())};
-            source_router_.update_source_routing_info(msg.uid(), source_session_varient);
+            SourceSessionPtrVariant source_session_Variant{&(this->impl())};
+            source_router_.update_source_routing_info(msg.uid(), source_session_Variant);
         }
 
         return this->impl().update_routing_info_impl(msg);
