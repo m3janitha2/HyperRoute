@@ -21,6 +21,11 @@
         <type>OneToOne</type>
         <destination_session_id>3000</destination_session_id>
       </router>
+      <!-- <router>
+        <type>RoundRobin</type>
+        <destination_session_id>3000</destination_session_id>
+        <destination_session_id>3001</destination_session_id>
+      </router> -->
       <enricher>
         <name>ProtocolA_Profile1</name>
       </enricher>
@@ -30,9 +35,8 @@
       <id>2001</id>
       <protocol>ProtocolA</protocol>
       <router>
-        <type>RoundRobin</type>
+        <type>OneToOne</type>
         <destination_session_id>3000</destination_session_id>
-        <destination_session_id>3001</destination_session_id>
       </router>
       <enricher>
         <name>ProtocolA_Profile2</name>

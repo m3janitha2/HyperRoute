@@ -39,7 +39,7 @@ namespace hyper::framework
         template <MessageInf Msg>
         RejectInfo send_message_to_transport(Msg &msg) noexcept;
         template <MessageInf Msg>
-        inline void on_message_from_transport(Msg &msg) noexcept;
+        void on_message_from_transport(Msg &msg) noexcept;
 
     private:
         bool connected_{true};

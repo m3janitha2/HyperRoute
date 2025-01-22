@@ -37,8 +37,8 @@ namespace hyper::framework
         void load_source_protocol_sessions();
 
         std::unique_ptr<framework::SourceRouter> source_router_;
-        std::unordered_map<std::size_t, ValidatorPtrVariant> validators_{};
-        std::unordered_map<std::size_t, DestinationProtocolPtrVariant> destination_protocol_sessions_{};
-        std::unordered_map<std::size_t, SourceProtocolPtrVariant> source_protocol_sessions_{};
+        std::unordered_map<std::size_t, ValidatorPtrVariant> validators_;
+        std::unordered_map<std::size_t, DestinationProtocolPtrVariant> destination_protocol_sessions_;
+        std::unordered_map<std::size_t, SourceProtocolPtrVariant> source_protocol_sessions_;
     };
 }

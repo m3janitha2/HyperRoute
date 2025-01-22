@@ -37,7 +37,7 @@ namespace hyper::framework
               source_router_{source_router} {}
 
         template <MessageInf Msg>
-        inline void on_message_from_transport_impl(Msg &msg) noexcept;
+        void on_message_from_transport_impl(Msg &msg) noexcept;
         template <MessageInf Msg>
         RejectInfo on_message_from_peer(Msg &msg) noexcept;
         template <MessageInf Msg>
