@@ -30,3 +30,12 @@ target_link_libraries(framework PUBLIC
     utility
     application
 )
+
+# Add compile options for stricter checks
+add_compile_options(
+    -Wall # Enable all warnings
+    -Wextra # Enable extra warnings
+    -Wpedantic # Enforce strict language conformance
+    -fconcepts-diagnostics-depth=2 # Diagnostic depth for C++20 concepts
+    -Werror # Treat warnings as errors
+)
