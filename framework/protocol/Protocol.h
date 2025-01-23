@@ -30,11 +30,19 @@ namespace hyper::framework
         template <typename... Args>
         explicit Protocol(const Configuration &config, Args &&...args)
             : config_(config),
+              transport_{TransportCallbacks{
+                  [this]() noexcept
+                  { on_connect(); },
+                  [this]() noexcept
+                  { on_disconnect(); },
+                  [this](std::string_view data) noexcept
+                  { return on_data(data); }}},
               session_{transport_, std::forward<Args>(args)...}
         {
             static_assert(TransportCallbackInf<Protocol<ProtocolImpl, Session>>,
                           "Protocol does not satisfy TransportCallbackInf");
-            static_assert(ProtocolInf<Protocol<ProtocolImpl, Session>>);
+            static_assert(ProtocolInf<Protocol<ProtocolImpl, Session>>,
+                          "Protocol does not satisfy ProtocolInf");
             load(config);
         }
 
@@ -54,6 +62,7 @@ namespace hyper::framework
 
         template <typename Msg>
         RejectInfo send_to_transport(Msg &msg) noexcept;
+
         template <typename Msg>
         void persist_protocol_message(Msg &msg) {}
 
@@ -63,26 +72,20 @@ namespace hyper::framework
         [[nodiscard]] constexpr const Session &session() const noexcept { return session_; }
         [[nodiscard]] constexpr Session &session() noexcept { return session_; }
 
-        [[nodiscard]] constexpr const std::string& name() const noexcept  { return name_; }
+        [[nodiscard]] constexpr const std::string &name() const noexcept { return name_; }
 
     private:
         const Configuration &config_;
         std::size_t id_{0};
         std::string name_{};
-        TransportCallbacks transport_callbacks{[this]()
-                                               { on_connect(); },
-                                               [this]()
-                                               { on_disconnect(); },
-                                               [this](std::string_view data)
-                                               { return on_data(data); }};
-        Transport transport_{transport_callbacks};
+        Transport transport_;
         Session session_;
         SequenceStore<std::uint64_t> sequence_store_{};
         bool connected_{false};
 
         /* todox: HeatbeatTimer producer_ */
         /* todox: HeatbeatTimer receiver_ */
-        /* todox: PersistStore msg_stroe_ */
+        /* todox: PersistStore msg_store_ */
     };
 
     template <typename ProtocolImpl, typename Session>

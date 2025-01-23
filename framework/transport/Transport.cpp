@@ -8,8 +8,8 @@ namespace hyper::framework
         return RejectInfo{};
     }
 
-    void Transport::set_receive_data_cb_for_test(const std::function<void(std::string_view data)> &cb) noexcept
+    void Transport::set_receive_data_cb_for_test(std::function<void(std::string_view)> cb) noexcept
     {
-        receive_data_cb_for_test_ = cb;
+        receive_data_cb_for_test_ = std::move(cb);
     }
 }
