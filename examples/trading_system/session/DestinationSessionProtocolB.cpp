@@ -23,7 +23,7 @@ namespace hyper::protocol_b
     {
         protocol_a::schema::CancelReject msg{};
         protocol_a::session::CancelReject src_msg{msg};
-        
+
         procoess_message_from_transport(dest_msg, src_msg);
     }
 
@@ -44,7 +44,7 @@ namespace hyper::protocol_b
             reject_info != true) [[unlikely]]
             return reject_info;
 
-       return RejectInfo{};
+        return RejectInfo{};
     }
 
     /* todox: move to codec */
@@ -83,7 +83,7 @@ namespace hyper::protocol_b
     RejectInfo DestinationSessionProtocolB::on_message_from_peer_impl(protocol_a::session::NewOrderSingle &src_msg) noexcept
     {
         protocol_b::schema::NewOrderSingle msg{};
-        protocol_b::session::NewOrderSingle dst_msg{msg};
+        protocol_b::session::NewOrderSingle dst_msg{msg, src_msg.in_timestamp()};
 
         handle_cl_ord_id_to_destination(dst_msg);
         return procoess_message_to_transport(src_msg, dst_msg);
@@ -92,7 +92,7 @@ namespace hyper::protocol_b
     RejectInfo DestinationSessionProtocolB::on_message_from_peer_impl(protocol_a::session::CancelReplaceRequest &src_msg) noexcept
     {
         protocol_b::schema::CancelReplaceRequest msg{};
-        protocol_b::session::CancelReplaceRequest dst_msg{msg};
+        protocol_b::session::CancelReplaceRequest dst_msg{msg, src_msg.in_timestamp()};
 
         handle_cl_ord_id_to_destination(dst_msg);
         if (auto reject_info = handle_orig_cl_ord_id_to_destination(src_msg, dst_msg);
@@ -105,7 +105,7 @@ namespace hyper::protocol_b
     RejectInfo DestinationSessionProtocolB::on_message_from_peer_impl(protocol_a::session::CancelRequest &src_msg) noexcept
     {
         protocol_b::schema::CancelRequest msg{};
-        protocol_b::session::CancelRequest dst_msg{msg};
+        protocol_b::session::CancelRequest dst_msg{msg, src_msg.in_timestamp()};
 
         handle_cl_ord_id_to_destination(dst_msg);
         if (auto reject_info = handle_orig_cl_ord_id_to_destination(src_msg, dst_msg);

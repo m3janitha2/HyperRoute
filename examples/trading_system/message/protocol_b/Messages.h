@@ -1,26 +1,32 @@
 #pragma once
 
-#include <examples/trading_system/message/core/BinaryMessages.h>
+#include <framework/message/BinaryMessage.h>
+#include <examples/trading_system/message/core/Messages.h>
 #include <examples/trading_system/message/protocol_b/schema/Messages.h>
 #include <cstdint>
 #include <iostream>
 
 namespace hyper::protocol_b::session
 {
+    using Timestamp = framework::Timestamp;
+    using TimestampClock = framework::TimestampClock;
     /* Wrap schema messages to support the trading system interface */
     /* Do not copy or allocate */
 
-    class NewOrderSingle : public trading::binary::NewOrderSingle<schema::NewOrderSingle>
+    class NewOrderSingle : public framework::BinaryMessage<schema::NewOrderSingle>,
+                           public trading::NewOrderSingle
     {
     public:
-        explicit constexpr NewOrderSingle(schema::NewOrderSingle &msg) noexcept
-            : trading::binary::NewOrderSingle<schema::NewOrderSingle>{msg} {}
-        explicit constexpr NewOrderSingle(std::string_view data) noexcept
-            : trading::binary::NewOrderSingle<schema::NewOrderSingle>{data} {}
+        explicit constexpr NewOrderSingle(schema::NewOrderSingle &msg,
+                                          Timestamp in_timestamp = TimestampClock::now()) noexcept
+            : framework::BinaryMessage<schema::NewOrderSingle>{msg, in_timestamp} {}
+        explicit constexpr NewOrderSingle(std::string_view data,
+                                          Timestamp in_timestamp = TimestampClock::now()) noexcept
+            : framework::BinaryMessage<schema::NewOrderSingle>{data, in_timestamp} {}
 
         friend std::ostream &operator<<(std::ostream &os, const NewOrderSingle &msg)
         {
-            os << "NewOrderSingle: " << msg.msg();
+            os << msg.msg();
             return os;
         }
 
@@ -33,13 +39,16 @@ namespace hyper::protocol_b::session
         constexpr void size(std::uint64_t id) noexcept { msg().b = id; }
     };
 
-    class CancelReplaceRequest : public trading::binary::CancelReplaceRequest<schema::CancelReplaceRequest>
+    class CancelReplaceRequest : public framework::BinaryMessage<schema::CancelReplaceRequest>,
+     public trading::CancelReplaceRequest
     {
     public:
-        explicit constexpr CancelReplaceRequest(schema::CancelReplaceRequest &msg) noexcept
-            : trading::binary::CancelReplaceRequest<schema::CancelReplaceRequest>{msg} {}
-        explicit constexpr CancelReplaceRequest(std::string_view data) noexcept
-            : trading::binary::CancelReplaceRequest<schema::CancelReplaceRequest>{data} {}
+        explicit constexpr CancelReplaceRequest(schema::CancelReplaceRequest &msg,
+                                                Timestamp in_timestamp = TimestampClock::now()) noexcept
+            : framework::BinaryMessage<schema::CancelReplaceRequest>{msg, in_timestamp} {}
+        explicit constexpr CancelReplaceRequest(std::string_view data,
+                                                Timestamp in_timestamp = TimestampClock::now()) noexcept
+            : framework::BinaryMessage<schema::CancelReplaceRequest>{data, in_timestamp} {}
 
         friend std::ostream &operator<<(std::ostream &os, const CancelReplaceRequest &msg)
         {
@@ -58,13 +67,16 @@ namespace hyper::protocol_b::session
         constexpr void size(std::uint64_t id) noexcept { msg().b = id; }
     };
 
-    class CancelRequest : public trading::binary::CancelRequest<schema::CancelRequest>
+    class CancelRequest : public framework::BinaryMessage<schema::CancelRequest>,
+                          public trading::CancelRequest
     {
     public:
-        explicit constexpr CancelRequest(schema::CancelRequest &msg) noexcept
-            : trading::binary::CancelRequest<schema::CancelRequest>{msg} {}
-        explicit constexpr CancelRequest(std::string_view data) noexcept
-            : trading::binary::CancelRequest<schema::CancelRequest>{data} {}
+        explicit constexpr CancelRequest(schema::CancelRequest &msg,
+                                         Timestamp in_timestamp = TimestampClock::now()) noexcept
+            : framework::BinaryMessage<schema::CancelRequest>{msg, in_timestamp} {}
+        explicit constexpr CancelRequest(std::string_view data,
+                                         Timestamp in_timestamp = TimestampClock::now()) noexcept
+            : framework::BinaryMessage<schema::CancelRequest>{data, in_timestamp} {}
 
         friend std::ostream &operator<<(std::ostream &os, const CancelRequest &msg)
         {
@@ -83,13 +95,16 @@ namespace hyper::protocol_b::session
         constexpr void size(std::uint64_t id) noexcept { msg().b = id; }
     };
 
-    class ExecutionReport : public trading::binary::ExecutionReport<schema::ExecutionReport>
+    class ExecutionReport : public framework::BinaryMessage<schema::ExecutionReport>,
+                            public trading::ExecutionReport
     {
     public:
-        explicit constexpr ExecutionReport(schema::ExecutionReport &msg) noexcept
-            : trading::binary::ExecutionReport<schema::ExecutionReport>{msg} {}
-        explicit constexpr ExecutionReport(std::string_view data) noexcept
-            : trading::binary::ExecutionReport<schema::ExecutionReport>{data} {}
+        explicit constexpr ExecutionReport(schema::ExecutionReport &msg,
+                                           Timestamp in_timestamp = TimestampClock::now()) noexcept
+            : framework::BinaryMessage<schema::ExecutionReport>{msg, in_timestamp} {}
+        explicit constexpr ExecutionReport(std::string_view data,
+                                           Timestamp in_timestamp = TimestampClock::now()) noexcept
+            : framework::BinaryMessage<schema::ExecutionReport>{data, in_timestamp} {}
 
         friend std::ostream &operator<<(std::ostream &os, const ExecutionReport &msg)
         {
@@ -108,13 +123,16 @@ namespace hyper::protocol_b::session
         constexpr void size(std::uint64_t id) noexcept { msg().b = id; }
     };
 
-    class CancelReject : public trading::binary::CancelReject<schema::CancelReject>
+    class CancelReject : public framework::BinaryMessage<schema::CancelReject>,
+                         public trading::CancelReject
     {
     public:
-        explicit constexpr CancelReject(schema::CancelReject &msg) noexcept
-            : trading::binary::CancelReject<schema::CancelReject>{msg} {}
-        explicit constexpr CancelReject(std::string_view data) noexcept
-            : trading::binary::CancelReject<schema::CancelReject>{data} {}
+        explicit constexpr CancelReject(schema::CancelReject &msg,
+                                        Timestamp in_timestamp = TimestampClock::now()) noexcept
+            : framework::BinaryMessage<schema::CancelReject>{msg, in_timestamp} {}
+        explicit constexpr CancelReject(std::string_view data,
+                                        Timestamp in_timestamp = TimestampClock::now()) noexcept
+            : framework::BinaryMessage<schema::CancelReject>{data, in_timestamp} {}
 
         friend std::ostream &operator<<(std::ostream &os, const CancelReject &msg)
         {

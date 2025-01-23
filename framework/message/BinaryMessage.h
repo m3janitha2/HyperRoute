@@ -10,13 +10,17 @@ namespace hyper::framework
 {
     /* Binary message abstraction. */
     template <typename Msg>
-    class BinaryMessage
+    class BinaryMessage : public Message
     {
     public:
-        explicit constexpr BinaryMessage(Msg &msg) noexcept
-            : msg_{msg} {}
-        explicit constexpr BinaryMessage(std::string_view data) noexcept
-            : msg_{*(reinterpret_cast<Msg *>(const_cast<char *>(data.data())))} {}
+        explicit constexpr BinaryMessage(Msg &msg,
+                                         Timestamp in_timestamp = TimestampClock::now()) noexcept
+            : Message{in_timestamp},
+              msg_{msg} {}
+        explicit constexpr BinaryMessage(std::string_view data,
+                                         Timestamp in_timestamp = TimestampClock::now()) noexcept
+            : Message{in_timestamp},
+              msg_{*(reinterpret_cast<Msg *>(const_cast<char *>(data.data())))} {}
 
         BinaryMessage(const BinaryMessage &) = delete;
         BinaryMessage &operator=(const BinaryMessage &) = delete;

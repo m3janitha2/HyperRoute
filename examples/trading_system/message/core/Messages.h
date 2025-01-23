@@ -10,23 +10,23 @@ namespace hyper::trading
 
     /* Message interface supported by the system */
 
-    struct NewOrderSingle : public Message, FirstEvent
+    struct NewOrderSingle : public FirstEvent
     {
     };
 
-    struct CancelReplaceRequest : public Message, SubsequentEvent
+    struct CancelReplaceRequest : public SubsequentEvent
     {
     };
 
-    struct CancelRequest : public Message, SubsequentEvent
+    struct CancelRequest : public SubsequentEvent
     {
     };
 
-    struct ExecutionReport : public Message, SubsequentEvent
+    struct ExecutionReport : public SubsequentEvent
     {
     };
 
-    struct CancelReject : public Message, SubsequentEvent
+    struct CancelReject : public SubsequentEvent
     {
     };
 }

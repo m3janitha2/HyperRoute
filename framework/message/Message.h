@@ -29,18 +29,20 @@ namespace hyper::framework
     class Message
     {
     public:
-        Message() = default;
+        explicit Message(Timestamp in_timestamp = TimestampClock::now())
+            : in_timestamp_(in_timestamp) {}
+
         Message(const Message &) = delete;
         Message &operator=(const Message &) = delete;
 
         [[nodiscard]] constexpr UID uid() const noexcept { return uid_; }
         constexpr void uid(UID uid) noexcept { uid_ = uid; }
 
-        [[nodiscard]] constexpr auto in_timestamp() const noexcept { return in_timestamp_.time_since_epoch().count(); }
+        [[nodiscard]] constexpr auto in_timestamp() const noexcept { return in_timestamp_; }
         constexpr void in_timestamp(Timestamp in_timestamp) noexcept { in_timestamp_ = in_timestamp; }
         void update_in_timestamp() noexcept { in_timestamp(TimestampClock::now()); }
 
-        [[nodiscard]] constexpr auto out_timestamp() const noexcept { return out_timestamp_.time_since_epoch().count(); }
+        [[nodiscard]] constexpr auto out_timestamp() const noexcept { return out_timestamp_; }
         constexpr void out_timestamp(Timestamp out_timestamp) noexcept { out_timestamp_ = out_timestamp; }
         void update_out_timestamp() noexcept { out_timestamp(TimestampClock::now()); }
 
@@ -48,7 +50,7 @@ namespace hyper::framework
 
     private:
         UID uid_{};
-        Timestamp in_timestamp_{TimestampClock::now()};
+        Timestamp in_timestamp_{};
         Timestamp out_timestamp_{};
     };
 
