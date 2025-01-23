@@ -10,6 +10,7 @@ namespace hyper::protocol_b::session
 {
     using Timestamp = framework::Timestamp;
     using TimestampClock = framework::TimestampClock;
+
     /* Wrap schema messages to support the trading system interface */
     /* Do not copy or allocate */
 
@@ -17,11 +18,12 @@ namespace hyper::protocol_b::session
                            public trading::NewOrderSingle
     {
     public:
-        explicit constexpr NewOrderSingle(schema::NewOrderSingle &msg,
-                                          Timestamp in_timestamp = TimestampClock::now()) noexcept
+        constexpr NewOrderSingle(schema::NewOrderSingle &msg,
+                                 Timestamp in_timestamp = TimestampClock::now()) noexcept
             : framework::BinaryMessage<schema::NewOrderSingle>{msg, in_timestamp} {}
-        explicit constexpr NewOrderSingle(std::string_view data,
-                                          Timestamp in_timestamp = TimestampClock::now()) noexcept
+
+        constexpr NewOrderSingle(std::string_view data,
+                                 Timestamp in_timestamp = TimestampClock::now()) noexcept
             : framework::BinaryMessage<schema::NewOrderSingle>{data, in_timestamp} {}
 
         friend std::ostream &operator<<(std::ostream &os, const NewOrderSingle &msg)
@@ -30,24 +32,27 @@ namespace hyper::protocol_b::session
             return os;
         }
 
-        /* message interface required for the framework */
+        /* Message interface required for the framework */
         [[nodiscard]] constexpr std::uint64_t cl_ord_id() const noexcept { return msg().c; }
         constexpr void cl_ord_id(std::uint64_t id) noexcept { msg().c = id; }
+
         [[nodiscard]] constexpr std::uint64_t price() const noexcept { return msg().a; }
         constexpr void price(std::uint64_t id) noexcept { msg().a = id; }
+
         [[nodiscard]] constexpr std::uint64_t size() const noexcept { return msg().b; }
         constexpr void size(std::uint64_t id) noexcept { msg().b = id; }
     };
 
     class CancelReplaceRequest : public framework::BinaryMessage<schema::CancelReplaceRequest>,
-     public trading::CancelReplaceRequest
+                                 public trading::CancelReplaceRequest
     {
     public:
-        explicit constexpr CancelReplaceRequest(schema::CancelReplaceRequest &msg,
-                                                Timestamp in_timestamp = TimestampClock::now()) noexcept
+        constexpr CancelReplaceRequest(schema::CancelReplaceRequest &msg,
+                                       Timestamp in_timestamp = TimestampClock::now()) noexcept
             : framework::BinaryMessage<schema::CancelReplaceRequest>{msg, in_timestamp} {}
-        explicit constexpr CancelReplaceRequest(std::string_view data,
-                                                Timestamp in_timestamp = TimestampClock::now()) noexcept
+
+        constexpr CancelReplaceRequest(std::string_view data,
+                                       Timestamp in_timestamp = TimestampClock::now()) noexcept
             : framework::BinaryMessage<schema::CancelReplaceRequest>{data, in_timestamp} {}
 
         friend std::ostream &operator<<(std::ostream &os, const CancelReplaceRequest &msg)
@@ -56,13 +61,16 @@ namespace hyper::protocol_b::session
             return os;
         }
 
-        /* message interface required for the framework */
+        /* Message interface required for the framework */
         [[nodiscard]] constexpr std::uint64_t cl_ord_id() const noexcept { return msg().c; }
         constexpr void cl_ord_id(std::uint64_t id) noexcept { msg().c = id; }
+
         [[nodiscard]] constexpr std::uint64_t orig_cl_ord_id() const noexcept { return msg().o; }
         constexpr void orig_cl_ord_id(std::uint64_t id) noexcept { msg().o = id; }
+
         [[nodiscard]] constexpr std::uint64_t price() const noexcept { return msg().a; }
         constexpr void price(std::uint64_t id) noexcept { msg().a = id; }
+
         [[nodiscard]] constexpr std::uint64_t size() const noexcept { return msg().b; }
         constexpr void size(std::uint64_t id) noexcept { msg().b = id; }
     };
@@ -71,11 +79,12 @@ namespace hyper::protocol_b::session
                           public trading::CancelRequest
     {
     public:
-        explicit constexpr CancelRequest(schema::CancelRequest &msg,
-                                         Timestamp in_timestamp = TimestampClock::now()) noexcept
+        constexpr CancelRequest(schema::CancelRequest &msg,
+                                Timestamp in_timestamp = TimestampClock::now()) noexcept
             : framework::BinaryMessage<schema::CancelRequest>{msg, in_timestamp} {}
-        explicit constexpr CancelRequest(std::string_view data,
-                                         Timestamp in_timestamp = TimestampClock::now()) noexcept
+
+        constexpr CancelRequest(std::string_view data,
+                                Timestamp in_timestamp = TimestampClock::now()) noexcept
             : framework::BinaryMessage<schema::CancelRequest>{data, in_timestamp} {}
 
         friend std::ostream &operator<<(std::ostream &os, const CancelRequest &msg)
@@ -84,13 +93,16 @@ namespace hyper::protocol_b::session
             return os;
         }
 
-        /* message interface required for the framework */
+        /* Message interface required for the framework */
         [[nodiscard]] constexpr std::uint64_t cl_ord_id() const noexcept { return msg().c; }
         constexpr void cl_ord_id(std::uint64_t id) noexcept { msg().c = id; }
+
         [[nodiscard]] constexpr std::uint64_t orig_cl_ord_id() const noexcept { return msg().o; }
         constexpr void orig_cl_ord_id(std::uint64_t id) noexcept { msg().o = id; }
+
         [[nodiscard]] constexpr std::uint64_t price() const noexcept { return msg().a; }
         constexpr void price(std::uint64_t id) noexcept { msg().a = id; }
+
         [[nodiscard]] constexpr std::uint64_t size() const noexcept { return msg().b; }
         constexpr void size(std::uint64_t id) noexcept { msg().b = id; }
     };
@@ -99,11 +111,12 @@ namespace hyper::protocol_b::session
                             public trading::ExecutionReport
     {
     public:
-        explicit constexpr ExecutionReport(schema::ExecutionReport &msg,
-                                           Timestamp in_timestamp = TimestampClock::now()) noexcept
+        constexpr ExecutionReport(schema::ExecutionReport &msg,
+                                  Timestamp in_timestamp = TimestampClock::now()) noexcept
             : framework::BinaryMessage<schema::ExecutionReport>{msg, in_timestamp} {}
-        explicit constexpr ExecutionReport(std::string_view data,
-                                           Timestamp in_timestamp = TimestampClock::now()) noexcept
+
+        constexpr ExecutionReport(std::string_view data,
+                                  Timestamp in_timestamp = TimestampClock::now()) noexcept
             : framework::BinaryMessage<schema::ExecutionReport>{data, in_timestamp} {}
 
         friend std::ostream &operator<<(std::ostream &os, const ExecutionReport &msg)
@@ -112,13 +125,16 @@ namespace hyper::protocol_b::session
             return os;
         }
 
-        /* message interface required for the framework */
+        /* Message interface required for the framework */
         [[nodiscard]] constexpr std::uint64_t cl_ord_id() const noexcept { return msg().c; }
         constexpr void cl_ord_id(std::uint64_t id) noexcept { msg().c = id; }
+
         [[nodiscard]] constexpr std::uint64_t orig_cl_ord_id() const noexcept { return msg().o; }
         constexpr void orig_cl_ord_id(std::uint64_t id) noexcept { msg().o = id; }
+
         [[nodiscard]] constexpr std::uint64_t price() const noexcept { return msg().a; }
         constexpr void price(std::uint64_t id) noexcept { msg().a = id; }
+
         [[nodiscard]] constexpr std::uint64_t size() const noexcept { return msg().b; }
         constexpr void size(std::uint64_t id) noexcept { msg().b = id; }
     };
@@ -127,11 +143,12 @@ namespace hyper::protocol_b::session
                          public trading::CancelReject
     {
     public:
-        explicit constexpr CancelReject(schema::CancelReject &msg,
-                                        Timestamp in_timestamp = TimestampClock::now()) noexcept
+        constexpr CancelReject(schema::CancelReject &msg,
+                               Timestamp in_timestamp = TimestampClock::now()) noexcept
             : framework::BinaryMessage<schema::CancelReject>{msg, in_timestamp} {}
-        explicit constexpr CancelReject(std::string_view data,
-                                        Timestamp in_timestamp = TimestampClock::now()) noexcept
+
+        constexpr CancelReject(std::string_view data,
+                               Timestamp in_timestamp = TimestampClock::now()) noexcept
             : framework::BinaryMessage<schema::CancelReject>{data, in_timestamp} {}
 
         friend std::ostream &operator<<(std::ostream &os, const CancelReject &msg)
@@ -140,13 +157,16 @@ namespace hyper::protocol_b::session
             return os;
         }
 
-        /* message interface required for the framework */
+        /* Message interface required for the framework */
         [[nodiscard]] constexpr std::uint64_t cl_ord_id() const noexcept { return msg().c; }
         constexpr void cl_ord_id(std::uint64_t id) noexcept { msg().c = id; }
+
         [[nodiscard]] constexpr std::uint64_t orig_cl_ord_id() const noexcept { return msg().o; }
         constexpr void orig_cl_ord_id(std::uint64_t id) noexcept { msg().o = id; }
+
         [[nodiscard]] constexpr std::uint64_t price() const noexcept { return msg().a; }
         constexpr void price(std::uint64_t id) noexcept { msg().a = id; }
+
         [[nodiscard]] constexpr std::uint64_t size() const noexcept { return msg().b; }
         constexpr void size(std::uint64_t id) noexcept { msg().b = id; }
     };
