@@ -1,14 +1,14 @@
 # HyperRoute
 **A general-purpose, stateless, ultra-low-latency message router capable of routing messages between source and destination in under 300ns (excluding transport layer overhead). Built for seamless extensibility and customization.**
 
-## Features:
-1. Extendable routing strategies between source and destination.
-2. Customizable source and destination protocols.
-3. Message enrichment and validation at both source and destination.
+## Features
+1. Fully customizable and plug-and-play source and destination protocols.
+2. Flexible and extendable routing strategies.
+3. Extendable message enrichment and validation at both ends.
    
 The protocol-agnostic core ensures independence from specific messaging protocols. Routers, validators, and enrichers can be effortlessly integrated to accommodate custom requirements.
 
-## Performance:
+## Performance
 Check the GitHub Actions Benchmark for detailed performance metrics
 
 ## Note
