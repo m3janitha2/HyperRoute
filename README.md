@@ -4,9 +4,9 @@
 ## Features
 1. Fully customizable and plug-and-play source and destination protocols.
 2. Flexible and extendable routing strategies.
-3. Extendable message enrichment and validation at both ends.
+3. Extensible message transformation and validation.
    
-The protocol-agnostic core ensures independence from specific messaging protocols. Routers, validators, and transforms can be effortlessly integrated to accommodate custom requirements.
+The protocol-agnostic core ensures independence from specific messaging protocols. Protocols, routers, validators, and transforms can be seamlessly integrated to accommodate custom requirements.
 
 ## Performance
 Check the GitHub Actions Benchmark for detailed performance metrics
@@ -31,7 +31,7 @@ Check the GitHub Actions Benchmark for detailed performance metrics
    Collect and route IoT data to analytics platforms or cloud storage for insights.
 
 ## Design Considerations  
-1. **KISS Principle** – "Keep it simple, stupid."  
+1. **KISS** – "Keep it simple, stupid."  
 2. **Static Interfaces in Critical Paths**  
 3. **Zero Copy and Zero Allocation in Critical Paths**  
    - If allocation is unavoidable, prefer stack allocation.  
@@ -39,7 +39,6 @@ Check the GitHub Actions Benchmark for detailed performance metrics
    - Use type-based decisions instead of runtime variable values (basic metaprogramming).  
    - **Tradeoff**: Improved runtime performance at the cost of increased verbosity and compile time.
   
-## What's Next  
-1. The network protocol layer is not implemented yet and is currently in progress.  
-2. A flexible threading model will be implemented alongside the socket layer.
-3. For low-latency, high-throughput applications, kernel bypass is recommended.
+## What's Next
+- Network protocol layer in development, featuring a flexible socket layer supporting TCP, UDP, and kernel bypass (e.g., Mellanox, SolarFlare).
+- Customizable threading model to be implemented alongside the socket layer.
