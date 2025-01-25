@@ -4,9 +4,9 @@
 ## Features:
 1. Extendable routing strategies between source and destination.
 2. Customizable source and destination protocols.
-3. Message enrichment and validation at both source and destination.
+3. Message transformment and validation at both source and destination.
    
-The protocol-agnostic core ensures independence from specific messaging protocols. Routers, validators, and enrichers can be effortlessly integrated to accommodate custom requirements.
+The protocol-agnostic core ensures independence from specific messaging protocols. Routers, validators, and transforms can be effortlessly integrated to accommodate custom requirements.
 
 ## Performance:
 Check the GitHub Actions Benchmark for detailed performance metrics

@@ -48,9 +48,9 @@ namespace hyper::protocol_a
         RejectInfo on_message_from_peer_impl(session::CancelReject &msg) noexcept;
 
     private:
-        RejectInfo enrich_uid_from_cl_ord_id(session::NewOrderSingle &msg) noexcept;
+        RejectInfo transform_uid_from_cl_ord_id(session::NewOrderSingle &msg) noexcept;
         template <typename Msg>
-        RejectInfo enrich_uid_from_orig_cl_ord_id(Msg &msg) noexcept;
+        RejectInfo transform_uid_from_orig_cl_ord_id(Msg &msg) noexcept;
 
         using ClOrdIdType = decltype(schema::NewOrderSingle::cl_ord_id);
         using ClOrdIDToUIDMap = std::unordered_map<ClOrdIdType, UID>;

@@ -3,7 +3,7 @@
 #include <framework/session/Session.h>
 #include <framework/message/Message.h>
 #include <framework/utility/RejectInfo.h>
-#include <framework/enricher/DestinationEnricher.h>
+#include <framework/transform/DestinationTransform.h>
 #include <framework/router/SourceRouter.h>
 #include <framework/application_dependency/Validators.h>
 #include <string_view>
@@ -51,9 +51,9 @@ namespace hyper::framework
         template <MessageInf Msg>
         RejectInfo validate(Msg &msg) noexcept;
         template <MessageInf Msg>
-        RejectInfo enrich_message_to_transport(Msg &msg) noexcept;
+        RejectInfo transform_message_to_transport(Msg &msg) noexcept;
         template <MessageInf Msg>
-        RejectInfo enrich_message_from_transport(Msg &msg) noexcept;
+        RejectInfo transform_message_from_transport(Msg &msg) noexcept;
         template <MessageInf SourceMsg, MessageInf DestinationMsg>
         RejectInfo encode_message_to_destination(SourceMsg &src_msg,
                                                  DestinationMsg &dst_msg) noexcept;
@@ -74,7 +74,7 @@ namespace hyper::framework
     private:
         SourceRouter &source_router_;
         ValidatorPtrVariant validator_{};
-        DestinationEnricher destination_enricher_{};
+        DestinationTransform destination_transform_{};
     };
 
     template <typename SessionImpl>
@@ -89,7 +89,7 @@ namespace hyper::framework
     inline void DestinationSession<SessionImpl>::procoess_message_from_transport(DestinationMsg &dst_msg,
                                                                                  SourceMsg &src_msg) noexcept
     {
-        if (auto reject_info = enrich_message_from_transport(dst_msg);
+        if (auto reject_info = transform_message_from_transport(dst_msg);
             reject_info != true) [[unlikely]]
             reject_message_from_transport(dst_msg, reject_info);
 
@@ -126,7 +126,7 @@ namespace hyper::framework
             reject_info != true) [[unlikely]]
             return reject_info;
 
-        if (auto reject_info = enrich_message_to_transport(dst_msg);
+        if (auto reject_info = transform_message_to_transport(dst_msg);
             reject_info != true) [[unlikely]]
             return reject_info;
 
@@ -157,16 +157,16 @@ namespace hyper::framework
 
     template <typename SessionImpl>
     template <MessageInf Msg>
-    inline RejectInfo DestinationSession<SessionImpl>::enrich_message_to_transport(Msg &msg) noexcept
+    inline RejectInfo DestinationSession<SessionImpl>::transform_message_to_transport(Msg &msg) noexcept
     {
-        return destination_enricher_.enrich_message_to_transport(msg);
+        return destination_transform_.transform_message_to_transport(msg);
     }
 
     template <typename SessionImpl>
     template <MessageInf Msg>
-    inline RejectInfo DestinationSession<SessionImpl>::enrich_message_from_transport(Msg &msg) noexcept
+    inline RejectInfo DestinationSession<SessionImpl>::transform_message_from_transport(Msg &msg) noexcept
     {
-        return destination_enricher_.enrich_message_from_transport(msg);
+        return destination_transform_.transform_message_from_transport(msg);
     }
 
     template <typename SessionImpl>

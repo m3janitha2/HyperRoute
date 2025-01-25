@@ -13,17 +13,17 @@ namespace hyper::protocol_a
 
     RejectInfo SourceSessionProtocolA::handle_message_from_transport_impl(session::NewOrderSingle &msg) noexcept
     {
-        return enrich_uid_from_cl_ord_id(msg);
+        return transform_uid_from_cl_ord_id(msg);
     }
 
     RejectInfo SourceSessionProtocolA::handle_message_from_transport_impl(session::CancelReplaceRequest &msg) noexcept
     {
-        return enrich_uid_from_orig_cl_ord_id(msg);
+        return transform_uid_from_orig_cl_ord_id(msg);
     }
 
     RejectInfo SourceSessionProtocolA::handle_message_from_transport_impl(session::CancelRequest &msg) noexcept
     {
-        return enrich_uid_from_orig_cl_ord_id(msg);
+        return transform_uid_from_orig_cl_ord_id(msg);
     }
 
     void SourceSessionProtocolA::reject_message_from_transport_impl(session::NewOrderSingle &msg,
@@ -57,7 +57,7 @@ namespace hyper::protocol_a
         return procoess_message_to_transport(msg);
     }
 
-    RejectInfo SourceSessionProtocolA::enrich_uid_from_cl_ord_id(session::NewOrderSingle &msg) noexcept
+    RejectInfo SourceSessionProtocolA::transform_uid_from_cl_ord_id(session::NewOrderSingle &msg) noexcept
     {
         auto uid = UIDGenerator::instance().get_next_uid();
         msg.uid(uid);
@@ -65,7 +65,7 @@ namespace hyper::protocol_a
     }
 
     template <typename Msg>
-    RejectInfo SourceSessionProtocolA::enrich_uid_from_orig_cl_ord_id(Msg &msg) noexcept
+    RejectInfo SourceSessionProtocolA::transform_uid_from_orig_cl_ord_id(Msg &msg) noexcept
     {
         if (auto it = cl_ord_id_to_uid_.find(msg.orig_cl_ord_id());
             it == cl_ord_id_to_uid_.end()) [[unlikely]]

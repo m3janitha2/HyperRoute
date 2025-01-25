@@ -21,12 +21,12 @@ namespace hyper::framework
             return "DestinationSession_From_Destination_Decoding_Failed";
         case Validatator_Validation_Failed:
             return "Validatator_Validation_Failed";
-        case SourceSession_Enrichment_Failed:
-            return "SourceSession_Enrichment_Failed";
+        case SourceSession_Transform_Failed:
+            return "SourceSession_Transform_Failed";
         case SourceSession_Validation_Failed:
             return "SourceSession_Validation_Failed";
-        case DestinationSession_Enrichment_Failed:
-            return "DestinationSession_Enrichment_Failed";
+        case DestinationSession_Transform_Failed:
+            return "DestinationSession_Transform_Failed";
         case DestinationSession_Validation_Failed:
             return "DestinationSession_Validation_Failed";
         default:

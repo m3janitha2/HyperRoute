@@ -21,10 +21,10 @@ namespace hyper::framework
         DestinationSession_Source_Msg_ID_Not_Found,
         /* Validatator */
         Validatator_Validation_Failed,
-        /* Enricher */
-        SourceSession_Enrichment_Failed,
+        /* Transform */
+        SourceSession_Transform_Failed,
         SourceSession_Validation_Failed,
-        DestinationSession_Enrichment_Failed,
+        DestinationSession_Transform_Failed,
         DestinationSession_Validation_Failed,
     };
 

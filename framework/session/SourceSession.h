@@ -3,7 +3,7 @@
 #include <framework/session/Session.h>
 #include <framework/message/Message.h>
 #include <framework/utility/RejectInfo.h>
-#include <framework/enricher/SourceEnricher.h>
+#include <framework/transform/SourceTransform.h>
 #include <framework/router/SourceRouter.h>
 #include <framework/application_dependency/DestinationRouters.h>
 #include <string_view>
@@ -45,9 +45,9 @@ namespace hyper::framework
         template <MessageInf Msg>
         void procoess_message_from_transport(Msg &msg) noexcept;
         template <MessageInf Msg>
-        RejectInfo enrich_message_to_transport(Msg &msg) noexcept;
+        RejectInfo transform_message_to_transport(Msg &msg) noexcept;
         template <MessageInf Msg>
-        RejectInfo enrich_message_from_transport(Msg &msg) noexcept;
+        RejectInfo transform_message_from_transport(Msg &msg) noexcept;
         template <MessageInf Msg>
         RejectInfo handle_message_from_transport(Msg &msg) noexcept;
         template <MessageInf Msg>
@@ -60,7 +60,7 @@ namespace hyper::framework
     private:
         DestinationRouterPtrVariant destination_router_;
         SourceRouter &source_router_;
-        SourceEnricher enricher_{};
+        SourceTransform transform_{};
     };
 
     template <typename SessionImpl>
@@ -81,7 +81,7 @@ namespace hyper::framework
     template <MessageInf Msg>
     inline RejectInfo SourceSession<SessionImpl>::procoess_message_to_transport(Msg &msg) noexcept
     {
-        if (auto reject_info = enrich_message_to_transport(msg);
+        if (auto reject_info = transform_message_to_transport(msg);
             reject_info != true) [[unlikely]]
             return reject_info;
 
@@ -101,7 +101,7 @@ namespace hyper::framework
     template <MessageInf Msg>
     inline void SourceSession<SessionImpl>::procoess_message_from_transport(Msg &msg) noexcept
     {
-        if (auto reject_info = enrich_message_from_transport(msg);
+        if (auto reject_info = transform_message_from_transport(msg);
             reject_info != true) [[unlikely]]
             reject_message_from_transport(msg, reject_info);
 
@@ -123,16 +123,16 @@ namespace hyper::framework
 
     template <typename SessionImpl>
     template <MessageInf Msg>
-    inline RejectInfo SourceSession<SessionImpl>::enrich_message_to_transport(Msg &msg) noexcept
+    inline RejectInfo SourceSession<SessionImpl>::transform_message_to_transport(Msg &msg) noexcept
     {
-        return enricher_.enrich_message_to_transport(msg);
+        return transform_.transform_message_to_transport(msg);
     }
 
     template <typename SessionImpl>
     template <MessageInf Msg>
-    inline RejectInfo SourceSession<SessionImpl>::enrich_message_from_transport(Msg &msg) noexcept
+    inline RejectInfo SourceSession<SessionImpl>::transform_message_from_transport(Msg &msg) noexcept
     {
-        return enricher_.enrich_message_from_transport(msg);
+        return transform_.transform_message_from_transport(msg);
     }
 
     template <typename SessionImpl>
