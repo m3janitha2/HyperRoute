@@ -23,15 +23,14 @@ namespace hyper::framework
             : name_(name), ip_(ip), port_(port)
         {
             SocketCallbacks transport_callbacks{
-                [this]()
-                { on_connect(); }, [this]()
-                { on_disconnect(); }, [this](std::string_view data)
-                { return on_data(data); }, [this](int socket_fd)
-                { on_connection_accept(socket_fd); }};
+                [this](int socket_fd)
+                { on_connect(socket_fd); }, [this](const std::string& error)
+                { on_disconnect(error); }, [this](std::string_view data)
+                { return on_data(data); }};
             if (type == Type::Server)
-                socket_fd_ = socket_manager_.add_server(ip, port, transport_callbacks);
+                socket_manager_.add_tcp_server(ip, port, transport_callbacks);
             else
-                socket_fd_ = socket_manager_.add_client(ip, port, transport_callbacks);
+                socket_manager_.add_tcp_client(ip, port, transport_callbacks);
         }
 
         void run()
@@ -39,19 +38,15 @@ namespace hyper::framework
             socket_manager_.run();
         }
 
-        void on_connect()
-        {
-            std::cout << name_ << " Connected" << std::endl;
-        }
-
-        void on_disconnect()
-        {
-            std::cout << name_ << " Disconnected" << std::endl;
-        }
-
-        void on_connection_accept(int socket_fd)
+        void on_connect(int socket_fd)
         {
             socket_fd_ = socket_fd;
+            std::cout << name_ << " Connected. socket_fd:" << socket_fd << std::endl;
+        }
+
+        void on_disconnect(const std::string& error)
+        {
+            std::cout << name_ << " Disconnected. " << error << std::endl;
         }
 
         std::size_t on_data(std::string_view data)
