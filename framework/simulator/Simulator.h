@@ -12,7 +12,8 @@ namespace hyper::framework
     class Simulator
     {
     public:
-        explicit Simulator(Protocol &protocol) noexcept : protocol_(protocol)
+        explicit Simulator(Protocol &protocol) noexcept
+            : protocol_(protocol)
         {
             protocol_.transport().set_receive_data_cb_for_test(
                 [this](std::string_view data) noexcept

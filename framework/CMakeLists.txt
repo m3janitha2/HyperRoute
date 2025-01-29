@@ -14,6 +14,7 @@ add_subdirectory(config)
 add_subdirectory(transport)
 add_subdirectory(application)
 add_subdirectory(utility)
+add_subdirectory(socket/tcp)
 
 # Collect all source files from subdirectories
 target_sources(framework PRIVATE
