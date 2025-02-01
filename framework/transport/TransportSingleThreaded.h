@@ -1,4 +1,5 @@
 #pragma once
+
 #include <framework/transport/TransportCallbacks.h>
 #include <framework/utility/RejectInfo.h>
 #include <framework/config/Configuration.h>
@@ -11,6 +12,7 @@ namespace hyper::framework
     public:
         explicit TransportSingleThreaded(const Configuration &config,
                                          TransportCallbacks transport_callbacks);
+        ~TransportSingleThreaded();
 
         TransportSingleThreaded(const TransportSingleThreaded &) = delete;
         TransportSingleThreaded &operator=(const TransportSingleThreaded &) = delete;

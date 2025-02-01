@@ -19,6 +19,15 @@ namespace hyper::framework
             is_server_ = true;
     }
 
+    TransportSingleThreaded::~TransportSingleThreaded()
+    {
+        if(socket_fd_ != INVALID_FD)
+        {
+            if(auto reject_info = disconnect(); reject_info !=true)
+                std::cerr << reject_info << std::endl;
+        }
+    }
+
     RejectInfo TransportSingleThreaded::connect() noexcept
     try
     {

@@ -40,6 +40,10 @@ int main(int argc, char **argv)
   }
   sim.send_data(message);
   sim.run();
+  if (auto ret = sim.disconnect(); ret != true)
+  {
+    std::cout << ret << std::endl;
+  }
 
   return 0;
 }
