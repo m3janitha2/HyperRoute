@@ -17,7 +17,6 @@
 #include <queue>
 #include <vector>
 #include <optional>
-#include <framework/socket/SocketCallbacks.h>
 #include <framework/socket/tcp/SocketException.h>
 
 namespace hyper::framework
@@ -28,7 +27,7 @@ namespace hyper::framework
     {
     public:
         ~EpollSocketManager();
-        
+
         EpollSocketManager(const EpollSocketManager &) = delete;
         EpollSocketManager &operator=(const EpollSocketManager &) = delete;
 

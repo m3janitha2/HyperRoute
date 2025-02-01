@@ -27,7 +27,11 @@ namespace hyper::framework
         DestinationSession_Transform_Failed,
         DestinationSession_Validation_Failed,
         /* Transport */
+        Transport_Failed_To_Connect,
+        Transport_Failed_To_Disconnect,
         Transport_Failed_To_Send_data,
+        /* Default */
+        Unknown,
     };
 
     const char *to_chars(InteranlRejectCode code) noexcept;

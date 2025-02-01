@@ -19,7 +19,8 @@ namespace hyper::framework
             is_server_ = true;
     }
 
-    RejectInfo TransportSingleThreaded::connect()
+    RejectInfo TransportSingleThreaded::connect() noexcept
+    try
     {
         if (is_server_)
             EpollSocketManager::instance().connect_server(*this);
@@ -28,15 +29,24 @@ namespace hyper::framework
 
         return RejectInfo{};
     }
-
-    RejectInfo TransportSingleThreaded::disconnect()
+    catch (std::exception &err)
     {
-        if(is_server_)
+        return RejectInfo{err.what(), InteranlRejectCode::Transport_Failed_To_Connect};
+    }
+
+    RejectInfo TransportSingleThreaded::disconnect() noexcept
+    try
+    {
+        if (is_server_)
             EpollSocketManager::instance().disconnect_server(*this);
         else
             EpollSocketManager::instance().disconnect_client(*this);
 
         return RejectInfo{};
+    }
+    catch (std::exception &err)
+    {
+        return RejectInfo{err.what(), InteranlRejectCode::Transport_Failed_To_Disconnect};
     }
 
     void TransportSingleThreaded::on_connect(int socket_fd) noexcept
@@ -84,7 +94,7 @@ namespace hyper::framework
 
             /* consume next message */
             read_offset_ += bytes_consumed;
-            if(read_offset_ == write_offset_)
+            if (read_offset_ == write_offset_)
                 break;
         }
 
@@ -97,12 +107,17 @@ namespace hyper::framework
     }
 
     RejectInfo TransportSingleThreaded::send_data(std::string_view data) noexcept
+    try
     {
         auto &socket_mgr = EpollSocketManager::instance();
         if (socket_mgr.send_data(socket_fd_, data) != true)
             RejectInfo{"Failed to send data on wire", InteranlRejectCode::Transport_Failed_To_Send_data};
 
         return RejectInfo{};
+    }
+    catch (std::exception &err)
+    {
+        return RejectInfo { err.what(), InteranlRejectCode::Transport_Failed_To_Send_data };
     }
 
     constexpr void TransportSingleThreaded::clear_receive_buffer() noexcept
