@@ -5,6 +5,9 @@
 #include <string_view>
 #include <functional>
 #include <algorithm>
+#include <thread>
+#include <chrono>
+#include <framework/transport/TransportSingleThreaded.h>
 #include <framework/socket/tcp/EpollSocketManager.h>
 
 namespace hyper::framework
@@ -12,75 +15,84 @@ namespace hyper::framework
     class TCPSimulator
     {
     public:
-        enum class Type
-        {
-            Server,
-            Client
-        };
-
         explicit TCPSimulator(const std::string &name,
-                              const std::string &ip, int port, Type type) noexcept
-            : name_(name), ip_(ip), port_(port)
+                              const Configuration &config) noexcept
+            : name_(name),
+              transport_{config,
+                         TransportCallbacks{
+                             [this]() noexcept
+                             { on_connect(); },
+                             [this]() noexcept
+                             { on_disconnect(); },
+                             [this](std::string_view data) noexcept
+                             { return on_data(data); }}}
         {
-            SocketCallbacks transport_callbacks{
-                [this](int socket_fd)
-                { on_connect(socket_fd); }, [this](const std::string& error)
-                { on_disconnect(error); }, [this](std::string_view data)
-                { return on_data(data); }};
-            if (type == Type::Server)
-                socket_manager_.add_tcp_server(ip, port, transport_callbacks);
-            else
-                socket_manager_.add_tcp_client(ip, port, transport_callbacks);
         }
 
         void run()
         {
-            socket_manager_.run();
+            auto &socket_mgr = EpollSocketManager::instance();
+            socket_mgr.run();
         }
 
-        void on_connect(int socket_fd)
+        RejectInfo connect() noexcept
+        try
         {
-            socket_fd_ = socket_fd;
-            std::cout << name_ << " Connected. socket_fd:" << socket_fd << std::endl;
+            return transport_.connect();
+        }
+        catch (const std::exception &e)
+        {
+            std::cerr << "Failed to connect: " << e.what() << '\n';
+            return RejectInfo(e.what(), InteranlRejectCode::Transport_Failed_To_Send_data);
         }
 
-        void on_disconnect(const std::string& error)
+        RejectInfo disconnect() noexcept
+        try
         {
-            std::cout << name_ << " Disconnected. " << error << std::endl;
+
+            return transport_.disconnect();
+        }
+        catch (const std::exception &e)
+        {
+            std::cerr << "Failed to disconnect: " << e.what() << '\n';
+            return RejectInfo(e.what(), InteranlRejectCode::Transport_Failed_To_Send_data);
+        }
+
+        void on_connect()
+        {
+            std::cout << name_ << " Connected." << std::endl;
+        }
+
+        void on_disconnect()
+        {
+            std::cout << name_ << " Disconnected." << std::endl;
         }
 
         std::size_t on_data(std::string_view data)
         {
+            std::cout << name_ << " Received:" << data << std::endl;
             try
             {
-                std::cout << name_ << " received: " << data << std::endl;
                 std::this_thread::sleep_for(std::chrono::seconds(5));
-                socket_manager_.send_data(socket_fd_, data);
-                std::cout << name_ << " sent: " << data << std::endl;
+                send_data(data);
+            }
+            catch (const std::exception &e)
+            {
+                std::cerr << "Failed to seend: " << e.what() << '\n';
                 return 0;
             }
-            catch (std::exception &err)
-            {
-                std::cerr << "error: " << err.what() << std::endl;
-            }
-            return 0;
+            return data.length();
         }
 
         void send_data(std::string_view data) noexcept
         {
-            socket_manager_.send_data(socket_fd_, data);
-        }
-
-        void print_statistics() const noexcept
-        {
+            if (auto reject_info = transport_.send_data(data);
+                reject_info == true)
+                std::cout << name_ << " Sent:" << data << std::endl;
         }
 
     private:
         const std::string name_{};
-        const std::string ip_{};
-        const int port_{};
-        EpollSocketManager socket_manager_{};
-        int socket_fd_{};
-        char buffer_[1024]{};
+        TransportSingleThreaded transport_;
     };
 }

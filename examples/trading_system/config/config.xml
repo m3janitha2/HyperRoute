@@ -29,6 +29,12 @@
       <transform>
         <name>ProtocolA_Profile1</name>
       </transform>
+      <transport>
+        <local_ip>127.0.0.1</local_ip>
+        <local_port>8081</local_port>
+        <socket_type>tcp</socket_type>
+        <socket_role>server</socket_role>
+      </transport>
     </source_session>
     <source_session>
       <name>Source2</name>

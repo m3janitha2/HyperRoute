@@ -14,6 +14,11 @@ file(GLOB tcp_test_sources
 # Create the executable for tcp_test
 add_executable(tcp_test ${tcp_test_sources})
 
+target_link_libraries(tcp_test PUBLIC
+    transport
+    utility
+)
+
 # Add compile options for stricter checks
 target_compile_options(tcp_test PRIVATE
     -Wall # Enable all warnings
