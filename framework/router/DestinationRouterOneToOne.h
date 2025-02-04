@@ -40,11 +40,11 @@ namespace hyper::framework
 	template <typename Msg>
 	inline RejectInfo DestinationRouterOneToOne::send_message_to_desination(Msg &msg) noexcept
 	{
-		return std::visit([&msg]<typename Destination>(Destination &&destination)
-						  { if(!std::forward<Destination>(destination)->is_connected()) [[unlikely]]
+		return std::visit([&msg]<typename Destination>(Destination &&destination_session)
+						  { if(!std::forward<Destination>(destination_session)->is_connected()) [[unlikely]]
 									return RejectInfo{"", InteranlRejectCode::DestinationRouter_No_Destinations_Available};
 								else
-									return std::forward<Destination>(destination)->on_message_from_peer(msg); },
+									return std::forward<Destination>(destination_session)->on_message_from_peer(msg); },
 						  destination_session_);
 	}
 }

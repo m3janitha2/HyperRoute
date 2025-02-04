@@ -49,7 +49,7 @@ namespace hyper::protocol_a::schema
 #pragma pack(push, 1)
     struct Logout
     {
-        Header header{.size = sizeof(Logon),
+        Header header{.size = sizeof(Logout),
                       .msg_type = MsgType::Logon,
                       .seq_no = 0};
         std::uint32_t a{};
@@ -66,7 +66,7 @@ namespace hyper::protocol_a::schema
 #pragma pack(push, 1)
     struct Heartbeat
     {
-        Header header{.size = sizeof(Logon),
+        Header header{.size = sizeof(Heartbeat),
                       .msg_type = MsgType::Logon,
                       .seq_no = 0};
         std::uint32_t a{};

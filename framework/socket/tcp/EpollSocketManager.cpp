@@ -1,5 +1,6 @@
 #include <framework/socket/tcp/EpollSocketManager.h>
 #include <framework/transport/TransportSingleThreaded.h>
+#include "EpollSocketManager.h"
 
 namespace hyper::framework
 {
@@ -50,11 +51,27 @@ namespace hyper::framework
     bool EpollSocketManager::send_data(int fd, std::string_view data)
     {
         auto bytes_sent = send(fd, data.data(), data.size(), 0);
-        if (bytes_sent == -1 && errno != EAGAIN)
+        if (bytes_sent == -1 && errno != EAGAIN) [[unlikely]]
         {
             std::cerr << "Failed to send data on fd: " << fd << "\n";
             return false;
         }
+        if(bytes_sent < static_cast<decltype(bytes_sent)>(data.size())) [[unlikely]]
+        {
+            std::cerr << "Failed to send complete message on fd: " << fd << "\n";
+            return false;
+        }
+        return true;
+    }
+
+    bool EpollSocketManager::send_data_async(int fd, std::string_view data)
+    {
+        if (async_send_queue_.push(std::pair{fd, data}) != true) [[unlikely]]
+        {
+            std::cerr << "Failed to insert async queue" << std::endl;
+            return false;
+        }
+
         return true;
     }
 
@@ -65,6 +82,7 @@ namespace hyper::framework
 
         auto server_fd = create_tcp_server_socket(local_ip, local_port);
         register_socket_to_epoll(server_fd, EPOLLIN | EPOLLET | EPOLLOUT, transport);
+        std::cout << "listening on " << local_ip << ":" << local_port << std::endl;
         transport.server_fd(server_fd);
     }
 
@@ -77,6 +95,7 @@ namespace hyper::framework
 
         auto client_fd = create_tcp_client_socket(remote_ip, remote_port, local_ip, local_port);
         register_socket_to_epoll(client_fd, EPOLLIN | EPOLLET | EPOLLOUT, transport);
+        std::cout << "connected to " << remote_ip << ":" << remote_port << std::endl;
         transport.on_connect(client_fd);
     }
 
@@ -183,7 +202,7 @@ namespace hyper::framework
 
         while (true)
         {
-            auto event_count = epoll_wait(epoll_fd_, events, max_events, -1);
+            auto event_count = epoll_wait(epoll_fd_, events, max_events, 0);
             if (event_count == -1)
             {
                 if (errno == EINTR)
@@ -195,6 +214,8 @@ namespace hyper::framework
             {
                 handle_io_event(events[i]);
             }
+
+            process_async_send();
         }
     }
 
@@ -268,6 +289,19 @@ namespace hyper::framework
         }
     }
 
+    void EpollSocketManager::process_async_send()
+    {
+        while (!async_send_queue_.empty())
+        {
+            std::pair<int, std::string_view> data;
+            if (async_send_queue_.pop(data) != true) [[unlikely]]
+                std::cerr << "Faild to send data. pop from async queue failed" << std::endl;
+
+            if (send_data(data.first, data.second) != true)
+                std::cerr << "Faild to send data. sending failed" << std::endl;
+        }
+    }
+
     void EpollSocketManager::handle_disconnect(TransportSingleThreaded &transport, const std::string &error)
     {
         remove_socket(transport.socket_fd());
@@ -300,6 +334,15 @@ namespace hyper::framework
         {
             close(socket_fd);
             throw SocketException("Failed to set SO_REUSEADDR");
+        }
+
+        struct linger so_linger;
+        so_linger.l_onoff = 1;  // Dissable SO_LINGER
+        so_linger.l_linger = 0; // Close immediately
+        if (setsockopt(socket_fd, SOL_SOCKET, SO_LINGER, &so_linger, sizeof(so_linger)) == -1)
+        {
+            close(socket_fd);
+            throw SocketException("Failed to set SO_LINGER");
         }
     }
 

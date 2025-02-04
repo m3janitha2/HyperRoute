@@ -17,6 +17,7 @@
 #include <queue>
 #include <vector>
 #include <optional>
+#include <boost/lockfree/spsc_queue.hpp>
 #include <framework/socket/tcp/SocketException.h>
 
 namespace hyper::framework
@@ -43,11 +44,10 @@ namespace hyper::framework
         void disconnect_client(TransportSingleThreaded &transport);
         void run();
         bool send_data(int fd, std::string_view data);
+        bool send_data_async(int fd, std::string_view data);
 
     private:
         EpollSocketManager();
-
-        int epoll_fd_;
 
         void add_tcp_server(TransportSingleThreaded &transport);
         void add_tcp_client(TransportSingleThreaded &transport);
@@ -59,9 +59,14 @@ namespace hyper::framework
         void handle_io_event(const epoll_event &event);
         void accept_new_connection(TransportSingleThreaded &transport);
         void process_received_data(TransportSingleThreaded &transport);
+        void process_async_send();
         void handle_disconnect(TransportSingleThreaded &transport, const std::string &error);
         void remove_socket(int socket_fd);
         void set_socket_options(int socket_fd);
         void set_socket_non_blocking(int socket_fd);
+
+        int epoll_fd_;
+        inline static constexpr std::size_t ASYNC_QUEUE_SIZE{1024};
+        boost::lockfree::spsc_queue<std::pair<int, std::string_view>, boost::lockfree::capacity<ASYNC_QUEUE_SIZE>> async_send_queue_;
     };
 }

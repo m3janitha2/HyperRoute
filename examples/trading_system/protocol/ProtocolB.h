@@ -47,6 +47,7 @@ namespace hyper::protocol_b
         SessionRejectInfo validate_heartbeat(schema::Heartbeat &msg);
 
     private:
+        void disconnect() noexcept;
         /* SessionStateMachine */
     };
 }

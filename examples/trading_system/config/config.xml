@@ -16,7 +16,7 @@
     <source_session>
       <name>Source1</name>
       <id>2000</id>
-      <protocol>ProtocolA</protocol>
+      <protocol_type>ProtocolA</protocol_type>
       <router>
         <type>OneToOne</type>
         <destination_session_id>3000</destination_session_id>
@@ -30,16 +30,16 @@
         <name>ProtocolA_Profile1</name>
       </transform>
       <transport>
-        <local_ip>127.0.0.1</local_ip>
-        <local_port>8081</local_port>
         <socket_type>tcp</socket_type>
         <socket_role>server</socket_role>
+        <local_ip>127.0.0.1</local_ip>
+        <local_port>8081</local_port>
       </transport>
     </source_session>
     <source_session>
       <name>Source2</name>
       <id>2001</id>
-      <protocol>ProtocolA</protocol>
+      <protocol_type>ProtocolA</protocol_type>
       <router>
         <type>OneToOne</type>
         <destination_session_id>3000</destination_session_id>
@@ -47,26 +47,48 @@
       <transform>
         <name>ProtocolA_Profile2</name>
       </transform>
+      <transport>
+        <socket_type>tcp</socket_type>
+        <socket_role>server</socket_role>
+        <local_ip>127.0.0.1</local_ip>
+        <local_port>8082</local_port>
+      </transport>
     </source_session>
   </source_sessions>
   <destination_sessions>
     <destination_session>
       <name>Destination1</name>
       <id>3000</id>
-      <protocol>ProtocolB</protocol>
+      <protocol_type>ProtocolB</protocol_type>
       <validator_id>1000</validator_id>
       <transform>
         <name>ProtocolB_Profile1</name>
       </transform>
+      <transport>
+        <socket_type>tcp</socket_type>
+        <socket_role>client</socket_role>
+        <local_ip>127.0.0.1</local_ip>
+        <local_port>8085</local_port>
+        <remote_ip>127.0.0.1</remote_ip>
+        <remote_port>8086</remote_port>
+      </transport>
     </destination_session>
     <destination_session>
       <name>Destination2</name>
       <id>3001</id>
-      <protocol>ProtocolB</protocol>
+      <protocol_type>ProtocolB</protocol_type>
       <validator_id>1000</validator_id>
       <transform>
         <name>ProtocolB_Profile2</name>
       </transform>
+      <transport>
+        <socket_type>tcp</socket_type>
+        <socket_role>client</socket_role>
+        <local_ip>127.0.0.1</local_ip>
+        <local_port>8087</local_port>
+        <remote_ip>127.0.0.1</remote_ip>
+        <remote_port>8088</remote_port>
+      </transport>
     </destination_session>
   </destination_sessions>
 </configuration>

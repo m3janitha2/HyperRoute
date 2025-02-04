@@ -30,19 +30,20 @@ namespace hyper::framework
         template <typename... Args>
         explicit Protocol(const Configuration &config, Args &&...args)
             : config_(config),
-              transport_{TransportCallbacks{
-                  [this]() noexcept
-                  { on_connect(); },
-                  [this]() noexcept
-                  { on_disconnect(); },
-                  [this](std::string_view data) noexcept
-                  { return on_data(data); }}},
+              transport_{config.get_child("transport"),
+                         TransportCallbacks{
+                             [this]() noexcept
+                             { on_connect(); },
+                             [this]() noexcept
+                             { on_disconnect(); },
+                             [this](std::string_view data) noexcept
+                             { return on_data(data); }}},
               session_{transport_, std::forward<Args>(args)...}
         {
             static_assert(TransportCallbackInf<Protocol<ProtocolImpl, Session>>,
                           "Protocol does not satisfy TransportCallbackInf");
             static_assert(ProtocolInf<Protocol<ProtocolImpl, Session>>,
-                          "Protocol does not satisfy ProtocolInf");
+                          "ProtocolImpl does not satisfy ProtocolInf");
             load(config);
         }
 

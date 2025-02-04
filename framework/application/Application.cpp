@@ -4,6 +4,7 @@
 #include <framework/factory/DestinationProtocolFactory.h>
 #include <framework/factory/DestinationRouterFactory.h>
 #include <framework/factory/SourceProtocolFactory.h>
+#include <framework/socket/tcp/EpollSocketManager.h>
 
 #include <iostream>
 
@@ -21,7 +22,7 @@ namespace hyper::framework
 
     void Application::run()
     {
-        // Implementation for running the application.
+        EpollSocketManager::instance().run();
     }
 
     void Application::stop()
@@ -76,11 +77,11 @@ namespace hyper::framework
         for (const auto &config : cfg_manager.get_destination_sessions())
         {
             const auto id = config.get<std::size_t>("id");
-            const auto protocol_name = config.get<std::string>("protocol");
+            const auto protocol_type = config.get<std::string>("protocol_type");
             const auto validator_id = config.get<std::size_t>("validator_id");
             auto validator = get_validator_by_id(validator_id);
             const auto &factory = framework::DestinationProtocolFactory::instance();
-            auto protocol = factory.create(protocol_name, config, *source_router_, validator);
+            auto protocol = factory.create(protocol_type, config, *source_router_, validator);
             if (auto [it, ret] = destination_protocol_sessions_.try_emplace(id, std::move(protocol));
                 !ret)
                 throw std::runtime_error("Duplicate Destination Protocol ID: " + std::to_string(id));
@@ -99,9 +100,9 @@ namespace hyper::framework
             auto router = router_factory.create(router_type, router_config, destination_protocol_sessions_);
 
             const auto &factory = framework::SourceProtocolFactory::instance();
-            const auto protocol_name = config.get<std::string>("protocol");
+            const auto protocol_type = config.get<std::string>("protocol_type");
 
-            auto protocol = factory.create(protocol_name, config, router, *source_router_);
+            auto protocol = factory.create(protocol_type, config, router, *source_router_);
 
             if (auto [it, ret] = source_protocol_sessions_.try_emplace(id, std::move(protocol));
                 !ret)

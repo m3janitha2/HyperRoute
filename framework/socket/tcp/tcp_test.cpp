@@ -8,11 +8,58 @@
 
 using namespace hyper::framework;
 
+struct TCPTest
+{
+  TCPTest(const Configuration &config, const std::string &name, const std::string &message)
+      : sim{config, name,
+            [this](std::string_view data) noexcept
+            { return on_data(data); }},
+        message_(message) {}
+
+  std::size_t on_data(std::string_view data) noexcept
+  {
+    std::cout << "Received:" << data << std::endl;
+    std::this_thread::sleep_for(std::chrono::seconds(5));
+    sim.send_data(data);
+    return data.length();
+  }
+
+  void send_data(std::string_view data)
+  {
+    sim.send_data(data);
+  }
+
+  void run()
+  {
+    if (!sim.is_server())
+    {
+      if (auto ret = sim.connect(); ret != true)
+        std::cout << ret << std::endl;
+    }
+    // auto t = std::thread([&]()
+    //                      {
+    //   static constexpr const char* message = "async message";
+    //   while(true)
+    //   {
+    //     std::this_thread::sleep_for(std::chrono::seconds(5));
+    //     sim.send_data_async(message);
+    //   }; });
+    sim.send_data(message_);
+    sim.run();
+    // t.join();
+    if (auto ret = sim.disconnect(); ret != true)
+      std::cout << ret << std::endl;
+  }
+
+  TCPSimulator sim;
+  const std::string message_{};
+};
+
 int main(int argc, char **argv)
 {
   if (argc < 8)
   {
-    std::cerr << "Usage: ./a <string> <int1> <int2>\n";
+    std::cerr << "Usage: ./tcp_test <local_ip> <local_port> <remote_ip> <remote_port> <socket_type> <socket_role> <name> <message>\n";
     return 1;
   }
 
@@ -25,25 +72,12 @@ int main(int argc, char **argv)
   std::string name = argv[7];
   std::string message = name + " " + argv[8];
 
-  Configuration cfg;
-  cfg.put("local_ip", local_ip);
-  cfg.put("local_port", local_port);
-  cfg.put("remote_ip", remote_ip);
-  cfg.put("remote_port", remote_port);
-  cfg.put("socket_type", socket_type);
-  cfg.put("socket_role", socket_role);
+  const auto config = TCPSimulator::generate_config(local_ip, local_port,
+                                                    remote_ip, remote_port,
+                                                    socket_type, socket_role);
 
-  TCPSimulator sim{name, cfg};
-  if (auto ret = sim.connect(); ret != true)
-  {
-    std::cout << ret << std::endl;
-  }
-  sim.send_data(message);
-  sim.run();
-  if (auto ret = sim.disconnect(); ret != true)
-  {
-    std::cout << ret << std::endl;
-  }
+  TCPTest test{config, name, message};
+  test.run();
 
   return 0;
 }

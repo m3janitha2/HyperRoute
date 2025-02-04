@@ -1,4 +1,5 @@
 #include <examples/trading_system/protocol/ProtocolB.h>
+#include "ProtocolB.h"
 
 namespace hyper::protocol_b
 {
@@ -90,7 +91,7 @@ namespace hyper::protocol_b
         if (auto reject_info = validate_logon(msg); reject_info != true)
         {
             send_logout();
-            impl().transport().disconnect();
+            disconnect();
             return;
         }
 
@@ -101,7 +102,7 @@ namespace hyper::protocol_b
     {
         if (auto reject_info = validate_logout(msg); reject_info != true)
         {
-            impl().transport().disconnect();
+            disconnect();
             return;
         }
 
@@ -112,7 +113,7 @@ namespace hyper::protocol_b
     {
         if (auto reject_info = validate_heartbeat(msg); reject_info != true)
         {
-            impl().transport().disconnect();
+            disconnect();
             return;
         }
     }
@@ -122,7 +123,7 @@ namespace hyper::protocol_b
         schema::Logon msg{};
         if (auto reject_info = send_to_transport(msg);
             reject_info != true)
-            transport().disconnect();
+            disconnect();
     }
 
     void ProtocolB::send_logout()
@@ -130,7 +131,7 @@ namespace hyper::protocol_b
         schema::Logout msg{};
         if (auto reject_info = send_to_transport(msg);
             reject_info != true)
-            transport().disconnect();
+            disconnect();
     }
 
     void ProtocolB::send_heartbeat()
@@ -138,7 +139,7 @@ namespace hyper::protocol_b
         schema::Heartbeat msg{};
         if (auto reject_info = send_to_transport(msg);
             reject_info != true)
-            transport().disconnect();
+            disconnect();
     }
 
     SessionRejectInfo ProtocolB::validate_logon([[maybe_unused]] schema::Logon &msg)
@@ -156,4 +157,11 @@ namespace hyper::protocol_b
         return SessionRejectInfo{};
     }
 
+    void ProtocolB::disconnect() noexcept
+    {
+        if (auto reject_info = impl().transport().disconnect(); reject_info != true)
+        {
+            std::cerr << "Failed to discconnect: " << reject_info << std::endl;
+        }
+    }
 }

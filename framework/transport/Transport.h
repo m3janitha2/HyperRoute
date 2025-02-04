@@ -1,31 +1,38 @@
 #pragma once
+#include <framework/config/Configuration.h>
 #include <framework/transport/TransportCallbacks.h>
 #include <framework/utility/RejectInfo.h>
+#include <framework/transport/TransportSingleThreaded.h>
 #include <string_view>
 
 namespace hyper::framework
 {
-    struct Transport
-    {
-    public:
-        explicit Transport(TransportCallbacks transport_callbacks)
-            : transport_callbacks_{std::move(transport_callbacks)} {}
+    using Transport = TransportSingleThreaded;
 
-        Transport(const Transport &) = delete;
-        Transport &operator=(const Transport &) = delete;
+    // struct Transport
+    // {
+    // public:
+    //     explicit Transport(const Configuration &config,
+    //                        TransportCallbacks transport_callbacks)
+    //         : config_(config),
+    //           transport_callbacks_{std::move(transport_callbacks)} {}
 
-        void connect() noexcept { transport_callbacks_.connect_callback_(); }
-        void disconnect() noexcept { transport_callbacks_.disconnect_callback_(); }
+    //     Transport(const Transport &) = delete;
+    //     Transport &operator=(const Transport &) = delete;
 
-        std::size_t on_data(std::string_view data) noexcept { return transport_callbacks_.data_callback_(data); }
-        RejectInfo send_data(std::string_view data) noexcept;
+    //     void connect() noexcept { transport_callbacks_.connect_callback_(); }
+    //     void disconnect() noexcept { transport_callbacks_.disconnect_callback_(); }
 
-        void set_receive_data_cb_for_test(std::function<void(std::string_view)> cb) noexcept;
+    //     std::size_t on_data(std::string_view data) noexcept { return transport_callbacks_.data_callback_(data); }
+    //     RejectInfo send_data(std::string_view data) noexcept;
 
-    private:
-        TransportCallbacks transport_callbacks_;
-        std::function<void(std::string_view)> receive_data_cb_for_test_;
-    };
+    //     void set_receive_data_cb_for_test(std::function<void(std::string_view)> cb) noexcept;
+
+    // private:
+    //     const Configuration config_{};
+    //     TransportCallbacks transport_callbacks_;
+    //     std::function<void(std::string_view)> receive_data_cb_for_test_;
+    // };
 }
 
 /* may be use a ring buffer */

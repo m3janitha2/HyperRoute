@@ -28,6 +28,7 @@ target_sources(framework PRIVATE
 target_link_libraries(framework PUBLIC
     config
     transport
+    socket
     utility
     application
 )

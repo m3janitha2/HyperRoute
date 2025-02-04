@@ -85,6 +85,7 @@ namespace hyper::protocol_a
             break;
         }
         default:
+            std::cerr << "invalid message. data[" << data << "]" << std::endl;
             break;
         };
 
@@ -96,7 +97,7 @@ namespace hyper::protocol_a
         if (auto reject_info = validate_logon(msg); reject_info != true)
         {
             send_logout();
-            this->impl().transport().disconnect();
+            disconnect();
             return;
         }
 
@@ -107,7 +108,7 @@ namespace hyper::protocol_a
     {
         if (auto reject_info = validate_logout(msg); reject_info != true)
         {
-            this->impl().transport().disconnect();
+            disconnect();
             return;
         }
 
@@ -118,7 +119,7 @@ namespace hyper::protocol_a
     {
         if (auto reject_info = validate_heartbeat(msg); reject_info != true)
         {
-            this->impl().transport().disconnect();
+            disconnect();
             return;
         }
     }
@@ -128,7 +129,7 @@ namespace hyper::protocol_a
         schema::Logon msg{};
         if (auto reject_info = send_to_transport(msg);
             reject_info != true)
-            transport().disconnect();
+            disconnect();
     }
 
     void ProtocolA::send_logout()
@@ -136,7 +137,7 @@ namespace hyper::protocol_a
         schema::Logout msg{};
         if (auto reject_info = send_to_transport(msg);
             reject_info != true)
-            transport().disconnect();
+            disconnect();
     }
 
     void ProtocolA::send_heartbeat()
@@ -144,21 +145,29 @@ namespace hyper::protocol_a
         schema::Heartbeat msg{};
         if (auto reject_info = send_to_transport(msg);
             reject_info != true)
-            transport().disconnect();
+            disconnect();
     }
 
-    SessionRejectInfo protocol_a::ProtocolA::validate_logon([[maybe_unused]] schema::Logon &msg)
+    SessionRejectInfo ProtocolA::validate_logon([[maybe_unused]] schema::Logon &msg)
     {
         return SessionRejectInfo{};
     }
 
-    SessionRejectInfo protocol_a::ProtocolA::validate_logout([[maybe_unused]] schema::Logout &msg)
+    SessionRejectInfo ProtocolA::validate_logout([[maybe_unused]] schema::Logout &msg)
     {
         return SessionRejectInfo{};
     }
 
-    SessionRejectInfo protocol_a::ProtocolA::validate_heartbeat([[maybe_unused]] schema::Heartbeat &msg)
+    SessionRejectInfo ProtocolA::validate_heartbeat([[maybe_unused]] schema::Heartbeat &msg)
     {
         return SessionRejectInfo{};
+    }
+
+    void ProtocolA::disconnect() noexcept
+    {
+        if (auto reject_info = impl().transport().disconnect(); reject_info != true)
+        {
+            std::cerr << "Failed to discconnect: " << reject_info << std::endl;
+        }
     }
 }

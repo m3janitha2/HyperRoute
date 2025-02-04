@@ -4,6 +4,7 @@
 #include <framework/utility/RejectInfo.h>
 #include <framework/config/Configuration.h>
 #include <string_view>
+#include <boost/lockfree/spsc_queue.hpp>
 
 namespace hyper::framework
 {
@@ -24,7 +25,9 @@ namespace hyper::framework
         void on_disconnect(const std::string &error) noexcept;
         int read_data();
         void process_data(std::size_t bytes_read) noexcept;
+        std::size_t on_data(std::string_view data);
         RejectInfo send_data(std::string_view data) noexcept;
+        RejectInfo send_data_async(std::string_view data) noexcept;
 
         [[nodiscard]] constexpr std::size_t length_for_read() const noexcept { return RECEIVE_BUFFER_SIZE - write_offset_; }
         [[nodiscard]] constexpr char *buffer_for_read() noexcept { return receive_buffer_ + write_offset_; }
@@ -51,6 +54,7 @@ namespace hyper::framework
         void set_receive_data_cb_for_test(std::function<void(std::string_view)> cb) noexcept;
 
     private:
+        void load_config(const Configuration& config);
         constexpr void clear_receive_buffer() noexcept;
 
         TransportCallbacks transport_callbacks_;

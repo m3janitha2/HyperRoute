@@ -12,7 +12,7 @@ include_directories(/usr/include)
 
 # Set default to Debug if not specified
 if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Build type" FORCE)
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type" FORCE)
 endif()
 
 # set(CMAKE_CONFIGURATION_TYPES "Release" CACHE STRING "" FORCE)
