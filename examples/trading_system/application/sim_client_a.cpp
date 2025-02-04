@@ -34,7 +34,7 @@ struct SimulatorClientA
 											for (std::size_t i = 0; i < number_of_messages_; ++i)
 											{
 												std::cout << "sending: " << cl_ord_id << std::endl; 
-												std::this_thread::sleep_for(std::chrono::milliseconds(2));
+												std::this_thread::sleep_for(std::chrono::microseconds(10));
 												sim.send_data_async(msg_store_.get_new_order(cl_ord_id++)); 
 											} });
 
