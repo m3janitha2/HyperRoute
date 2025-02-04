@@ -82,5 +82,8 @@ jobs:
       run: ctest --build-config ${{ matrix.build_type }}
 
     - name: Benchmark
-      working-directory: ${{github.workspace}}/build/examples/trading_system/application/
-      run: ./trading_system "${{github.workspace}}/examples/trading_system/config/config.xml" 100 
+      # working-directory: ${{github.workspace}}/build/examples/trading_system/application/
+      # run: ./trading_system "${{github.workspace}}/examples/trading_system/config/config.xml" 100
+      working-directory: ${{github.workspace}}
+      run: ./.github/run_sim.sh 
+
