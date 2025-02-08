@@ -4,7 +4,7 @@
 ## Features
 1. Fully customizable and plug-and-play source and destination protocols.
 2. Flexible and extendable routing strategies.
-3. Extensible message transformation and validation.
+3. Extendable message transformation and validation.
    
 The protocol-agnostic core ensures independence from specific messaging protocols. Protocols, routers, validators, and transforms can be seamlessly integrated to accommodate custom requirements.
 
