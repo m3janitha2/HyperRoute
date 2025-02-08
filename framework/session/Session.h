@@ -39,7 +39,7 @@ namespace hyper::framework
         template <MessageInf Msg>
         RejectInfo send_message_to_transport(Msg &msg) const noexcept;
         template <MessageInf Msg>
-        void on_message_from_transport(Msg &msg) noexcept;
+        void on_message_from_transport(Msg &msg) const noexcept;
 
     private:
         bool connected_{true};
@@ -68,7 +68,7 @@ namespace hyper::framework
 
     template <typename SessionImpl>
     template <MessageInf Msg>
-    inline void Session<SessionImpl>::on_message_from_transport(Msg &msg) noexcept
+    inline void Session<SessionImpl>::on_message_from_transport(Msg &msg) const noexcept
     {
         this->impl().on_message_from_transport_impl(msg);
     }

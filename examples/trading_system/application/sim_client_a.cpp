@@ -10,18 +10,21 @@
 
 using namespace hyper;
 
+using Timestamp = hyper::framework::Timestamp;
+
 struct SimulatorClientA
 {
 	SimulatorClientA(const Configuration &config, const std::string &name, std::size_t number_of_messages)
 		: sim{config, name,
-			  [this](std::string_view data) noexcept
-			  { return on_data(data); }},
+			  [this](std::string_view data, Timestamp timestamp) noexcept
+			  { return on_data(data, timestamp); }},
 		  number_of_messages_(number_of_messages),
 		  msg_store_(number_of_messages) {}
 
-	std::size_t on_data(std::string_view data) noexcept
+	std::size_t on_data(std::string_view data, Timestamp timestamp) noexcept
 	{
-		std::cout << "Received:" << data << std::endl;
+		std::cout << "Timestamp: " << timestamp.time_since_epoch().count()
+				  << " Received:" << data << std::endl;
 		return data.length();
 	}
 
@@ -29,7 +32,7 @@ struct SimulatorClientA
 	{
 		std::cout << "number_of_messages: " << number_of_messages_ << std::endl;
 		auto sender_thread = std::jthread([this]()
-										 {
+										  {
 											static std::uint64_t cl_ord_id{1000};
 											for (std::size_t i = 0; i < number_of_messages_; ++i)
 											{

@@ -81,7 +81,8 @@ namespace hyper::framework
 
     void TransportSingleThreaded::process_data(std::size_t bytes_read) noexcept
     {
-        /* next point write */
+        Timestamp timestamp = TimestampClock::now();
+        /* next point for write */
         write_offset_ += bytes_read;
 
         /* consume buffer */
@@ -90,7 +91,7 @@ namespace hyper::framework
         {
             auto data_lenght = write_offset_ - read_offset_;
             std::string_view data{receive_buffer_ + read_offset_, data_lenght};
-            auto bytes_consumed = transport_callbacks_.data_callback_(data);
+            auto bytes_consumed = transport_callbacks_.data_callback_(data, timestamp);
             if (bytes_consumed == 0)
                 break;
             else if (bytes_consumed > data_lenght) [[unlikely]]
@@ -116,7 +117,8 @@ namespace hyper::framework
     std::size_t TransportSingleThreaded::on_data(std::string_view data) const noexcept
     {
         /* only for test */
-        return transport_callbacks_.data_callback_(data);
+        Timestamp timestamp = TimestampClock::now();
+        return transport_callbacks_.data_callback_(data, timestamp);
     }
 
     RejectInfo TransportSingleThreaded::send_data(std::string_view data) const noexcept

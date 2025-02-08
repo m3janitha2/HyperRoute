@@ -34,7 +34,7 @@ namespace hyper::protocol_a
     {
     }
 
-    std::size_t ProtocolA::on_data_impl(std::string_view data)
+    std::size_t ProtocolA::on_data_impl(std::string_view data, Timestamp timestamp)
     {
         auto *const_header = reinterpret_cast<const schema::Header *>(data.data());
         auto *header = const_cast<schema::Header *>(const_header);
@@ -68,19 +68,19 @@ namespace hyper::protocol_a
         }
         case schema::MsgType::NewOrderSingle:
         {
-            session::NewOrderSingle msg{data};
+            session::NewOrderSingle msg{data, timestamp};
             impl().session().on_message_from_transport(msg);
             break;
         }
         case schema::MsgType::CancelReplaceRequest:
         {
-            session::CancelReplaceRequest msg{data};
+            session::CancelReplaceRequest msg{data, timestamp};
             impl().session().on_message_from_transport(msg);
             break;
         }
         case schema::MsgType::CancelRequest:
         {
-            session::CancelRequest msg{data};
+            session::CancelRequest msg{data, timestamp};
             impl().session().on_message_from_transport(msg);
             break;
         }

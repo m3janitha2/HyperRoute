@@ -16,8 +16,8 @@ struct SimulatorServerB
 {
 	SimulatorServerB(const Configuration &config, const std::string &name, std::size_t number_of_messages)
 		: sim{config, name,
-			  [this](std::string_view data) noexcept
-			  { return on_data(data); }},
+			  [this](std::string_view data, Timestamp timestamp) noexcept
+			  { return on_data(data, timestamp); }},
 		  number_of_messages_(number_of_messages),
 		  msg_store_(number_of_messages) {}
 
@@ -28,7 +28,7 @@ struct SimulatorServerB
 				  << " msg: " << msg << std::endl;
 	}
 
-	std::size_t on_data(std::string_view data) noexcept
+	std::size_t on_data(std::string_view data, [[maybe_unused]] Timestamp timestamp) noexcept
 	{
 		auto *const_header = reinterpret_cast<const schema::Header *>(data.data());
 		auto *header = const_cast<schema::Header *>(const_header);

@@ -2,16 +2,12 @@
 
 #include <framework/utility/CrtpBase.h>
 #include <framework/utility/Types.h>
+#include <framework/utility/TimeAux.h>
 #include <string_view>
-#include <chrono>
-#include <type_traits>
 #include <concepts>
 
 namespace hyper::framework
 {
-    using TimestampClock = std::chrono::steady_clock;
-    using Timestamp = std::chrono::time_point<TimestampClock>;
-
     /* Minimum message interface required by the framework */
     template <typename Msg>
     concept MessageInf = requires(Msg msg, Timestamp timestamp) {

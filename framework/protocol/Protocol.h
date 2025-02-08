@@ -17,10 +17,10 @@ namespace hyper::framework
     /* - Dispatch application messages to the Session */
 
     template <typename ProtocolImpl>
-    concept ProtocolInf = requires(ProtocolImpl p, std::string_view data) {
+    concept ProtocolInf = requires(ProtocolImpl p, std::string_view data, Timestamp timestamp) {
         { p.impl().on_connect_impl() } -> std::same_as<void>;
         { p.impl().on_disconnect_impl() } -> std::same_as<void>;
-        { p.impl().on_data_impl(data) } -> std::same_as<std::size_t>;
+        { p.impl().on_data_impl(data, timestamp) } -> std::same_as<std::size_t>;
     };
 
     template <typename ProtocolImpl, typename Session>
@@ -36,8 +36,8 @@ namespace hyper::framework
                              { on_connect(); },
                              [this]() noexcept
                              { on_disconnect(); },
-                             [this](std::string_view data) noexcept
-                             { return on_data(data); }}},
+                             [this](std::string_view data, Timestamp timestamp) noexcept
+                             { return on_data(data, timestamp); }}},
               session_{transport_, std::forward<Args>(args)...}
         {
             static_assert(TransportCallbackInf<Protocol<ProtocolImpl, Session>>,
@@ -55,7 +55,8 @@ namespace hyper::framework
         /* TransportCallbacks */
         void on_connect() noexcept;
         void on_disconnect() noexcept;
-        std::size_t on_data(std::string_view data) noexcept;
+        std::size_t on_data(std::string_view data,
+                            Timestamp timestamp) noexcept;
 
         RejectInfo connect();
         RejectInfo disconnect();
@@ -109,10 +110,11 @@ namespace hyper::framework
     }
 
     template <typename ProtocolImpl, typename Session>
-    inline std::size_t Protocol<ProtocolImpl, Session>::on_data(std::string_view data) noexcept
+    inline std::size_t Protocol<ProtocolImpl, Session>::on_data(std::string_view data,
+                                                                Timestamp timestamp) noexcept
     {
         /* todox: reschedule heatbeat receiver */
-        return this->impl().on_data_impl(data);
+        return this->impl().on_data_impl(data, timestamp);
     }
 
     template <typename ProtocolImpl, typename Session>

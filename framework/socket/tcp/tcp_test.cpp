@@ -1,10 +1,12 @@
+
+#include <framework/socket/tcp/EpollSocketManager.h>
+#include <framework/simulator/TCPSimulator.h>
+#include <framework/config/Configuration.h>
 #include <iostream>
 #include <string>
 #include <thread>
 #include <chrono>
-#include <framework/socket/tcp/EpollSocketManager.h>
-#include <framework/simulator/TCPSimulator.h>
-#include <framework/config/Configuration.h>
+#include <format>
 
 using namespace hyper::framework;
 
@@ -12,25 +14,25 @@ struct TCPTest
 {
   TCPTest(const Configuration &config, const std::string &name, const std::string &message)
       : sim{config, name,
-            [this](std::string_view data) noexcept
-            { return on_data(data); }},
+            [this](std::string_view data, Timestamp timestamp) noexcept
+            { return on_data(data, timestamp); }},
         message_(message) {}
 
-  std::size_t on_data(std::string_view data) noexcept
+  std::size_t on_data(std::string_view data, Timestamp timestamp) noexcept
   {
-    std::cout << "Received:" << data << std::endl;
+    std::cout << "Timestamp:" << timestamp.time_since_epoch().count() << " Received:" << data << std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(5));
-    if(auto reject_info = sim.send_data(data);
-      reject_info != true)
-        std::cerr << "Falied to send: " << data << std::endl;
+    if (auto reject_info = sim.send_data(data);
+        reject_info != true)
+      std::cerr << "Falied to send: " << data << std::endl;
     return data.length();
   }
 
   void send_data(std::string_view data)
   {
-    if(auto reject_info = sim.send_data(data);
-      reject_info != true)
-        std::cerr << "Falied to send: " << data << std::endl;
+    if (auto reject_info = sim.send_data(data);
+        reject_info != true)
+      std::cerr << "Falied to send: " << data << std::endl;
   }
 
   void run()

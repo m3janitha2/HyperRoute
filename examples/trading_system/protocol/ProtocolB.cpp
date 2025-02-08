@@ -35,7 +35,7 @@ namespace hyper::protocol_b
     {
     }
 
-    std::size_t ProtocolB::on_data_impl(std::string_view data)
+    std::size_t ProtocolB::on_data_impl(std::string_view data, Timestamp timestamp)
     {
         auto *const_header = reinterpret_cast<const schema::Header *>(data.data());
         auto *header = const_cast<schema::Header *>(const_header);
@@ -69,13 +69,13 @@ namespace hyper::protocol_b
         }
         case schema::MsgType::ExecutionReport:
         {
-            session::ExecutionReport msg{data};
+            session::ExecutionReport msg{data, timestamp};
             impl().session().on_message_from_transport(msg);
             break;
         }
         case schema::MsgType::CancelReject:
         {
-            session::CancelReject msg{data};
+            session::CancelReject msg{data, timestamp};
             impl().session().on_message_from_transport(msg);
             break;
         }

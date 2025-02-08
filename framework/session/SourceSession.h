@@ -118,7 +118,6 @@ namespace hyper::framework
         update_source_routing_info(msg);
 
         // Persist the recevied message for session recovery.
-        // Publish the recevied message to other channels.
     }
 
     template <typename SessionImpl>

@@ -18,15 +18,15 @@ namespace hyper::framework
     public:
         explicit TCPSimulator(const Configuration &config,
                               const std::string &name,
-                              const std::function<std::size_t(std::string_view)> &data_callback) noexcept
+                              const std::function<std::size_t(std::string_view, Timestamp)> &data_callback) noexcept
             : transport_{config,
                          TransportCallbacks{
                              [this]() noexcept
                              { on_connect(); },
                              [this]() noexcept
                              { on_disconnect(); },
-                             [this](std::string_view data) noexcept
-                             { return on_data(data); }}},
+                             [this](std::string_view data, Timestamp timestamp) noexcept
+                             { return on_data(data, timestamp); }}},
               name_(name),
               data_callback_(data_callback)
         {
@@ -70,10 +70,10 @@ namespace hyper::framework
             std::cout << name_ << " Disconnected." << std::endl;
         }
 
-        std::size_t on_data(std::string_view data)
+        std::size_t on_data(std::string_view data, Timestamp timestamp)
         {
             //std::cout << name_ << " Received:" << std::endl;
-            return data_callback_(data);
+            return data_callback_(data, timestamp);
         }
 
         RejectInfo send_data(std::string_view data) noexcept
@@ -108,6 +108,6 @@ namespace hyper::framework
     private:
         TransportSingleThreaded transport_;
         const std::string name_{};
-        const std::function<std::size_t(std::string_view)> data_callback_;
+        const std::function<std::size_t(std::string_view, Timestamp timestamp)> data_callback_;
     };
 }

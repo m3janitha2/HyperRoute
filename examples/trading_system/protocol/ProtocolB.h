@@ -22,6 +22,7 @@ namespace hyper::protocol_b
 
     using SessionRejectInfo = framework::ErrorInfo<SessionRejectCode>;
     using Configuration = framework::Configuration;
+    using Timestamp = framework::Timestamp;
 
     class ProtocolB : public framework::Protocol<ProtocolB, DestinationSessionProtocolB>
     {
@@ -32,7 +33,7 @@ namespace hyper::protocol_b
 
         void on_connect_impl();
         void on_disconnect_impl();
-        std::size_t on_data_impl(std::string_view data);
+        std::size_t on_data_impl(std::string_view data, Timestamp timestamp);
 
         void on_logon(schema::Logon &msg);
         void on_logout(schema::Logout &msg);
