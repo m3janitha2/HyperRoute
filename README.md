@@ -8,8 +8,15 @@
    
 The protocol-agnostic core ensures independence from specific messaging protocols. Protocols, routers, validators, and transforms can be seamlessly integrated to accommodate custom requirements.
 
-## Performance
-Check the GitHub Actions Benchmark for detailed performance metrics
+## Performance  
+Check the [GitHub Actions Benchmark](https://github.com/m3janitha2/HyperRoute/actions) for detailed performance metrics.  
+
+**Please note:** GitHub Actions runners have limited flexibility in terms of hardware and system configurations. The CPU is low-spec, and you cannot:  
+- Choose specific hardware  
+- Modify kernel parameters such as C-States, P-States, or Spectre/Meltdown patches  
+- Isolate CPUs, enable a tickless kernel, or configure interrupt isolation  
+
+Additionally, binding critical threads to CPUs without isolated cores may degrade performance.
 
 ## Note
 **_This is a work in progress._** If you are interested in new features, feel free to reach out. I am a low-latency enthusiast and open to collaborating or working on similar projects.
