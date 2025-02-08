@@ -9,5 +9,5 @@ namespace hyper
         class SourceSessionProtocolA;
     }
     
-    using SourceSessionPtrVariant = std::variant<protocol_a::SourceSessionProtocolA*>;
+    using SourceSessionPtrVariant = std::variant<const protocol_a::SourceSessionProtocolA*>;
 };

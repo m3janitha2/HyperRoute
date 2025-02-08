@@ -38,32 +38,33 @@ namespace hyper::framework
             return instance;
         }
 
-        void connect_server(TransportSingleThreaded &transport);
-        void disconnect_server(TransportSingleThreaded &transport);
-        void connect_client(TransportSingleThreaded &transport);
-        void disconnect_client(TransportSingleThreaded &transport);
+        void connect_server(TransportSingleThreaded &transport) const;
+        void disconnect_server(TransportSingleThreaded &transport) const;
+        void connect_client(TransportSingleThreaded &transport) const;
+        void disconnect_client(TransportSingleThreaded &transport) const;
         void run();
-        bool send_data(int fd, std::string_view data);
+        bool send_data(int fd, std::string_view data) const;
         bool send_data_async(int fd, std::string_view data);
 
     private:
         EpollSocketManager();
 
-        void add_tcp_server(TransportSingleThreaded &transport);
-        void add_tcp_client(TransportSingleThreaded &transport);
-        int create_tcp_server_socket(const std::string &local_ip, std::uint16_t local_port);
+        void add_tcp_server(TransportSingleThreaded &transport) const;
+        void add_tcp_client(TransportSingleThreaded &transport) const;
+        int create_tcp_server_socket(const std::string &local_ip, std::uint16_t local_port) const;
         int create_tcp_client_socket(const std::string &remote_ip, std::uint16_t remote_port,
-                                     const std::string &local_ip, std::uint16_t local_port);
-        void register_socket_to_epoll(int socket_fd, uint32_t events, TransportSingleThreaded &transport);
+                                     const std::string &local_ip, std::uint16_t local_port) const;
+        void register_socket_to_epoll(int socket_fd, uint32_t events,
+                                      TransportSingleThreaded &transport) const;
         void process_io_events();
         void handle_io_event(const epoll_event &event);
         void accept_new_connection(TransportSingleThreaded &transport);
         void process_received_data(TransportSingleThreaded &transport);
         void process_async_send();
-        void handle_disconnect(TransportSingleThreaded &transport, const std::string &error);
-        void remove_socket(int socket_fd);
-        void set_socket_options(int socket_fd);
-        void set_socket_non_blocking(int socket_fd);
+        void handle_disconnect(TransportSingleThreaded &transport, const std::string &error) const;
+        void remove_socket(int socket_fd) const;
+        void set_socket_options(int socket_fd) const;
+        void set_socket_non_blocking(int socket_fd) const;
 
         int epoll_fd_;
         inline static constexpr std::size_t ASYNC_QUEUE_SIZE{1024};

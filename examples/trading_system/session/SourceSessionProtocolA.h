@@ -28,37 +28,38 @@ namespace hyper::protocol_a
         void on_disconnect_impl() noexcept;
 
         /* Messages from transport */
-        RejectInfo handle_message_from_transport_impl(session::NewOrderSingle &msg) noexcept;
-        RejectInfo handle_message_from_transport_impl(session::CancelReplaceRequest &msg) noexcept;
-        RejectInfo handle_message_from_transport_impl(session::CancelRequest &msg) noexcept;
+        RejectInfo handle_message_from_transport_impl(session::NewOrderSingle &msg) const noexcept;
+        RejectInfo handle_message_from_transport_impl(session::CancelReplaceRequest &msg) const noexcept;
+        RejectInfo handle_message_from_transport_impl(session::CancelRequest &msg) const noexcept;
 
         /* Internal rejects */
         void reject_message_from_transport_impl(session::NewOrderSingle &msg,
-                                                RejectInfo &reject_info) noexcept;
+                                                RejectInfo &reject_info) const noexcept;
         void reject_message_from_transport_impl(session::CancelReplaceRequest &msg,
-                                                RejectInfo &reject_info) noexcept;
+                                                RejectInfo &reject_info) const noexcept;
         void reject_message_from_transport_impl(session::CancelRequest &msg,
-                                                RejectInfo &reject_info) noexcept;
+                                                RejectInfo &reject_info) const noexcept;
 
         template <typename Msg>
-        void update_routing_info_impl(Msg &msg) noexcept;
+        void update_routing_info_impl(Msg &msg) const noexcept;
 
         /* Messages from the peer session to the transport */
-        RejectInfo on_message_from_peer_impl(session::ExecutionReport &msg) noexcept;
-        RejectInfo on_message_from_peer_impl(session::CancelReject &msg) noexcept;
+        RejectInfo on_message_from_peer_impl(session::ExecutionReport &msg) const noexcept;
+        RejectInfo on_message_from_peer_impl(session::CancelReject &msg) const noexcept;
 
     private:
-        RejectInfo transform_uid_from_cl_ord_id(session::NewOrderSingle &msg) noexcept;
+        RejectInfo transform_uid_from_cl_ord_id(session::NewOrderSingle &msg) const noexcept;
         template <typename Msg>
-        RejectInfo transform_uid_from_orig_cl_ord_id(Msg &msg) noexcept;
+        RejectInfo transform_uid_from_orig_cl_ord_id(Msg &msg) const noexcept;
 
         using ClOrdIdType = decltype(schema::NewOrderSingle::cl_ord_id);
         using ClOrdIDToUIDMap = std::unordered_map<ClOrdIdType, UID>;
-        ClOrdIDToUIDMap cl_ord_id_to_uid_{optimal_order_count};
+        /* tbb::concurrent_hash_map for concurrent multi-threaded access */
+        mutable ClOrdIDToUIDMap cl_ord_id_to_uid_{optimal_order_count};
     };
 
     template <typename Msg>
-    inline void SourceSessionProtocolA::update_routing_info_impl(Msg &msg) noexcept
+    inline void SourceSessionProtocolA::update_routing_info_impl(Msg &msg) const noexcept
     try
     {
         if constexpr (std::is_same_v<Msg, session::NewOrderSingle>)

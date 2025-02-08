@@ -28,14 +28,18 @@ struct SimulatorClientA
 	void run()
 	{
 		std::cout << "number_of_messages: " << number_of_messages_ << std::endl;
-		auto sender_thread = std::thread([&]()
+		auto sender_thread = std::jthread([this]()
 										 {
 											static std::uint64_t cl_ord_id{1000};
 											for (std::size_t i = 0; i < number_of_messages_; ++i)
 											{
 												std::cout << "sending: " << cl_ord_id << std::endl; 
 												std::this_thread::sleep_for(std::chrono::microseconds(10));
-												sim.send_data_async(msg_store_.get_new_order(cl_ord_id++)); 
+												if(auto ret = sim.send_data_async(msg_store_.get_new_order(cl_ord_id++)); 
+													ret != true)
+													{
+														std::cerr << "Failed to send: " << cl_ord_id << std::endl;
+													}
 											} });
 
 		sim.run();

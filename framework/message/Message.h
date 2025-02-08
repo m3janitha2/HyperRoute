@@ -9,7 +9,7 @@
 
 namespace hyper::framework
 {
-    using TimestampClock = std::chrono::high_resolution_clock;
+    using TimestampClock = std::chrono::steady_clock;
     using Timestamp = std::chrono::time_point<TimestampClock>;
 
     /* Minimum message interface required by the framework */

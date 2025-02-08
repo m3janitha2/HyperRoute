@@ -29,7 +29,7 @@ namespace hyper::framework
 		DestinationRouter &operator=(const DestinationRouter &) = delete;
 
 		template <MessageInf Msg>
-		RejectInfo on_message_from_source(Msg &msg) noexcept
+		RejectInfo on_message_from_source(Msg &msg) const noexcept
 		{
 			return this->impl().on_message_from_source_impl(msg);
 		}

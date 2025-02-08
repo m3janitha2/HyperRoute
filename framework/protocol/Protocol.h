@@ -62,10 +62,10 @@ namespace hyper::framework
         [[nodiscard]] constexpr bool is_connected() const noexcept { return connected_; }
 
         template <typename Msg>
-        RejectInfo send_to_transport(Msg &msg) noexcept;
+        RejectInfo send_to_transport(Msg &msg) const noexcept;
 
         template <typename Msg>
-        void persist_protocol_message(Msg &msg) {}
+        void persist_protocol_message(Msg &msg) { /* todox */ }
 
         [[nodiscard]] constexpr Transport &transport() noexcept { return transport_; }
         [[nodiscard]] constexpr const Transport &transport() const noexcept { return transport_; }
@@ -129,7 +129,7 @@ namespace hyper::framework
 
     template <typename ProtocolImpl, typename Session>
     template <typename Msg>
-    inline RejectInfo Protocol<ProtocolImpl, Session>::send_to_transport(Msg &msg) noexcept
+    inline RejectInfo Protocol<ProtocolImpl, Session>::send_to_transport(Msg &msg) const noexcept
     {
         /* todox: reschedule heatbeat producer_ */
         std::string_view data{reinterpret_cast<char *>(&msg), sizeof(msg)};

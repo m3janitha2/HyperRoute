@@ -28,7 +28,7 @@ namespace hyper
             : framework::Validator<ValidatorX>{config} {}
 
         template <ValidatorMsg Msg>
-        RejectInfo validate_impl(Msg &msg)
+        RejectInfo validate_impl(Msg &msg) const noexcept
         {
             std::uint64_t limit{dummy_limit_};
             if (!check_01_.is_enabled()) [[unlikely]]
@@ -39,7 +39,7 @@ namespace hyper
 
     private:
         template <typename Check, typename Msg, typename... Args>
-        RejectInfo validate_(Check &check, Msg &, Args &&...args)
+        RejectInfo validate_(Check &check, Msg &, Args &&...args) const noexcept
         {
             if constexpr (std::derived_from<Msg, trading::NewOrderSingle>)
                 return check.on_new_order_single(std::forward<Args>(args)...);

@@ -72,22 +72,18 @@ namespace hyper::framework
 
         std::size_t on_data(std::string_view data)
         {
-            std::cout << name_ << " Received:" << std::endl;
+            //std::cout << name_ << " Received:" << std::endl;
             return data_callback_(data);
         }
 
-        void send_data(std::string_view data) noexcept
+        RejectInfo send_data(std::string_view data) noexcept
         {
-            if (auto reject_info = transport_.send_data(data);
-                reject_info == true)
-                std::cout << name_ << " Sent:" << std::endl;
+            return transport_.send_data(data);
         }
 
-        void send_data_async(std::string_view data) noexcept
+        RejectInfo send_data_async(std::string_view data) noexcept
         {
-            if (auto reject_info = transport_.send_data_async(data);
-                reject_info == true)
-                std::cout << name_ << " Sent Async:" << std::endl;
+            return transport_.send_data_async(data);
         }
 
         static Configuration generate_config(const std::string &local_ip,

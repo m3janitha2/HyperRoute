@@ -20,23 +20,27 @@ struct TCPTest
   {
     std::cout << "Received:" << data << std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(5));
-    sim.send_data(data);
+    if(auto reject_info = sim.send_data(data);
+      reject_info != true)
+        std::cerr << "Falied to send: " << data << std::endl;
     return data.length();
   }
 
   void send_data(std::string_view data)
   {
-    sim.send_data(data);
+    if(auto reject_info = sim.send_data(data);
+      reject_info != true)
+        std::cerr << "Falied to send: " << data << std::endl;
   }
 
   void run()
   {
-    if (!sim.is_server())
-    {
-      if (auto ret = sim.connect(); ret != true)
-        std::cout << ret << std::endl;
-    }
-    // auto t = std::thread([&]()
+    // if (!sim.is_server())
+    // {
+    //   if (auto ret = sim.connect(); ret != true)
+    //     std::cout << ret << std::endl;
+    // }
+    // auto t = std::jthread([&]()
     //                      {
     //   static constexpr const char* message = "async message";
     //   while(true)
@@ -44,7 +48,7 @@ struct TCPTest
     //     std::this_thread::sleep_for(std::chrono::seconds(5));
     //     sim.send_data_async(message);
     //   }; });
-    sim.send_data(message_);
+    send_data(message_);
     sim.run();
     // t.join();
     if (auto ret = sim.disconnect(); ret != true)

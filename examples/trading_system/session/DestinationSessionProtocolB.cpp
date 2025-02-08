@@ -11,7 +11,7 @@ namespace hyper::protocol_b
     {
     }
 
-    void DestinationSessionProtocolB::on_message_from_transport_impl(protocol_b::session::ExecutionReport &dest_msg) noexcept
+    void DestinationSessionProtocolB::on_message_from_transport_impl(protocol_b::session::ExecutionReport &dest_msg) const noexcept
     {
         protocol_a::schema::ExecutionReport msg{};
         protocol_a::session::ExecutionReport src_msg{msg};
@@ -19,7 +19,7 @@ namespace hyper::protocol_b
         procoess_message_from_transport(dest_msg, src_msg);
     }
 
-    void DestinationSessionProtocolB::on_message_from_transport_impl(protocol_b::session::CancelReject &dest_msg) noexcept
+    void DestinationSessionProtocolB::on_message_from_transport_impl(protocol_b::session::CancelReject &dest_msg) const noexcept
     {
         protocol_a::schema::CancelReject msg{};
         protocol_a::session::CancelReject src_msg{msg};
@@ -28,7 +28,7 @@ namespace hyper::protocol_b
     }
 
     RejectInfo DestinationSessionProtocolB::handle_message_from_transport_impl(protocol_b::session::ExecutionReport &dst_msg,
-                                                                               protocol_a::session::ExecutionReport &src_msg) noexcept
+                                                                               protocol_a::session::ExecutionReport &src_msg) const noexcept
     {
         if (auto reject_info = handle_cl_ord_id_from_destination(dst_msg, src_msg);
             reject_info != true) [[unlikely]]
@@ -38,7 +38,7 @@ namespace hyper::protocol_b
     }
 
     RejectInfo DestinationSessionProtocolB::handle_message_from_transport_impl(protocol_b::session::CancelReject &dst_msg,
-                                                                               protocol_a::session::CancelReject &src_msg) noexcept
+                                                                               protocol_a::session::CancelReject &src_msg) const noexcept
     {
         if (auto reject_info = handle_cl_ord_id_from_destination(dst_msg, src_msg);
             reject_info != true) [[unlikely]]
@@ -49,7 +49,7 @@ namespace hyper::protocol_b
 
     /* todox: move to codec */
     RejectInfo DestinationSessionProtocolB::decode_message_from_destination_impl(protocol_b::session::ExecutionReport &dst_msg,
-                                                                                 protocol_a::session::ExecutionReport &src_msg) noexcept
+                                                                                 protocol_a::session::ExecutionReport &src_msg) const noexcept
     {
         // std::cout << "decode_message_from_destination:" << dst_msg << std::endl;
         auto &msg = src_msg.msg();
@@ -59,7 +59,7 @@ namespace hyper::protocol_b
     }
 
     RejectInfo DestinationSessionProtocolB::decode_message_from_destination_impl(protocol_b::session::CancelReject &dst_msg,
-                                                                                 protocol_a::session::CancelReject &src_msg) noexcept
+                                                                                 protocol_a::session::CancelReject &src_msg) const noexcept
     {
         // std::cout << "decode_message_from_destination:" << dst_msg << std::endl;
         auto &msg = src_msg.msg();
@@ -69,18 +69,18 @@ namespace hyper::protocol_b
     }
 
     void DestinationSessionProtocolB::reject_message_from_transport_impl(protocol_b::session::ExecutionReport &msg,
-                                                                         RejectInfo &reject_info) noexcept
+                                                                         RejectInfo &reject_info) const noexcept
     {
         std::cout << "message rejected. reason:" << reject_info << " msg:" << msg << std::endl;
     }
 
     void DestinationSessionProtocolB::reject_message_from_transport_impl(protocol_b::session::CancelReject &msg,
-                                                                         RejectInfo &reject_info) noexcept
+                                                                         RejectInfo &reject_info) const noexcept
     {
         std::cout << "message rejected. reason:" << reject_info << " msg:" << msg << std::endl;
     }
 
-    RejectInfo DestinationSessionProtocolB::on_message_from_peer_impl(protocol_a::session::NewOrderSingle &src_msg) noexcept
+    RejectInfo DestinationSessionProtocolB::on_message_from_peer_impl(protocol_a::session::NewOrderSingle &src_msg) const noexcept
     {
         protocol_b::schema::NewOrderSingle msg{};
         protocol_b::session::NewOrderSingle dst_msg{msg, src_msg.in_timestamp()};
@@ -89,7 +89,7 @@ namespace hyper::protocol_b
         return procoess_message_to_transport(src_msg, dst_msg);
     }
 
-    RejectInfo DestinationSessionProtocolB::on_message_from_peer_impl(protocol_a::session::CancelReplaceRequest &src_msg) noexcept
+    RejectInfo DestinationSessionProtocolB::on_message_from_peer_impl(protocol_a::session::CancelReplaceRequest &src_msg) const noexcept
     {
         protocol_b::schema::CancelReplaceRequest msg{};
         protocol_b::session::CancelReplaceRequest dst_msg{msg, src_msg.in_timestamp()};
@@ -102,7 +102,7 @@ namespace hyper::protocol_b
         return procoess_message_to_transport(src_msg, dst_msg);
     }
 
-    RejectInfo DestinationSessionProtocolB::on_message_from_peer_impl(protocol_a::session::CancelRequest &src_msg) noexcept
+    RejectInfo DestinationSessionProtocolB::on_message_from_peer_impl(protocol_a::session::CancelRequest &src_msg) const noexcept
     {
         protocol_b::schema::CancelRequest msg{};
         protocol_b::session::CancelRequest dst_msg{msg, src_msg.in_timestamp()};
@@ -116,7 +116,7 @@ namespace hyper::protocol_b
     }
 
     RejectInfo DestinationSessionProtocolB::encode_message_to_destination_impl(protocol_a::session::NewOrderSingle &src_msg,
-                                                                               protocol_b::session::NewOrderSingle &dst_msg) noexcept
+                                                                               protocol_b::session::NewOrderSingle &dst_msg) const noexcept
     {
         // std::cout << "encode_message_to_destination:" << src_msg << std::endl;
         auto &dest_msg = dst_msg.msg();
@@ -127,7 +127,7 @@ namespace hyper::protocol_b
 
     /* todox: move to codec */
     RejectInfo DestinationSessionProtocolB::encode_message_to_destination_impl(protocol_a::session::CancelReplaceRequest &src_msg,
-                                                                               protocol_b::session::CancelReplaceRequest &dst_msg) noexcept
+                                                                               protocol_b::session::CancelReplaceRequest &dst_msg) const noexcept
     {
         // std::cout << "encode_message_to_destination:" << src_msg << std::endl;
         auto &dest_msg = dst_msg.msg();
@@ -137,7 +137,7 @@ namespace hyper::protocol_b
     }
 
     RejectInfo DestinationSessionProtocolB::encode_message_to_destination_impl(protocol_a::session::CancelRequest &src_msg,
-                                                                               protocol_b::session::CancelRequest &dst_msg) noexcept
+                                                                               protocol_b::session::CancelRequest &dst_msg) const noexcept
     {
         // std::cout << "encode_message_to_destination:" << src_msg << std::endl;
         auto &dest_msg = dst_msg.msg();
@@ -147,7 +147,7 @@ namespace hyper::protocol_b
     }
 
     inline void DestinationSessionProtocolB::update_destination_routing_info_impl(protocol_a::session::NewOrderSingle &src_msg,
-                                                                                  protocol_b::session::NewOrderSingle &dst_msg) noexcept
+                                                                                  protocol_b::session::NewOrderSingle &dst_msg) const noexcept
     {
         src_routing_info_by_dest_cl_ord_id_.emplace(std::piecewise_construct,
                                                     std::forward_as_tuple(dst_msg.msg().c),
@@ -156,7 +156,7 @@ namespace hyper::protocol_b
     }
 
     void DestinationSessionProtocolB::update_destination_routing_info_impl([[maybe_unused]] protocol_a::session::CancelReplaceRequest &src_msg,
-                                                                           [[maybe_unused]] protocol_b::session::CancelReplaceRequest &dst_msg) noexcept
+                                                                           [[maybe_unused]] protocol_b::session::CancelReplaceRequest &dst_msg) const noexcept
     {
         src_routing_info_by_dest_cl_ord_id_.emplace(std::piecewise_construct,
                                                     std::forward_as_tuple(dst_msg.msg().c),
@@ -165,7 +165,7 @@ namespace hyper::protocol_b
     }
 
     void DestinationSessionProtocolB::update_destination_routing_info_impl([[maybe_unused]] protocol_a::session::CancelRequest &src_msg,
-                                                                           [[maybe_unused]] protocol_b::session::CancelRequest &dst_msg) noexcept
+                                                                           [[maybe_unused]] protocol_b::session::CancelRequest &dst_msg) const noexcept
     {
         src_routing_info_by_dest_cl_ord_id_.emplace(std::piecewise_construct,
                                                     std::forward_as_tuple(dst_msg.msg().c),
@@ -174,14 +174,14 @@ namespace hyper::protocol_b
     }
 
     template <typename DestMsg>
-    void DestinationSessionProtocolB::handle_cl_ord_id_to_destination(DestMsg &dst_msg)
+    void DestinationSessionProtocolB::handle_cl_ord_id_to_destination(DestMsg &dst_msg) const noexcept
     {
         auto dest_cl_ord_id = destination_id_generator_.get_next_uid();
         dst_msg.msg().c = dest_cl_ord_id;
     }
 
     template <typename SrcMsg, typename DestMsg>
-    RejectInfo DestinationSessionProtocolB::handle_orig_cl_ord_id_to_destination(SrcMsg &src_msg, DestMsg &dst_msg)
+    RejectInfo DestinationSessionProtocolB::handle_orig_cl_ord_id_to_destination(SrcMsg &src_msg, DestMsg &dst_msg) const noexcept
     {
         auto orig_cl_ord_id = src_msg.msg().orig_cl_ord_id;
         if (auto it = dest_cl_ord_id_by_src_cl_ord_id_.find(orig_cl_ord_id);
@@ -194,7 +194,7 @@ namespace hyper::protocol_b
     }
 
     template <typename DestMsg, typename SrcMsg>
-    RejectInfo DestinationSessionProtocolB::handle_cl_ord_id_from_destination(DestMsg &dst_msg, SrcMsg &src_msg)
+    RejectInfo DestinationSessionProtocolB::handle_cl_ord_id_from_destination(DestMsg &dst_msg, SrcMsg &src_msg) const noexcept
     {
         if (auto it = src_routing_info_by_dest_cl_ord_id_.find(dst_msg.msg().c);
             it == src_routing_info_by_dest_cl_ord_id_.end()) [[unlikely]]

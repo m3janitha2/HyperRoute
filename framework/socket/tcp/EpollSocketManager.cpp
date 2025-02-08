@@ -1,6 +1,7 @@
 #include <framework/socket/tcp/EpollSocketManager.h>
 #include <framework/transport/TransportSingleThreaded.h>
 #include "EpollSocketManager.h"
+#include <format>
 
 namespace hyper::framework
 {
@@ -18,29 +19,27 @@ namespace hyper::framework
         close(epoll_fd_);
     }
 
-    void EpollSocketManager::connect_server(TransportSingleThreaded &transport)
+    void EpollSocketManager::connect_server(TransportSingleThreaded &transport) const
     {
         add_tcp_server(transport);
     }
 
-    void EpollSocketManager::disconnect_server(TransportSingleThreaded &transport)
+    void EpollSocketManager::disconnect_server(TransportSingleThreaded &transport) const
     {
         remove_socket(transport.server_fd());
         handle_disconnect(transport,
-                          "Disconnect called. socket_fd:" +
-                              std::to_string(transport.socket_fd()));
+                          std::format("Disconnect called. socket_fd:{}", transport.socket_fd()));
     }
 
-    void EpollSocketManager::connect_client(TransportSingleThreaded &transport)
+    void EpollSocketManager::connect_client(TransportSingleThreaded &transport) const
     {
         add_tcp_client(transport);
     }
 
-    void EpollSocketManager::disconnect_client(TransportSingleThreaded &transport)
+    void EpollSocketManager::disconnect_client(TransportSingleThreaded &transport) const
     {
         handle_disconnect(transport,
-                          "Disconnect called. socket_fd:" +
-                              std::to_string(transport.socket_fd()));
+                          std::format("Disconnect called. socket_fd:{}", transport.socket_fd()));
     }
 
     void EpollSocketManager::run()
@@ -48,7 +47,7 @@ namespace hyper::framework
         process_io_events();
     }
 
-    bool EpollSocketManager::send_data(int fd, std::string_view data)
+    bool EpollSocketManager::send_data(int fd, std::string_view data) const
     {
         auto bytes_sent = send(fd, data.data(), data.size(), 0);
         if (bytes_sent == -1 && errno != EAGAIN) [[unlikely]]
@@ -56,7 +55,7 @@ namespace hyper::framework
             std::cerr << "Failed to send data on fd: " << fd << "\n";
             return false;
         }
-        if(bytes_sent < static_cast<decltype(bytes_sent)>(data.size())) [[unlikely]]
+        if (bytes_sent < static_cast<decltype(bytes_sent)>(data.size())) [[unlikely]]
         {
             std::cerr << "Failed to send complete message on fd: " << fd << "\n";
             return false;
@@ -75,7 +74,7 @@ namespace hyper::framework
         return true;
     }
 
-    void EpollSocketManager::add_tcp_server(TransportSingleThreaded &transport)
+    void EpollSocketManager::add_tcp_server(TransportSingleThreaded &transport) const
     {
         auto local_ip = transport.local_ip();
         auto local_port = transport.local_port();
@@ -86,7 +85,7 @@ namespace hyper::framework
         transport.server_fd(server_fd);
     }
 
-    void EpollSocketManager::add_tcp_client(TransportSingleThreaded &transport)
+    void EpollSocketManager::add_tcp_client(TransportSingleThreaded &transport) const
     {
         auto remote_ip = transport.remote_ip();
         auto remote_port = transport.remote_port();
@@ -99,7 +98,7 @@ namespace hyper::framework
         transport.on_connect(client_fd);
     }
 
-    int EpollSocketManager::create_tcp_server_socket(const std::string &ip, std::uint16_t port)
+    int EpollSocketManager::create_tcp_server_socket(const std::string &ip, std::uint16_t port) const
     {
         auto server_fd = socket(AF_INET, SOCK_STREAM, 0);
         if (server_fd == -1)
@@ -134,7 +133,7 @@ namespace hyper::framework
     }
 
     int EpollSocketManager::create_tcp_client_socket(const std::string &remote_ip, std::uint16_t remote_port,
-                                                     const std::string &local_ip, std::uint16_t local_port)
+                                                     const std::string &local_ip, std::uint16_t local_port) const
     {
         auto client_fd = socket(AF_INET, SOCK_STREAM, 0);
         if (client_fd == -1)
@@ -182,7 +181,8 @@ namespace hyper::framework
         return client_fd;
     }
 
-    void EpollSocketManager::register_socket_to_epoll(int socket_fd, uint32_t events, TransportSingleThreaded &transport)
+    void EpollSocketManager::register_socket_to_epoll(int socket_fd, uint32_t events,
+                                                      TransportSingleThreaded &transport) const
     {
         epoll_event event{};
         event.events = events;
@@ -235,8 +235,8 @@ namespace hyper::framework
         if (event_mask & (EPOLLERR | EPOLLHUP))
         {
             handle_disconnect(transport,
-                              "Peer has closed the connection. socket_fd:" +
-                                  std::to_string(transport.socket_fd()));
+                              std::format("Peer has closed the connection. socket_fd: {}",
+                                          transport.socket_fd()));
         }
     }
 
@@ -270,8 +270,8 @@ namespace hyper::framework
         else if (bytes_read == 0) [[unlikely]]
         {
             handle_disconnect(transport,
-                              "Peer has closed the connection. socket_fd:" +
-                                  std::to_string(transport.socket_fd()));
+                              std::format("Peer has closed the connection. socket_fd:{}",
+                                          transport.socket_fd()));
         }
         else if (bytes_read == -1) [[unlikely]]
         {
@@ -283,8 +283,8 @@ namespace hyper::framework
             {
                 std::cerr << "Failed to read data. socket_fd:" << transport.socket_fd() << std::endl;
                 handle_disconnect(transport,
-                                  "Failed to read data. socket_fd:" +
-                                      std::to_string(transport.socket_fd()));
+                                  std::format("Failed to read data. socket_fd:{}",
+                                              transport.server_fd()));
             }
         }
     }
@@ -302,23 +302,24 @@ namespace hyper::framework
         }
     }
 
-    void EpollSocketManager::handle_disconnect(TransportSingleThreaded &transport, const std::string &error)
+    void EpollSocketManager::handle_disconnect(TransportSingleThreaded &transport, const std::string &error) const
     {
         remove_socket(transport.socket_fd());
         transport.on_disconnect(error);
     }
 
-    void EpollSocketManager::remove_socket(int socket_fd)
+    void EpollSocketManager::remove_socket(int socket_fd) const
     {
         if (epoll_ctl(epoll_fd_, EPOLL_CTL_DEL, socket_fd, nullptr) == -1)
         {
-            std::cerr << "Failed to remove socket_fd from epoll. socket_fd:" << socket_fd << std::endl;
+            std::cerr << std::format("Failed to remove socket_fd from epoll. socket_fd:{}", socket_fd)
+                      << std::endl;
         }
 
         close(socket_fd);
     }
 
-    void EpollSocketManager::set_socket_options(int socket_fd)
+    void EpollSocketManager::set_socket_options(int socket_fd) const
     {
         set_socket_non_blocking(socket_fd);
 
@@ -346,7 +347,7 @@ namespace hyper::framework
         }
     }
 
-    void EpollSocketManager::set_socket_non_blocking(int socket_fd)
+    void EpollSocketManager::set_socket_non_blocking(int socket_fd) const
     {
         auto flags = fcntl(socket_fd, F_GETFL, 0);
         if (flags == -1 || fcntl(socket_fd, F_SETFL, flags | O_NONBLOCK) == -1)

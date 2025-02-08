@@ -37,25 +37,25 @@ namespace hyper::framework
               source_router_{source_router} {}
 
         template <MessageInf Msg>
-        void on_message_from_transport_impl(Msg &msg) noexcept;
+        void on_message_from_transport_impl(Msg &msg) const noexcept;
         template <MessageInf Msg>
-        RejectInfo on_message_from_peer(Msg &msg) noexcept;
+        RejectInfo on_message_from_peer(Msg &msg) const noexcept;
         template <MessageInf Msg>
-        RejectInfo procoess_message_to_transport(Msg &msg) noexcept;
+        RejectInfo procoess_message_to_transport(Msg &msg) const noexcept;
         template <MessageInf Msg>
-        void procoess_message_from_transport(Msg &msg) noexcept;
+        void procoess_message_from_transport(Msg &msg) const noexcept;
         template <MessageInf Msg>
-        RejectInfo transform_message_to_transport(Msg &msg) noexcept;
+        RejectInfo transform_message_to_transport(Msg &msg) const noexcept;
         template <MessageInf Msg>
-        RejectInfo transform_message_from_transport(Msg &msg) noexcept;
+        RejectInfo transform_message_from_transport(Msg &msg) const noexcept;
         template <MessageInf Msg>
-        RejectInfo handle_message_from_transport(Msg &msg) noexcept;
+        RejectInfo handle_message_from_transport(Msg &msg) const noexcept;
         template <MessageInf Msg>
-        RejectInfo send_message_to_peer(Msg &msg) noexcept;
+        RejectInfo send_message_to_peer(Msg &msg) const noexcept;
         template <MessageInf Msg>
-        void reject_message_from_transport(Msg &msg, RejectInfo &reject_info) noexcept;
+        void reject_message_from_transport(Msg &msg, RejectInfo &reject_info) const noexcept;
         template <MessageInf Msg>
-        void update_source_routing_info(Msg &msg) noexcept;
+        void update_source_routing_info(Msg &msg) const noexcept;
 
     private:
         DestinationRouterPtrVariant destination_router_;
@@ -65,21 +65,21 @@ namespace hyper::framework
 
     template <typename SessionImpl>
     template <MessageInf Msg>
-    inline void SourceSession<SessionImpl>::on_message_from_transport_impl(Msg &msg) noexcept
+    inline void SourceSession<SessionImpl>::on_message_from_transport_impl(Msg &msg) const noexcept
     {
         procoess_message_from_transport(msg);
     }
 
     template <typename SessionImpl>
     template <MessageInf Msg>
-    inline RejectInfo SourceSession<SessionImpl>::on_message_from_peer(Msg &msg) noexcept
+    inline RejectInfo SourceSession<SessionImpl>::on_message_from_peer(Msg &msg) const noexcept
     {
         return this->impl().on_message_from_peer_impl(msg);
     }
 
     template <typename SessionImpl>
     template <MessageInf Msg>
-    inline RejectInfo SourceSession<SessionImpl>::procoess_message_to_transport(Msg &msg) noexcept
+    inline RejectInfo SourceSession<SessionImpl>::procoess_message_to_transport(Msg &msg) const noexcept
     {
         if (auto reject_info = transform_message_to_transport(msg);
             reject_info != true) [[unlikely]]
@@ -99,7 +99,7 @@ namespace hyper::framework
 
     template <typename SessionImpl>
     template <MessageInf Msg>
-    inline void SourceSession<SessionImpl>::procoess_message_from_transport(Msg &msg) noexcept
+    inline void SourceSession<SessionImpl>::procoess_message_from_transport(Msg &msg) const noexcept
     {
         if (auto reject_info = transform_message_from_transport(msg);
             reject_info != true) [[unlikely]]
@@ -123,28 +123,28 @@ namespace hyper::framework
 
     template <typename SessionImpl>
     template <MessageInf Msg>
-    inline RejectInfo SourceSession<SessionImpl>::transform_message_to_transport(Msg &msg) noexcept
+    inline RejectInfo SourceSession<SessionImpl>::transform_message_to_transport(Msg &msg) const noexcept
     {
         return transform_.transform_message_to_transport(msg);
     }
 
     template <typename SessionImpl>
     template <MessageInf Msg>
-    inline RejectInfo SourceSession<SessionImpl>::transform_message_from_transport(Msg &msg) noexcept
+    inline RejectInfo SourceSession<SessionImpl>::transform_message_from_transport(Msg &msg) const noexcept
     {
         return transform_.transform_message_from_transport(msg);
     }
 
     template <typename SessionImpl>
     template <MessageInf Msg>
-    inline RejectInfo SourceSession<SessionImpl>::handle_message_from_transport(Msg &msg) noexcept
+    inline RejectInfo SourceSession<SessionImpl>::handle_message_from_transport(Msg &msg) const noexcept
     {
         return this->impl().handle_message_from_transport_impl(msg);
     }
 
     template <typename SessionImpl>
     template <MessageInf Msg>
-    inline RejectInfo SourceSession<SessionImpl>::send_message_to_peer(Msg &msg) noexcept
+    inline RejectInfo SourceSession<SessionImpl>::send_message_to_peer(Msg &msg) const noexcept
     {
         return std::visit([&msg]<typename Router>(Router &&router)
                           { return std::forward<Router>(router)->on_message_from_source(msg); },
@@ -153,14 +153,14 @@ namespace hyper::framework
 
     template <typename SessionImpl>
     template <MessageInf Msg>
-    inline void SourceSession<SessionImpl>::reject_message_from_transport(Msg &msg, RejectInfo &reject_info) noexcept
+    inline void SourceSession<SessionImpl>::reject_message_from_transport(Msg &msg, RejectInfo &reject_info) const noexcept
     {
         this->impl().reject_message_from_transport_impl(msg, reject_info);
     }
 
     template <typename SessionImpl>
     template <MessageInf Msg>
-    inline void SourceSession<SessionImpl>::update_source_routing_info(Msg &msg) noexcept
+    inline void SourceSession<SessionImpl>::update_source_routing_info(Msg &msg) const noexcept
     {
         if constexpr (std::derived_from<Msg, FirstEvent>)
         {

@@ -7,7 +7,7 @@
 namespace hyper::framework
 {
     template <typename Msg>
-    RejectInfo SourceRouter::send_message_to_source(Msg &msg) noexcept
+    RejectInfo SourceRouter::send_message_to_source(Msg &msg) const noexcept
     {
         auto uid = msg.uid();
         if (auto it = uid_to_source_session_.find(uid); it != uid_to_source_session_.end())
@@ -23,7 +23,7 @@ namespace hyper::framework
         }
     }
 
-    void SourceRouter::update_source_routing_info(UID uid, SourceSessionPtrVariant source_session_Variant) noexcept
+    void SourceRouter::update_source_routing_info(UID uid, SourceSessionPtrVariant source_session_Variant) const noexcept
     try
     {
         if (auto [it, ret] = uid_to_source_session_.try_emplace(uid, source_session_Variant);
@@ -37,6 +37,6 @@ namespace hyper::framework
     }
 
     /* todox: this is odd */
-    template RejectInfo SourceRouter::send_message_to_source<protocol_a::session::ExecutionReport>(protocol_a::session::ExecutionReport &msg);
-    template RejectInfo SourceRouter::send_message_to_source<protocol_a::session::CancelReject>(protocol_a::session::CancelReject &msg);
+    template RejectInfo SourceRouter::send_message_to_source<protocol_a::session::ExecutionReport>(protocol_a::session::ExecutionReport &msg) const noexcept;
+    template RejectInfo SourceRouter::send_message_to_source<protocol_a::session::CancelReject>(protocol_a::session::CancelReject &msg) const noexcept;
 }

@@ -37,7 +37,7 @@ namespace hyper::framework
         [[nodiscard]] constexpr bool is_connected() const noexcept { return connected_; }
 
         template <MessageInf Msg>
-        RejectInfo send_message_to_transport(Msg &msg) noexcept;
+        RejectInfo send_message_to_transport(Msg &msg) const noexcept;
         template <MessageInf Msg>
         void on_message_from_transport(Msg &msg) noexcept;
 
@@ -57,10 +57,10 @@ namespace hyper::framework
     {
         this->impl().on_disconnect_impl();
     }
-    
+
     template <typename SessionImpl>
     template <MessageInf Msg>
-    inline RejectInfo Session<SessionImpl>::send_message_to_transport(Msg &msg) noexcept
+    inline RejectInfo Session<SessionImpl>::send_message_to_transport(Msg &msg) const noexcept
     {
         msg.update_out_timestamp();
         return transport_.send_data(msg.data());

@@ -11,53 +11,53 @@ namespace hyper::protocol_a
 
     void SourceSessionProtocolA::on_disconnect_impl() noexcept {}
 
-    RejectInfo SourceSessionProtocolA::handle_message_from_transport_impl(session::NewOrderSingle &msg) noexcept
+    RejectInfo SourceSessionProtocolA::handle_message_from_transport_impl(session::NewOrderSingle &msg) const noexcept
     {
         return transform_uid_from_cl_ord_id(msg);
     }
 
-    RejectInfo SourceSessionProtocolA::handle_message_from_transport_impl(session::CancelReplaceRequest &msg) noexcept
+    RejectInfo SourceSessionProtocolA::handle_message_from_transport_impl(session::CancelReplaceRequest &msg) const noexcept
     {
         return transform_uid_from_orig_cl_ord_id(msg);
     }
 
-    RejectInfo SourceSessionProtocolA::handle_message_from_transport_impl(session::CancelRequest &msg) noexcept
+    RejectInfo SourceSessionProtocolA::handle_message_from_transport_impl(session::CancelRequest &msg) const noexcept
     {
         return transform_uid_from_orig_cl_ord_id(msg);
     }
 
     void SourceSessionProtocolA::reject_message_from_transport_impl(session::NewOrderSingle &msg,
-                                                                    RejectInfo &reject_info) noexcept
+                                                                    RejectInfo &reject_info) const noexcept
     {
         std::cout << "msg rejected: " << msg << " reason: " << reject_info << std::endl;
         /* create reject and send to transport */
     }
 
     void SourceSessionProtocolA::reject_message_from_transport_impl(session::CancelReplaceRequest &msg,
-                                                                    RejectInfo &reject_info) noexcept
+                                                                    RejectInfo &reject_info) const noexcept
     {
         std::cout << "msg rejected: " << msg << " reason: " << reject_info << std::endl;
         /* create reject and send to transport */
     }
 
     void SourceSessionProtocolA::reject_message_from_transport_impl(session::CancelRequest &msg,
-                                                                    RejectInfo &reject_info) noexcept
+                                                                    RejectInfo &reject_info) const noexcept
     {
         std::cout << "msg rejected: " << msg << " reason: " << reject_info << std::endl;
         /* create reject and send to transport */
     }
 
-    RejectInfo SourceSessionProtocolA::on_message_from_peer_impl(session::ExecutionReport &msg) noexcept
+    RejectInfo SourceSessionProtocolA::on_message_from_peer_impl(session::ExecutionReport &msg) const noexcept
     {
         return procoess_message_to_transport(msg);
     }
 
-    RejectInfo SourceSessionProtocolA::on_message_from_peer_impl(session::CancelReject &msg) noexcept
+    RejectInfo SourceSessionProtocolA::on_message_from_peer_impl(session::CancelReject &msg) const noexcept
     {
         return procoess_message_to_transport(msg);
     }
 
-    RejectInfo SourceSessionProtocolA::transform_uid_from_cl_ord_id(session::NewOrderSingle &msg) noexcept
+    RejectInfo SourceSessionProtocolA::transform_uid_from_cl_ord_id(session::NewOrderSingle &msg) const noexcept
     {
         auto uid = UIDGenerator::instance().get_next_uid();
         msg.uid(uid);
@@ -65,7 +65,7 @@ namespace hyper::protocol_a
     }
 
     template <typename Msg>
-    RejectInfo SourceSessionProtocolA::transform_uid_from_orig_cl_ord_id(Msg &msg) noexcept
+    RejectInfo SourceSessionProtocolA::transform_uid_from_orig_cl_ord_id(Msg &msg) const noexcept
     {
         if (auto it = cl_ord_id_to_uid_.find(msg.orig_cl_ord_id());
             it == cl_ord_id_to_uid_.end()) [[unlikely]]

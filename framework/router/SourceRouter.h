@@ -18,10 +18,11 @@ namespace hyper::framework
         SourceRouter &operator=(const SourceRouter &) = delete;
 
         template <typename Msg>
-        RejectInfo send_message_to_source(Msg &msg) noexcept;
-        void update_source_routing_info(UID uid, SourceSessionPtrVariant source_session_Variant) noexcept;
+        RejectInfo send_message_to_source(Msg &msg) const noexcept;
+        void update_source_routing_info(UID uid, SourceSessionPtrVariant source_session_Variant) const noexcept;
 
     private:
-        std::unordered_map<UID, SourceSessionPtrVariant> uid_to_source_session_{};
+        /* tbb::concurrent_hash_map for concurrent multi-threaded access */
+        mutable std::unordered_map<UID, SourceSessionPtrVariant> uid_to_source_session_{};
     };
 }

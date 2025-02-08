@@ -11,8 +11,8 @@ namespace hyper::framework
         load_config(config);
 
         // Connect or listen on startup for simplicity
-        if (auto ret = connect(); ret != true)
-            std::cerr << "Failed to connec." << std::endl;
+        if (auto reject_info = connect(); reject_info != true)
+            std::cerr << "Failed to disconnect. " << reject_info << std::endl;
     }
 
     TransportSingleThreaded::~TransportSingleThreaded()
@@ -20,7 +20,7 @@ namespace hyper::framework
         if (socket_fd_ != INVALID_FD)
         {
             if (auto reject_info = disconnect(); reject_info != true)
-                std::cerr << reject_info << std::endl;
+                std::cerr << "Failed to disconnect. " << reject_info << std::endl;
         }
     }
 
@@ -66,14 +66,14 @@ namespace hyper::framework
     void TransportSingleThreaded::on_disconnect(const std::string &error) noexcept
     {
         socket_fd_ = INVALID_FD;
-        std::cout << "socket disconnected. socket fd: " << socket_fd_
+        std::cout << "socket disconnected. socket fd:" << socket_fd_
                   << " ip:" << remote_ip_ << " port:" << remote_port_
-                  << " erorr: " << std::endl;
+                  << " erorr:" << error << std::endl;
         clear_receive_buffer();
         transport_callbacks_.disconnect_callback_();
     }
 
-    int TransportSingleThreaded::read_data()
+    long TransportSingleThreaded::read_data()
     {
         /* direct read to avoid any copies */
         return read(socket_fd_, buffer_for_read(), length_for_read());
@@ -93,9 +93,10 @@ namespace hyper::framework
             auto bytes_consumed = transport_callbacks_.data_callback_(data);
             if (bytes_consumed == 0)
                 break;
-            if (bytes_consumed > data_lenght) [[unlikely]]
+            else if (bytes_consumed > data_lenght) [[unlikely]]
             {
-                std::cerr << "critical error" << std::endl;
+                std::cerr << "Critical error. Consumed more than data length." << std::endl;
+                break;
             }
 
             /* consume next message */
@@ -112,17 +113,16 @@ namespace hyper::framework
         write_offset_ = data_length;
     }
 
-    std::size_t TransportSingleThreaded::on_data(std::string_view data)
+    std::size_t TransportSingleThreaded::on_data(std::string_view data) const noexcept
     {
         /* only for test */
         return transport_callbacks_.data_callback_(data);
     }
 
-    RejectInfo TransportSingleThreaded::send_data(std::string_view data) noexcept
+    RejectInfo TransportSingleThreaded::send_data(std::string_view data) const noexcept
     try
     {
-        auto &socket_mgr = EpollSocketManager::instance();
-        if (socket_mgr.send_data(socket_fd_, data) != true) [[unlikely]]
+        if (EpollSocketManager::instance().send_data(socket_fd_, data) != true) [[unlikely]]
             RejectInfo{"Failed to send data on wire", InteranlRejectCode::Transport_Failed_To_Send_data};
 
         return RejectInfo{};
@@ -133,11 +133,10 @@ namespace hyper::framework
     }
 
     /* Ensure that the data (message) outlives process_async_send */
-    RejectInfo TransportSingleThreaded::send_data_async(std::string_view data) noexcept
+    RejectInfo TransportSingleThreaded::send_data_async(std::string_view data) const noexcept
     try
     {
-        auto &socket_mgr = EpollSocketManager::instance();
-        if (socket_mgr.send_data_async(socket_fd_, data) != true) [[unlikely]]
+        if (EpollSocketManager::instance().send_data_async(socket_fd_, data) != true) [[unlikely]]
             RejectInfo{"Failed to async send data", InteranlRejectCode::Transport_Failed_To_Send_data};
 
         return RejectInfo{};

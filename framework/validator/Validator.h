@@ -19,7 +19,7 @@ namespace hyper::framework
         Validator &operator=(const Validator &) = delete;
 
         template <typename Msg>
-        RejectInfo validate(Msg &msg)
+        RejectInfo validate(Msg &msg) const noexcept
         {
             return this->impl().validate_impl(msg);
         }

@@ -25,20 +25,20 @@ namespace hyper::framework
 		DestinationRouterOneToOne &operator=(const DestinationRouterOneToOne &) = delete;
 
 		template <typename Msg>
-		RejectInfo on_message_from_source_impl(Msg &msg) noexcept
+		RejectInfo on_message_from_source_impl(Msg &msg) const noexcept
 		{
 			return send_message_to_desination(msg);
 		}
 
 	private:
 		template <typename Msg>
-		RejectInfo send_message_to_desination(Msg &msg) noexcept;
+		RejectInfo send_message_to_desination(Msg &msg) const noexcept;
 
 		DestinationSessionPtrVariant destination_session_;
 	};
 
 	template <typename Msg>
-	inline RejectInfo DestinationRouterOneToOne::send_message_to_desination(Msg &msg) noexcept
+	inline RejectInfo DestinationRouterOneToOne::send_message_to_desination(Msg &msg) const noexcept
 	{
 		return std::visit([&msg]<typename Destination>(Destination &&destination_session)
 						  { if(!std::forward<Destination>(destination_session)->is_connected()) [[unlikely]]

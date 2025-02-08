@@ -35,7 +35,7 @@ namespace hyper::framework
 		DestinationRouterRoundRobin &operator=(const DestinationRouterRoundRobin &) = delete;
 
 		template <typename Msg>
-		RejectInfo on_message_from_source_impl(Msg &msg) noexcept
+		RejectInfo on_message_from_source_impl(Msg &msg) const noexcept
 		{
 			if (auto reject_info = send_message_to_desination(msg);
 				reject_info != true) [[unlikely]]
@@ -45,31 +45,33 @@ namespace hyper::framework
 		}
 
 	private:
-		auto &get_next_session() noexcept;
+		auto &get_next_session() const noexcept;
 		template <typename Msg>
-		RejectInfo send_message_to_desination(Msg &msg) noexcept;
+		RejectInfo send_message_to_desination(Msg &msg) const noexcept;
 		template <typename Msg>
-		RejectInfo send_first_event_to_next_available_desination(Msg &msg) noexcept;
+		RejectInfo send_first_event_to_next_available_desination(Msg &msg) const noexcept;
 		template <typename Msg>
-		RejectInfo send_subsequent_events_to_the_same_desination(Msg &msg) noexcept;
+		RejectInfo send_subsequent_events_to_the_same_desination(Msg &msg) const noexcept;
 		bool is_destination_connected(const DestinationSessionPtrVariant &destination_session) const noexcept;
 		template <typename Msg>
 		RejectInfo send_message_to_desination(Msg &msg, const DestinationSessionPtrVariant &destination_session) const noexcept;
-		void cache_destination_by_uid(UID uid, DestinationSessionPtrVariant &destination_session) noexcept;
+		void cache_destination_by_uid(UID uid, const DestinationSessionPtrVariant &destination_session) const noexcept;
 
 		std::vector<DestinationSessionPtrVariant> destinations_;
-		decltype(destinations_.size()) index_{0};
-		std::unordered_map<UID, DestinationSessionPtrVariant &> uid_to_destination_{};
+		/* relaxed atomic for concurrent multi-threaded access */
+		mutable decltype(destinations_.size()) index_{0};
+		/* tbb::concurrent_hash_map for concurrent multi-threaded access */
+		mutable std::unordered_map<UID, const DestinationSessionPtrVariant &> uid_to_destination_{};
 	};
 
-	inline auto &DestinationRouterRoundRobin::get_next_session() noexcept
+	inline auto &DestinationRouterRoundRobin::get_next_session() const noexcept
 	{
 		index_ = (index_ + 1) % destinations_.size();
 		return destinations_[index_];
 	}
 
 	template <typename Msg>
-	inline RejectInfo DestinationRouterRoundRobin::send_message_to_desination(Msg &msg) noexcept
+	inline RejectInfo DestinationRouterRoundRobin::send_message_to_desination(Msg &msg) const noexcept
 	{
 		if constexpr (std::derived_from<Msg, FirstEvent>)
 			return send_first_event_to_next_available_desination(msg);
@@ -78,11 +80,11 @@ namespace hyper::framework
 	}
 
 	template <typename Msg>
-	inline RejectInfo DestinationRouterRoundRobin::send_first_event_to_next_available_desination(Msg &msg) noexcept
+	inline RejectInfo DestinationRouterRoundRobin::send_first_event_to_next_available_desination(Msg &msg) const noexcept
 	{
 		for (decltype(destinations_.size()) i{0}; i < destinations_.size(); i++)
 		{
-			auto &destination = get_next_session();
+			const auto &destination = get_next_session();
 			if (is_destination_connected(destination))
 			{
 				auto reject_info = send_message_to_desination(msg, destination);
@@ -95,14 +97,14 @@ namespace hyper::framework
 	}
 
 	template <typename Msg>
-	inline RejectInfo DestinationRouterRoundRobin::send_subsequent_events_to_the_same_desination(Msg &msg) noexcept
+	inline RejectInfo DestinationRouterRoundRobin::send_subsequent_events_to_the_same_desination(Msg &msg) const noexcept
 	try
 	{
 		auto uid = msg.uid();
 		if (auto it = uid_to_destination_.find(uid);
 			it != uid_to_destination_.end()) [[likely]]
 		{
-			auto &destination = it->second;
+			const auto &destination = it->second;
 			return send_message_to_desination(msg, destination);
 		}
 		else
@@ -131,7 +133,7 @@ namespace hyper::framework
 						  destination_session);
 	}
 
-	inline void DestinationRouterRoundRobin::cache_destination_by_uid(UID uid, DestinationSessionPtrVariant &destination_session) noexcept
+	inline void DestinationRouterRoundRobin::cache_destination_by_uid(UID uid, const DestinationSessionPtrVariant &destination_session) const noexcept
 	try
 	{
 		if (auto [it, ret] = uid_to_destination_.emplace(uid, destination_session);
