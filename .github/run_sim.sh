@@ -1,5 +1,5 @@
 $GITHUB_WORKSPACE/build/examples/trading_system/application/sim_server_b "127.0.0.1" "8086" "" "0" "tcp" "server" "serverB" "10" > $GITHUB_WORKSPACE/sim_server_b.log 2>&1 &
-$GITHUB_WORKSPACE/build/examples/trading_system/application/sim_server_b "127.0.0.1" "8088" "" "0" "tcp" "server" "serverC" "10" > $GITHUB_WORKSPACE/sim_server_b.log 2>&1 &
+$GITHUB_WORKSPACE/build/examples/trading_system/application/sim_server_b "127.0.0.1" "8088" "" "0" "tcp" "server" "serverC" "10" > $GITHUB_WORKSPACE/sim_server_c.log 2>&1 &
 sleep 1
 $GITHUB_WORKSPACE/build/examples/trading_system/application/app_trading_system "$GITHUB_WORKSPACE/examples/trading_system/config/config.xml" > $GITHUB_WORKSPACE/app_trading_system.log 2>&1 &
 sleep 1
