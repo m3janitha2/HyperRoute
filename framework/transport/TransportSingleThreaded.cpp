@@ -86,11 +86,11 @@ namespace hyper::framework
         write_offset_ += bytes_read;
 
         /* consume buffer */
-        /* todox: reduce branching */
-        while (read_offset_ < RECEIVE_BUFFER_SIZE)
+        std::size_t read_offset{0};
+        while (read_offset < write_offset_)
         {
-            auto data_lenght = write_offset_ - read_offset_;
-            std::string_view data{receive_buffer_ + read_offset_, data_lenght};
+            auto data_lenght = write_offset_ - read_offset;
+            std::string_view data{receive_buffer_ + read_offset, data_lenght};
             auto bytes_consumed = transport_callbacks_.data_callback_(data, timestamp);
             if (bytes_consumed == 0)
                 break;
@@ -101,16 +101,14 @@ namespace hyper::framework
             }
 
             /* consume next message */
-            read_offset_ += bytes_consumed;
-            if (read_offset_ == write_offset_)
-                break;
+            read_offset += bytes_consumed;
         }
 
         /* move remaining unprocessed data to front */
-        auto data_length = write_offset_ - read_offset_;
+        auto data_length = write_offset_ - read_offset;
         if (data_length > 0)
-            std::memmove(receive_buffer_, receive_buffer_ + read_offset_, data_length);
-        read_offset_ = 0;
+            std::memmove(receive_buffer_, receive_buffer_ + read_offset, data_length);
+        read_offset = 0;
         write_offset_ = data_length;
     }
 
@@ -170,7 +168,6 @@ namespace hyper::framework
     constexpr void TransportSingleThreaded::clear_receive_buffer() noexcept
     {
         write_offset_ = 0;
-        read_offset_ = 0;
     }
 
     void TransportSingleThreaded::set_receive_data_cb_for_test(std::function<void(std::string_view)> cb) noexcept

@@ -55,7 +55,7 @@ namespace hyper::framework
         void set_receive_data_cb_for_test(std::function<void(std::string_view)> cb) noexcept;
 
     private:
-        void load_config(const Configuration& config);
+        void load_config(const Configuration &config);
         constexpr void clear_receive_buffer() noexcept;
 
         TransportCallbacks transport_callbacks_;
@@ -63,7 +63,6 @@ namespace hyper::framework
         inline static constexpr std::size_t RECEIVE_BUFFER_SIZE{1024};
         char receive_buffer_[RECEIVE_BUFFER_SIZE]{};
         std::size_t write_offset_{0};
-        std::size_t read_offset_{0};
 
         inline static constexpr int INVALID_FD{-1};
         int socket_fd_{INVALID_FD};
