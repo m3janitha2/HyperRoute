@@ -17,15 +17,15 @@
       <name>Source1</name>
       <id>2000</id>
       <protocol_type>ProtocolA</protocol_type>
-      <router>
+      <!-- <router>
         <type>OneToOne</type>
         <destination_session_id>3000</destination_session_id>
-      </router>
-      <!-- <router>
+      </router> -->
+      <router>
         <type>RoundRobin</type>
         <destination_session_id>3000</destination_session_id>
         <destination_session_id>3001</destination_session_id>
-      </router> -->
+      </router>
       <transform>
         <name>ProtocolA_Profile1</name>
       </transform>
