@@ -108,7 +108,6 @@ namespace hyper::framework
         auto data_length = write_offset_ - read_offset;
         if (data_length > 0)
             std::memmove(receive_buffer_, receive_buffer_ + read_offset, data_length);
-        read_offset = 0;
         write_offset_ = data_length;
     }
 
