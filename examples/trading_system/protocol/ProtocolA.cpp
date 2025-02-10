@@ -1,4 +1,5 @@
 #include <examples/trading_system/protocol/ProtocolA.h>
+#include <examples/trading_system/session/SourceSessionProtocolA.h>
 
 namespace hyper::protocol_a
 {
@@ -26,15 +27,17 @@ namespace hyper::protocol_a
                          SourceRouter &source_router)
         : Protocol{config, destination_router, source_router} {}
 
-    void ProtocolA::on_connect_impl()
+    void ProtocolA::on_connect_impl() noexcept
     {
+        std::cout << "ProtocolA connected" << std::endl;
     }
 
-    void ProtocolA::on_disconnect_impl()
+    void ProtocolA::on_disconnect_impl() noexcept
     {
+        std::cout << "ProtocolA disconnected" << std::endl;
     }
 
-    std::size_t ProtocolA::on_data_impl(std::string_view data, Timestamp timestamp)
+    std::size_t ProtocolA::on_data_impl(std::string_view data, Timestamp timestamp) noexcept
     {
         auto *const_header = reinterpret_cast<const schema::Header *>(data.data());
         auto *header = const_cast<schema::Header *>(const_header);
@@ -50,19 +53,19 @@ namespace hyper::protocol_a
         {
         case schema::MsgType::Logon:
         {
-            auto &msg = *(reinterpret_cast<schema::Logon *>(header));
+            protocol::Logon msg{data, timestamp};
             on_logon(msg);
             break;
         }
         case schema::MsgType::Logout:
         {
-            auto &msg = *(reinterpret_cast<schema::Logout *>(header));
+            protocol::Logout msg{data, timestamp};
             on_logout(msg);
             break;
         }
         case schema::MsgType::Heartbeat:
         {
-            auto &msg = *(reinterpret_cast<schema::Heartbeat *>(header));
+            protocol::Heartbeat msg{data, timestamp};
             on_heartbeat(msg);
             break;
         }
@@ -92,7 +95,7 @@ namespace hyper::protocol_a
         return header->size;
     }
 
-    void ProtocolA::on_logon(schema::Logon &msg)
+    void ProtocolA::on_logon(const protocol::Logon &msg) noexcept
     {
         if (auto reject_info = validate_logon(msg); reject_info != true)
         {
@@ -104,7 +107,7 @@ namespace hyper::protocol_a
         send_logon();
     }
 
-    void ProtocolA::on_logout(schema::Logout &msg)
+    void ProtocolA::on_logout(const protocol::Logout &msg) noexcept
     {
         if (auto reject_info = validate_logout(msg); reject_info != true)
         {
@@ -115,7 +118,7 @@ namespace hyper::protocol_a
         send_logout();
     }
 
-    void ProtocolA::on_heartbeat(schema::Heartbeat &msg)
+    void ProtocolA::on_heartbeat(const protocol::Heartbeat &msg) noexcept
     {
         if (auto reject_info = validate_heartbeat(msg); reject_info != true)
         {
@@ -124,41 +127,44 @@ namespace hyper::protocol_a
         }
     }
 
-    void ProtocolA::send_logon()
+    void ProtocolA::send_logon() noexcept
     {
-        schema::Logon msg{};
+        schema::Logon logon{};
+        protocol::Logon msg{logon};
         if (auto reject_info = send_to_transport(msg);
             reject_info != true)
             disconnect();
     }
 
-    void ProtocolA::send_logout()
+    void ProtocolA::send_logout() noexcept
     {
-        schema::Logout msg{};
+        schema::Logout logout{};
+        protocol::Logout msg{logout};
         if (auto reject_info = send_to_transport(msg);
             reject_info != true)
             disconnect();
     }
 
-    void ProtocolA::send_heartbeat()
+    void ProtocolA::send_heartbeat() noexcept
     {
-        schema::Heartbeat msg{};
+        schema::Heartbeat heartbeat{};
+        protocol::Heartbeat msg{heartbeat};
         if (auto reject_info = send_to_transport(msg);
             reject_info != true)
             disconnect();
     }
 
-    SessionRejectInfo ProtocolA::validate_logon([[maybe_unused]] schema::Logon &msg)
+    SessionRejectInfo ProtocolA::validate_logon([[maybe_unused]] const protocol::Logon &msg) noexcept
     {
         return SessionRejectInfo{};
     }
 
-    SessionRejectInfo ProtocolA::validate_logout([[maybe_unused]] schema::Logout &msg)
+    SessionRejectInfo ProtocolA::validate_logout([[maybe_unused]] const protocol::Logout &msg) noexcept
     {
         return SessionRejectInfo{};
     }
 
-    SessionRejectInfo ProtocolA::validate_heartbeat([[maybe_unused]] schema::Heartbeat &msg)
+    SessionRejectInfo ProtocolA::validate_heartbeat([[maybe_unused]] const protocol::Heartbeat &msg) noexcept
     {
         return SessionRejectInfo{};
     }

@@ -8,20 +8,20 @@
 
 namespace hyper::protocol_a
 {
+    class ProtocolA;
+
     using RejectInfo = framework::RejectInfo;
     using SourceRouter = framework::SourceRouter;
-    using Transport = framework::Transport;
     using UID = framework::UID;
 
     /* Application message session implementation for the source session (Protocol A) */
-    
-    class SourceSessionProtocolA : public framework::SourceSession<SourceSessionProtocolA>
+
+    class SourceSessionProtocolA : public framework::SourceSession<SourceSessionProtocolA, ProtocolA>
     {
     public:
-        explicit SourceSessionProtocolA(Transport &transport,
+        explicit SourceSessionProtocolA(ProtocolA &protocol,
                                         const DestinationRouterPtrVariant &destination_router,
-                                        SourceRouter &source_router)
-            : SourceSession<SourceSessionProtocolA>{transport, destination_router, source_router} {}
+                                        SourceRouter &source_router);
 
         /* TransportEvents */
         void on_connect_impl() noexcept;

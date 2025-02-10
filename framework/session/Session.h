@@ -3,7 +3,6 @@
 #include <framework/utility/CrtpBase.h>
 #include <framework/utility/RejectInfo.h>
 #include <framework/message/Message.h>
-#include <framework/transport/Transport.h>
 #include <framework/config/Configuration.h>
 #include <type_traits>
 #include <concepts>
@@ -17,14 +16,14 @@ namespace hyper::framework
         { ds.impl().on_disconnect_impl() } -> std::same_as<void>;
     };
 
-    template <typename SessionImpl>
+    template <typename SessionImpl, typename Protocol>
     class Session : public CrtpBase<SessionImpl>
     {
     public:
-        explicit Session(Transport &transport)
-            : transport_(transport)
+        explicit Session(Protocol &protocol)
+            : protocol_(protocol)
         {
-            static_assert(SessionInf<Session<SessionImpl>>,
+            static_assert(SessionInf<Session<SessionImpl, Protocol>>,
                           "The Session implementation does not satisfy SessionInf");
         }
 
@@ -43,32 +42,31 @@ namespace hyper::framework
 
     private:
         bool connected_{true};
-        Transport &transport_;
+        Protocol &protocol_;
     };
 
-    template <typename SessionImpl>
-    inline void Session<SessionImpl>::on_connect() noexcept
+    template <typename SessionImpl, typename Protocol>
+    inline void Session<SessionImpl, Protocol>::on_connect() noexcept
     {
         this->impl().on_connect_impl();
     }
 
-    template <typename SessionImpl>
-    inline void Session<SessionImpl>::on_disconnect() noexcept
+    template <typename SessionImpl, typename Protocol>
+    inline void Session<SessionImpl, Protocol>::on_disconnect() noexcept
     {
         this->impl().on_disconnect_impl();
     }
 
-    template <typename SessionImpl>
+    template <typename SessionImpl, typename Protocol>
     template <MessageInf Msg>
-    inline RejectInfo Session<SessionImpl>::send_message_to_transport(Msg &msg) const noexcept
+    inline RejectInfo Session<SessionImpl, Protocol>::send_message_to_transport(Msg &msg) const noexcept
     {
-        msg.update_out_timestamp();
-        return transport_.send_data(msg.data());
+        return protocol_.send_to_transport(msg);
     }
 
-    template <typename SessionImpl>
+    template <typename SessionImpl, typename Protocol>
     template <MessageInf Msg>
-    inline void Session<SessionImpl>::on_message_from_transport(Msg &msg) const noexcept
+    inline void Session<SessionImpl, Protocol>::on_message_from_transport(Msg &msg) const noexcept
     {
         this->impl().on_message_from_transport_impl(msg);
     }

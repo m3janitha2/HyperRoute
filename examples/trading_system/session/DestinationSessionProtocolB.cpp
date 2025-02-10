@@ -1,8 +1,13 @@
 #include <examples/trading_system/session/DestinationSessionProtocolB.h>
-#include "DestinationSessionProtocolB.h"
+#include <examples/trading_system/protocol/ProtocolB.h>
 
 namespace hyper::protocol_b
 {
+    DestinationSessionProtocolB::DestinationSessionProtocolB(ProtocolB &protocol,
+                                                             SourceRouter &source_router,
+                                                             const ValidatorPtrVariant &validator)
+        : DestinationSession<DestinationSessionProtocolB, ProtocolB>{protocol, source_router, validator} {}
+
     void DestinationSessionProtocolB::on_connect_impl() noexcept
     {
     }

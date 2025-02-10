@@ -50,7 +50,7 @@ namespace hyper::protocol_a::schema
     struct Logout
     {
         Header header{.size = sizeof(Logout),
-                      .msg_type = MsgType::Logon,
+                      .msg_type = MsgType::Logout,
                       .seq_no = 0};
         std::uint32_t a{};
         std::uint32_t b{};
@@ -67,7 +67,7 @@ namespace hyper::protocol_a::schema
     struct Heartbeat
     {
         Header header{.size = sizeof(Heartbeat),
-                      .msg_type = MsgType::Logon,
+                      .msg_type = MsgType::Heartbeat,
                       .seq_no = 0};
         std::uint32_t a{};
         std::uint32_t b{};

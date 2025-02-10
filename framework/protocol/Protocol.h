@@ -3,8 +3,9 @@
 #include <framework/utility/CrtpBase.h>
 #include <framework/utility/RejectInfo.h>
 #include <framework/transport/Transport.h>
-#include <framework/sequence_store/SequenceStore.h>
 #include <framework/config/Configuration.h>
+#include <framework/message/Message.h>
+#include <memory>
 #include <cstdint>
 #include <string_view>
 #include <type_traits>
@@ -38,7 +39,8 @@ namespace hyper::framework
                              { on_disconnect(); },
                              [this](std::string_view data, Timestamp timestamp) noexcept
                              { return on_data(data, timestamp); }}},
-              session_{transport_, std::forward<Args>(args)...}
+              session_{std::make_unique<Session>(*(ProtocolImpl *)(this),
+                                                 std::forward<Args>(args)...)}
         {
             static_assert(TransportCallbackInf<Protocol<ProtocolImpl, Session>>,
                           "Protocol does not satisfy TransportCallbackInf");
@@ -62,17 +64,17 @@ namespace hyper::framework
         RejectInfo disconnect();
         [[nodiscard]] constexpr bool is_connected() const noexcept { return connected_; }
 
-        template <typename Msg>
+        template <MessageInf Msg>
         RejectInfo send_to_transport(Msg &msg) const noexcept;
 
-        template <typename Msg>
+        template <MessageInf Msg>
         void persist_protocol_message(Msg &msg) { /* todox */ }
 
         [[nodiscard]] constexpr Transport &transport() noexcept { return transport_; }
         [[nodiscard]] constexpr const Transport &transport() const noexcept { return transport_; }
 
-        [[nodiscard]] constexpr const Session &session() const noexcept { return session_; }
-        [[nodiscard]] constexpr Session &session() noexcept { return session_; }
+        [[nodiscard]] constexpr const Session &session() const noexcept { return *session_.get(); }
+        [[nodiscard]] constexpr Session &session() noexcept { return *session_.get(); }
 
         [[nodiscard]] constexpr const std::string &name() const noexcept { return name_; }
 
@@ -81,8 +83,7 @@ namespace hyper::framework
         std::size_t id_{0};
         std::string name_{};
         Transport transport_;
-        Session session_;
-        SequenceStore<std::uint64_t> sequence_store_{};
+        std::unique_ptr<Session> session_{nullptr};
         bool connected_{false};
 
         /* todox: HeatbeatTimer producer_ */
@@ -130,11 +131,12 @@ namespace hyper::framework
     }
 
     template <typename ProtocolImpl, typename Session>
-    template <typename Msg>
+    template <MessageInf Msg>
     inline RejectInfo Protocol<ProtocolImpl, Session>::send_to_transport(Msg &msg) const noexcept
     {
-        /* todox: reschedule heatbeat producer_ */
-        std::string_view data{reinterpret_cast<char *>(&msg), sizeof(msg)};
-        return transport_.send_data(data);
+        this->impl().enrich_for_send_impl(msg);
+        msg.update_out_timestamp();
+        /* todox: reschedule heatbeat producer */
+        return transport_.send_data(msg.data());
     }
 }

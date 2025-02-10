@@ -10,20 +10,20 @@
 
 namespace hyper::protocol_b
 {
+    class ProtocolB;
+
     using RejectInfo = framework::RejectInfo;
     using InteranlRejectCode = framework::InteranlRejectCode;
     using SourceRouter = framework::SourceRouter;
-    using Transport = framework::Transport;
 
     /* Application message session implementation for the destination session (Protocol B) */
 
-    class DestinationSessionProtocolB : public framework::DestinationSession<DestinationSessionProtocolB>
+    class DestinationSessionProtocolB : public framework::DestinationSession<DestinationSessionProtocolB, ProtocolB>
     {
     public:
-        explicit DestinationSessionProtocolB(Transport &transport,
+        explicit DestinationSessionProtocolB(ProtocolB &protocol,
                                              SourceRouter &source_router,
-                                             const ValidatorPtrVariant &validator)
-            : DestinationSession<DestinationSessionProtocolB>{transport, source_router, validator} {}
+                                             const ValidatorPtrVariant &validator);
 
         /* TransportEvents */
         void on_connect_impl() noexcept;

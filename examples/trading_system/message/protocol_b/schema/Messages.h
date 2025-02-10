@@ -8,7 +8,7 @@ namespace hyper::protocol_b::schema
     /* Message schema for Protocol B */
     /* This is a primitive, FIX-like binary schema to demonstrate usage */
     /* 60-70% of the schema is duplicated from Protocol A for implementation simplicity */
-    
+
     enum class MsgType : std::uint32_t
     {
         Logon = 10,
@@ -26,6 +26,16 @@ namespace hyper::protocol_b::schema
         std::uint32_t size;
         MsgType msg_type;
         std::uint8_t version{1};
+        std::uint64_t seq_no{0};
+
+        friend std::ostream &operator<<(std::ostream &os, const Header &header)
+        {
+            os << "ProtocolB size:" << header.size
+               << " msg_type:" << header.size
+               << " version:" << static_cast<int>(header.version)
+               << " seq_no:" << header.seq_no;
+            return os;
+        }
     };
 
     struct Logon
@@ -36,7 +46,8 @@ namespace hyper::protocol_b::schema
 
         friend std::ostream &operator<<(std::ostream &os, const Logon &msg)
         {
-            os << "A Logon a:" << msg.a << " b:" << msg.b;
+            os << msg.header
+               << " Logon a:" << msg.a << " b:" << msg.b;
             return os;
         }
     };
@@ -49,7 +60,8 @@ namespace hyper::protocol_b::schema
 
         friend std::ostream &operator<<(std::ostream &os, const Logout &msg)
         {
-            os << "A Logout a:" << msg.a << " b:" << msg.b;
+            os << msg.header
+               << " Logout a:" << msg.a << " b:" << msg.b;
             return os;
         }
     };
@@ -62,7 +74,8 @@ namespace hyper::protocol_b::schema
 
         friend std::ostream &operator<<(std::ostream &os, const Heartbeat &msg)
         {
-            os << "A Heartbeat a:" << msg.a << " b:" << msg.b;
+            os << msg.header
+               << " Heartbeat a:" << msg.a << " b:" << msg.b;
             return os;
         }
     };
@@ -76,7 +89,8 @@ namespace hyper::protocol_b::schema
 
         friend std::ostream &operator<<(std::ostream &os, const NewOrderSingle &msg)
         {
-            os << "ProtocolB NewOrderSingle a:" << msg.a
+            os << msg.header
+               << " NewOrderSingle a:" << msg.a
                << " b:" << msg.b
                << " C:" << msg.c;
             return os;
@@ -93,7 +107,8 @@ namespace hyper::protocol_b::schema
 
         friend std::ostream &operator<<(std::ostream &os, const CancelReplaceRequest &msg)
         {
-            os << "B CancelReplaceRequest a:" << msg.a << " b:" << msg.b;
+            os << msg.header
+               << " CancelReplaceRequest a:" << msg.a << " b:" << msg.b;
             return os;
         }
     };
@@ -108,7 +123,8 @@ namespace hyper::protocol_b::schema
 
         friend std::ostream &operator<<(std::ostream &os, const CancelRequest &msg)
         {
-            os << "B CancelRequest a:" << msg.a << " b:" << msg.b;
+            os << msg.header
+               << " CancelRequest a:" << msg.a << " b:" << msg.b;
             return os;
         }
     };
@@ -124,7 +140,8 @@ namespace hyper::protocol_b::schema
 
         friend std::ostream &operator<<(std::ostream &os, const ExecutionReport &msg)
         {
-            os << "B ExecutionReport a: " << msg.a << " b:" << msg.b;
+            os << msg.header
+               << " ExecutionReport a: " << msg.a << " b:" << msg.b;
             return os;
         }
     };
@@ -139,7 +156,8 @@ namespace hyper::protocol_b::schema
 
         friend std::ostream &operator<<(std::ostream &os, const CancelReject &msg)
         {
-            os << "B CancelReject a: " << msg.a << " b:" << msg.b;
+            os << msg.header
+               << " CancelReject a: " << msg.a << " b:" << msg.b;
             return os;
         }
     };

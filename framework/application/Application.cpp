@@ -5,6 +5,7 @@
 #include <framework/factory/DestinationRouterFactory.h>
 #include <framework/factory/SourceProtocolFactory.h>
 #include <framework/socket/tcp/EpollSocketManager.h>
+#include <framework/router/SourceRouter.h>
 
 #include <iostream>
 

@@ -1,5 +1,5 @@
 #include <examples/trading_system/protocol/ProtocolB.h>
-#include "ProtocolB.h"
+#include <examples/trading_system/session/DestinationSessionProtocolB.h>
 
 namespace hyper::protocol_b
 {
@@ -27,22 +27,22 @@ namespace hyper::protocol_b
                          const ValidatorPtrVariant &validator)
         : Protocol{config, source_router, validator} {}
 
-    void ProtocolB::on_connect_impl()
+    void ProtocolB::on_connect_impl() noexcept
     {
     }
 
-    void ProtocolB::on_disconnect_impl()
+    void ProtocolB::on_disconnect_impl() noexcept
     {
     }
 
-    std::size_t ProtocolB::on_data_impl(std::string_view data, Timestamp timestamp)
+    std::size_t ProtocolB::on_data_impl(std::string_view data, Timestamp timestamp) noexcept
     {
-        auto *const_header = reinterpret_cast<const schema::Header *>(data.data());
-        auto *header = const_cast<schema::Header *>(const_header);
         /* data is less than header size, don't consume */
         if (data.length() < sizeof(schema::Header))
             return 0;
 
+        auto *const_header = reinterpret_cast<const schema::Header *>(data.data());
+        auto *header = const_cast<schema::Header *>(const_header);
         /* data is less than message size, don't consume */
         if (data.length() < header->size)
             return 0;
@@ -51,19 +51,19 @@ namespace hyper::protocol_b
         {
         case schema::MsgType::Logon:
         {
-            auto &msg = *(reinterpret_cast<schema::Logon *>(header));
+            protocol::Logon msg{data, timestamp};
             on_logon(msg);
             break;
         }
         case schema::MsgType::Logout:
         {
-            auto &msg = *(reinterpret_cast<schema::Logout *>(header));
+            protocol::Logout msg{data, timestamp};
             on_logout(msg);
             break;
         }
         case schema::MsgType::Heartbeat:
         {
-            auto &msg = *(reinterpret_cast<schema::Heartbeat *>(header));
+            protocol::Heartbeat msg{data, timestamp};
             on_heartbeat(msg);
             break;
         }
@@ -86,7 +86,7 @@ namespace hyper::protocol_b
         return header->size;
     }
 
-    void ProtocolB::on_logon(schema::Logon &msg)
+    void ProtocolB::on_logon(const protocol::Logon &msg) noexcept
     {
         if (auto reject_info = validate_logon(msg); reject_info != true)
         {
@@ -98,7 +98,7 @@ namespace hyper::protocol_b
         send_logon();
     }
 
-    void ProtocolB::on_logout(schema::Logout &msg)
+    void ProtocolB::on_logout(const protocol::Logout &msg) noexcept
     {
         if (auto reject_info = validate_logout(msg); reject_info != true)
         {
@@ -109,7 +109,7 @@ namespace hyper::protocol_b
         send_logout();
     }
 
-    void ProtocolB::on_heartbeat(schema::Heartbeat &msg)
+    void ProtocolB::on_heartbeat(const protocol::Heartbeat &msg) noexcept
     {
         if (auto reject_info = validate_heartbeat(msg); reject_info != true)
         {
@@ -118,41 +118,44 @@ namespace hyper::protocol_b
         }
     }
 
-    void ProtocolB::send_logon()
+    void ProtocolB::send_logon() noexcept
     {
-        schema::Logon msg{};
+        schema::Logon logon{};
+        protocol::Logon msg{logon};
         if (auto reject_info = send_to_transport(msg);
             reject_info != true)
             disconnect();
     }
 
-    void ProtocolB::send_logout()
+    void ProtocolB::send_logout() noexcept
     {
-        schema::Logout msg{};
+        schema::Logout logout{};
+        protocol::Logout msg{logout};
         if (auto reject_info = send_to_transport(msg);
             reject_info != true)
             disconnect();
     }
 
-    void ProtocolB::send_heartbeat()
+    void ProtocolB::send_heartbeat() noexcept
     {
-        schema::Heartbeat msg{};
+        schema::Heartbeat heartbeat{};
+        protocol::Heartbeat msg{heartbeat};
         if (auto reject_info = send_to_transport(msg);
             reject_info != true)
             disconnect();
     }
 
-    SessionRejectInfo ProtocolB::validate_logon([[maybe_unused]] schema::Logon &msg)
+    SessionRejectInfo ProtocolB::validate_logon([[maybe_unused]] const protocol::Logon &msg) noexcept
     {
         return SessionRejectInfo{};
     }
 
-    SessionRejectInfo ProtocolB::validate_logout([[maybe_unused]] schema::Logout &msg)
+    SessionRejectInfo ProtocolB::validate_logout([[maybe_unused]] const protocol::Logout &msg) noexcept
     {
         return SessionRejectInfo{};
     }
 
-    SessionRejectInfo ProtocolB::validate_heartbeat([[maybe_unused]] schema::Heartbeat &msg)
+    SessionRejectInfo ProtocolB::validate_heartbeat([[maybe_unused]] const protocol::Heartbeat &msg) noexcept
     {
         return SessionRejectInfo{};
     }

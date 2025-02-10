@@ -6,11 +6,13 @@
 #include <vector>
 #include <string_view>
 #include <framework/simulator/TCPSimulator.h>
+#include <framework/config/Configuration.h>
 #include <examples/trading_system/application/TestMessageStore.h>
 
 using namespace hyper;
 
 using Timestamp = hyper::framework::Timestamp;
+using Configuration = hyper::framework::Configuration;
 
 struct SimulatorClientA
 {

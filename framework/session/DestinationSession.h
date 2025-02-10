@@ -28,14 +28,14 @@ namespace hyper::framework
         { ds.update_destination_routing_info_impl(src_msg) } -> std::same_as<void>;
     };
 
-    template <typename SessionImpl>
-    class DestinationSession : public Session<SessionImpl>
+    template <typename SessionImpl, typename Protocol>
+    class DestinationSession : public Session<SessionImpl, Protocol>
     {
     public:
-        explicit DestinationSession(Transport &transport,
+        explicit DestinationSession(Protocol &protocol,
                                     SourceRouter &source_router,
                                     const ValidatorPtrVariant &validator)
-            : Session<SessionImpl>{transport},
+            : Session<SessionImpl, Protocol>{protocol},
               source_router_{source_router},
               validator_{validator} {}
 
@@ -77,17 +77,17 @@ namespace hyper::framework
         DestinationTransform destination_transform_{};
     };
 
-    template <typename SessionImpl>
+    template <typename SessionImpl, typename Protocol>
     template <MessageInf Msg>
-    inline RejectInfo DestinationSession<SessionImpl>::on_message_from_peer(Msg &msg) const noexcept
+    inline RejectInfo DestinationSession<SessionImpl, Protocol>::on_message_from_peer(Msg &msg) const noexcept
     {
         return this->impl().on_message_from_peer_impl(msg);
     }
 
-    template <typename SessionImpl>
+    template <typename SessionImpl, typename Protocol>
     template <MessageInf DestinationMsg, MessageInf SourceMsg>
-    inline void DestinationSession<SessionImpl>::procoess_message_from_transport(DestinationMsg &dst_msg,
-                                                                                 SourceMsg &src_msg) const noexcept
+    inline void DestinationSession<SessionImpl, Protocol>::procoess_message_from_transport(DestinationMsg &dst_msg,
+                                                                                           SourceMsg &src_msg) const noexcept
     {
         if (auto reject_info = transform_message_from_transport(dst_msg);
             reject_info != true) [[unlikely]]
@@ -113,10 +113,10 @@ namespace hyper::framework
         // Publish the recevied message to other channels.
     }
 
-    template <typename SessionImpl>
+    template <typename SessionImpl, typename Protocol>
     template <MessageInf SourceMsg, MessageInf DestinationMsg>
-    inline RejectInfo DestinationSession<SessionImpl>::procoess_message_to_transport(SourceMsg &src_msg,
-                                                                                     DestinationMsg &dst_msg) const noexcept
+    inline RejectInfo DestinationSession<SessionImpl, Protocol>::procoess_message_to_transport(SourceMsg &src_msg,
+                                                                                               DestinationMsg &dst_msg) const noexcept
     {
         if (auto reject_info = validate(src_msg);
             reject_info != true) [[unlikely]]
@@ -145,70 +145,70 @@ namespace hyper::framework
         return RejectInfo{};
     }
 
-    template <typename SessionImpl>
+    template <typename SessionImpl, typename Protocol>
     template <MessageInf Msg>
-    inline RejectInfo DestinationSession<SessionImpl>::validate(Msg &msg) const noexcept
+    inline RejectInfo DestinationSession<SessionImpl, Protocol>::validate(Msg &msg) const noexcept
     {
         return std::visit([&msg]<typename ValidatorType>(ValidatorType &&validator)
                           { return std::forward<ValidatorType>(validator)->validate(msg); },
                           validator_);
     }
 
-    template <typename SessionImpl>
+    template <typename SessionImpl, typename Protocol>
     template <MessageInf Msg>
-    inline RejectInfo DestinationSession<SessionImpl>::transform_message_to_transport(Msg &msg) const noexcept
+    inline RejectInfo DestinationSession<SessionImpl, Protocol>::transform_message_to_transport(Msg &msg) const noexcept
     {
         return destination_transform_.transform_message_to_transport(msg);
     }
 
-    template <typename SessionImpl>
+    template <typename SessionImpl, typename Protocol>
     template <MessageInf Msg>
-    inline RejectInfo DestinationSession<SessionImpl>::transform_message_from_transport(Msg &msg) const noexcept
+    inline RejectInfo DestinationSession<SessionImpl, Protocol>::transform_message_from_transport(Msg &msg) const noexcept
     {
         return destination_transform_.transform_message_from_transport(msg);
     }
 
-    template <typename SessionImpl>
+    template <typename SessionImpl, typename Protocol>
     template <MessageInf SourceMsg, MessageInf DestinationMsg>
-    inline RejectInfo DestinationSession<SessionImpl>::encode_message_to_destination(SourceMsg &src_msg,
-                                                                                     DestinationMsg &dst_msg) const noexcept
+    inline RejectInfo DestinationSession<SessionImpl, Protocol>::encode_message_to_destination(SourceMsg &src_msg,
+                                                                                               DestinationMsg &dst_msg) const noexcept
     {
         return this->impl().encode_message_to_destination_impl(src_msg, dst_msg);
     }
 
-    template <typename SessionImpl>
+    template <typename SessionImpl, typename Protocol>
     template <MessageInf DestinationMsg, MessageInf SourceMsg>
-    inline RejectInfo DestinationSession<SessionImpl>::handle_message_from_transport(DestinationMsg &dst_msg, SourceMsg &src_msg) const noexcept
+    inline RejectInfo DestinationSession<SessionImpl, Protocol>::handle_message_from_transport(DestinationMsg &dst_msg, SourceMsg &src_msg) const noexcept
     {
         return this->impl().handle_message_from_transport_impl(dst_msg, src_msg);
     }
 
-    template <typename SessionImpl>
+    template <typename SessionImpl, typename Protocol>
     template <MessageInf DestinationMsg, MessageInf SourceMsg>
-    inline RejectInfo DestinationSession<SessionImpl>::decode_message_from_destination(DestinationMsg &dst_msg,
-                                                                                       SourceMsg &src_msg) const noexcept
+    inline RejectInfo DestinationSession<SessionImpl, Protocol>::decode_message_from_destination(DestinationMsg &dst_msg,
+                                                                                                 SourceMsg &src_msg) const noexcept
     {
         return this->impl().decode_message_from_destination_impl(dst_msg, src_msg);
     }
 
-    template <typename SessionImpl>
+    template <typename SessionImpl, typename Protocol>
     template <MessageInf Msg>
-    inline RejectInfo DestinationSession<SessionImpl>::send_message_to_peer(Msg &msg) const noexcept
+    inline RejectInfo DestinationSession<SessionImpl, Protocol>::send_message_to_peer(Msg &msg) const noexcept
     {
         return source_router_.send_message_to_source(msg);
     }
 
-    template <typename SessionImpl>
+    template <typename SessionImpl, typename Protocol>
     template <MessageInf Msg>
-    inline void DestinationSession<SessionImpl>::reject_message_from_transport(Msg &msg, RejectInfo &reject_info) const noexcept
+    inline void DestinationSession<SessionImpl, Protocol>::reject_message_from_transport(Msg &msg, RejectInfo &reject_info) const noexcept
     {
         this->impl().reject_message_from_transport_impl(msg, reject_info);
     }
 
-    template <typename SessionImpl>
+    template <typename SessionImpl, typename Protocol>
     template <MessageInf SourceMsg, MessageInf DestinationMsg>
-    inline void DestinationSession<SessionImpl>::update_destination_routing_info(SourceMsg &src_msg,
-                                                                                 DestinationMsg &dst_msg) const noexcept
+    inline void DestinationSession<SessionImpl, Protocol>::update_destination_routing_info(SourceMsg &src_msg,
+                                                                                           DestinationMsg &dst_msg) const noexcept
     {
         return this->impl().update_destination_routing_info_impl(src_msg, dst_msg);
     }

@@ -168,3 +168,63 @@ namespace hyper::protocol_a::session
         constexpr void size(std::uint64_t s) noexcept { msg().b = s; }
     };
 }
+
+namespace hyper::protocol_a::protocol
+{
+    using Timestamp = framework::Timestamp;
+    using TimestampClock = framework::TimestampClock;
+
+    class Logon : public framework::BinaryMessage<schema::Logon>
+    {
+    public:
+        explicit constexpr Logon(schema::Logon &msg,
+                                 Timestamp in_timestamp = TimestampClock::now()) noexcept
+            : framework::BinaryMessage<schema::Logon>{msg, in_timestamp} {}
+
+        explicit constexpr Logon(std::string_view data,
+                                 Timestamp in_timestamp = TimestampClock::now()) noexcept
+            : framework::BinaryMessage<schema::Logon>{data, in_timestamp} {}
+
+        friend std::ostream &operator<<(std::ostream &os, const Logon &msg)
+        {
+            os << msg.msg();
+            return os;
+        }
+    };
+
+    class Logout : public framework::BinaryMessage<schema::Logout>
+    {
+    public:
+        explicit constexpr Logout(schema::Logout &msg,
+                                  Timestamp in_timestamp = TimestampClock::now()) noexcept
+            : framework::BinaryMessage<schema::Logout>{msg, in_timestamp} {}
+
+        explicit constexpr Logout(std::string_view data,
+                                  Timestamp in_timestamp = TimestampClock::now()) noexcept
+            : framework::BinaryMessage<schema::Logout>{data, in_timestamp} {}
+
+        friend std::ostream &operator<<(std::ostream &os, const Logout &msg)
+        {
+            os << msg.msg();
+            return os;
+        }
+    };
+
+    class Heartbeat : public framework::BinaryMessage<schema::Heartbeat>
+    {
+    public:
+        explicit constexpr Heartbeat(schema::Heartbeat &msg,
+                                     Timestamp in_timestamp = TimestampClock::now()) noexcept
+            : framework::BinaryMessage<schema::Heartbeat>{msg, in_timestamp} {}
+
+        explicit constexpr Heartbeat(std::string_view data,
+                                     Timestamp in_timestamp = TimestampClock::now()) noexcept
+            : framework::BinaryMessage<schema::Heartbeat>{data, in_timestamp} {}
+
+        friend std::ostream &operator<<(std::ostream &os, const Heartbeat &msg)
+        {
+            os << msg.msg();
+            return os;
+        }
+    };
+}

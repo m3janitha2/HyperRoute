@@ -1,11 +1,16 @@
 #include <examples/trading_system/session/SourceSessionProtocolA.h>
+#include <examples/trading_system/protocol/ProtocolA.h>
 #include <framework/message/UIDGenerator.h>
-#include "SourceSessionProtocolA.h"
 
 namespace hyper::protocol_a
 {
     using UIDGenerator = framework::UIDGenerator;
     using InteranlRejectCode = framework::InteranlRejectCode;
+
+    SourceSessionProtocolA::SourceSessionProtocolA(ProtocolA &protocol,
+                                                   const DestinationRouterPtrVariant &destination_router,
+                                                   SourceRouter &source_router)
+        : SourceSession{protocol, destination_router, source_router} {}
 
     void SourceSessionProtocolA::on_connect_impl() noexcept {}
 
@@ -30,21 +35,30 @@ namespace hyper::protocol_a
                                                                     RejectInfo &reject_info) const noexcept
     {
         std::cout << "msg rejected: " << msg << " reason: " << reject_info << std::endl;
-        /* create reject and send to transport */
+        schema::ExecutionReport reject;
+        session::ExecutionReport dst_msg(reject);
+        /* create reject */
+        send_message_to_transport(dst_msg);
     }
 
     void SourceSessionProtocolA::reject_message_from_transport_impl(session::CancelReplaceRequest &msg,
                                                                     RejectInfo &reject_info) const noexcept
     {
         std::cout << "msg rejected: " << msg << " reason: " << reject_info << std::endl;
-        /* create reject and send to transport */
+        schema::ExecutionReport reject;
+        session::ExecutionReport dst_msg(reject);
+        /* create reject */
+        send_message_to_transport(dst_msg);
     }
 
     void SourceSessionProtocolA::reject_message_from_transport_impl(session::CancelRequest &msg,
                                                                     RejectInfo &reject_info) const noexcept
     {
         std::cout << "msg rejected: " << msg << " reason: " << reject_info << std::endl;
-        /* create reject and send to transport */
+        schema::CancelReject reject;
+        session::CancelReject dst_msg(reject);
+        /* create reject */
+        send_message_to_transport(dst_msg);
     }
 
     RejectInfo SourceSessionProtocolA::on_message_from_peer_impl(session::ExecutionReport &msg) const noexcept
