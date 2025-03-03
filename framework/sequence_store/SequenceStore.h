@@ -10,26 +10,24 @@ namespace hyper::framework
     {
     public:
         explicit SequenceStore(const std::string &filename)
-            : m_mapped_data_(decorate_file_name(filename)),
-              data_(m_mapped_data_.data()) {}
+            : mapped_data_(generate_storage_filename(filename)),
+              data_(mapped_data_.get_mapped_data()) {}
 
-        // Input sequence number methods
         SeqNumType in_sequence_number() const { return data_.in_sequence_number_; }
         SeqNumType next_in_sequence_number() { return ++data_.in_sequence_number_; }
         void in_sequence_number(SeqNumType seq) { data_.in_sequence_number_ = seq; }
 
-        // Output sequence number methods
         SeqNumType out_sequence_number() const { return data_.out_sequence_number_; }
         SeqNumType next_out_sequence_number() { return ++data_.out_sequence_number_; }
         void out_sequence_number(SeqNumType seq) { data_.out_sequence_number_ = seq; }
 
     private:
-        static auto decorate_file_name(const std::string &filename)
+        static std::string generate_storage_filename(const std::string &filename)
         {
             return filename + "_seq.dat";
         }
 
-        struct Data
+        struct SequenceData
         {
             SeqNumType in_sequence_number_{0};
             SeqNumType out_sequence_number_{0};
@@ -41,7 +39,7 @@ namespace hyper::framework
             }
         };
 
-        MemoryMappedData<Data> m_mapped_data_;
-        Data &data_;
+        MemoryMappedData<SequenceData> mapped_data_;
+        SequenceData &data_;
     };
 }
