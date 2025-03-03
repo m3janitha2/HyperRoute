@@ -59,7 +59,7 @@ namespace hyper::protocol_b
         void disconnect() noexcept;
 
         /* SessionStateMachine */
-        SequenceStore sequence_store_{};
+        SequenceStore sequence_store_;
     };
 
     template <typename Msg>

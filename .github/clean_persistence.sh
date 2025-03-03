@@ -1,0 +1,2 @@
+rm $GITHUB_WORKSPACE/**.log
+rm $GITHUB_WORKSPACE/**_seq.dat

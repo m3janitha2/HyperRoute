@@ -38,7 +38,7 @@ namespace hyper::protocol_a
         schema::ExecutionReport reject;
         session::ExecutionReport dst_msg(reject);
         /* create reject */
-        send_message_to_transport(dst_msg);
+        send_message_to_transport_ignoring_errors(dst_msg);
     }
 
     void SourceSessionProtocolA::reject_message_from_transport_impl(session::CancelReplaceRequest &msg,
@@ -48,7 +48,7 @@ namespace hyper::protocol_a
         schema::ExecutionReport reject;
         session::ExecutionReport dst_msg(reject);
         /* create reject */
-        send_message_to_transport(dst_msg);
+        send_message_to_transport_ignoring_errors(dst_msg);
     }
 
     void SourceSessionProtocolA::reject_message_from_transport_impl(session::CancelRequest &msg,
@@ -58,7 +58,7 @@ namespace hyper::protocol_a
         schema::CancelReject reject;
         session::CancelReject dst_msg(reject);
         /* create reject */
-        send_message_to_transport(dst_msg);
+        send_message_to_transport_ignoring_errors(dst_msg);
     }
 
     RejectInfo SourceSessionProtocolA::on_message_from_peer_impl(session::ExecutionReport &msg) const noexcept

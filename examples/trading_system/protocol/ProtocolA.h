@@ -41,7 +41,7 @@ namespace hyper::protocol_a
         void on_disconnect_impl() noexcept;
         std::size_t on_data_impl(std::string_view data, Timestamp timestamp) noexcept;
         template <typename Msg>
-        void enrich_for_send_impl(Msg& msg) const noexcept {}
+        void enrich_for_send_impl(Msg &msg) const noexcept;
 
         void on_logon(const protocol::Logon &msg) noexcept;
         void on_logout(const protocol::Logout &msg) noexcept;
@@ -59,6 +59,12 @@ namespace hyper::protocol_a
         void disconnect() noexcept;
 
         /* SessionStateMachine */
-        SequenceStore sequence_store_{};
+        SequenceStore sequence_store_;
     };
+
+    template <typename Msg>
+    inline void ProtocolA::enrich_for_send_impl(Msg &msg) const noexcept
+    {
+        msg.msg().header.seq_no = const_cast<ProtocolA *>(this)->sequence_store_.next_out_sequence_number();
+    }
 }

@@ -25,7 +25,8 @@ namespace hyper::protocol_b
     ProtocolB::ProtocolB(const Configuration &config,
                          SourceRouter &source_router,
                          const ValidatorPtrVariant &validator)
-        : Protocol{config, source_router, validator} {}
+        : Protocol{config, source_router, validator},
+          sequence_store_(name()) {}
 
     void ProtocolB::on_connect_impl() noexcept
     {

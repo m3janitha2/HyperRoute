@@ -3,4 +3,5 @@ out/*
 build/
 .vscode/*
 Testing/**
-*.log
+**.log
+**_seq.dat

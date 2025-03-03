@@ -25,7 +25,10 @@ namespace hyper::protocol_a
     ProtocolA::ProtocolA(const Configuration &config,
                          const DestinationRouterPtrVariant &destination_router,
                          SourceRouter &source_router)
-        : Protocol{config, destination_router, source_router} {}
+        : Protocol{config, destination_router, source_router},
+          sequence_store_(name())
+    {
+    }
 
     void ProtocolA::on_connect_impl() noexcept
     {

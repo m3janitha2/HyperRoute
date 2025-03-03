@@ -38,6 +38,8 @@ namespace hyper::framework
         template <MessageInf Msg>
         RejectInfo send_message_to_transport(Msg &msg) const noexcept;
         template <MessageInf Msg>
+        void send_message_to_transport_ignoring_errors(Msg &msg) const noexcept;
+        template <MessageInf Msg>
         void on_message_from_transport(Msg &msg) const noexcept;
 
     private:
@@ -62,6 +64,17 @@ namespace hyper::framework
     inline RejectInfo Session<SessionImpl, Protocol>::send_message_to_transport(Msg &msg) const noexcept
     {
         return protocol_.send_to_transport(msg);
+    }
+
+    template <typename SessionImpl, typename Protocol>
+    template <MessageInf Msg>
+    inline void Session<SessionImpl, Protocol>::send_message_to_transport_ignoring_errors(Msg &msg) const noexcept
+    {
+        if(auto reject_info = protocol_.send_to_transport(msg);
+            reject_info != true) [[unlikely]]
+            {
+                std::cerr << "Failed to send message to transport" << std::endl;
+            }
     }
 
     template <typename SessionImpl, typename Protocol>
