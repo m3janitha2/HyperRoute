@@ -47,5 +47,4 @@ Additionally, binding critical threads to CPUs without isolated cores may degrad
    - **Tradeoff**: Improved runtime performance at the cost of increased verbosity and compile time.
   
 ## What's Next
-- Network protocol layer in development, featuring a flexible socket layer supporting TCP, UDP, and kernel bypass (e.g., Mellanox, SolarFlare).
 - Customizable threading model to be implemented alongside the socket layer.
